@@ -7,12 +7,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
 import org.cloud.wetag.dataset.DataSet;
+import org.cloud.wetag.dataset.WorkSpace;
 
 import java.util.List;
 
@@ -36,26 +38,22 @@ public class DataSetAdapter extends RecyclerView.Adapter<DataSetAdapter.DataSetV
   }
 
   @Override
-  public void onBindViewHolder(@NonNull DataSetViewHolder viewHolder, int position) {
+  public void onBindViewHolder(@NonNull DataSetViewHolder viewHolder, final int position) {
     DataSet dataSet = dataSetList.get(position);
-    viewHolder.dataSetName.setText(dataSet.getName());
-
-    ImageView[] imageViews = new ImageView[]{
-        viewHolder.dataSetImage1, viewHolder.dataSetImage2, viewHolder.dataSetImage3};
+    viewHolder.dataSetName.setText(dataSet.getName() + "数据集");
+    viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        WorkSpace.removeDataSet(position);
+        notifyItemRemoved(position);
+      }
+    });
     List<String> imageLocations = dataSet.getImages();
-    for (int i = 0; i < imageViews.length; i++) {
-      String imageLocation;
-      try {
-        imageLocation = imageLocations.get(i);
-      } catch (IndexOutOfBoundsException e) {
-        imageLocation = null;
-      }
-      if (imageLocation == null) {
-        // if image location is null, load default picture
-        Glide.with(context).load(R.drawable.no_image).into(imageViews[i]);
-      } else {
-        Glide.with(context).load(dataSet.getImages().get(0)).into(imageViews[i]);
-      }
+    if (imageLocations.isEmpty()) {
+      // if dataset is empty, load default picture
+      Glide.with(context).load(R.drawable.no_image).into(viewHolder.dataSetImage);
+    } else {
+      Glide.with(context).load(dataSet.getImages().get(0)).into(viewHolder.dataSetImage);
     }
   }
 
@@ -68,15 +66,15 @@ public class DataSetAdapter extends RecyclerView.Adapter<DataSetAdapter.DataSetV
 
     CardView cardView;
     TextView dataSetName;
-    ImageView dataSetImage1, dataSetImage2, dataSetImage3;
+    Button deleteButton;
+    ImageView dataSetImage;
 
     public DataSetViewHolder(@NonNull View itemView) {
       super(itemView);
       cardView = (CardView) itemView;
       dataSetName = itemView.findViewById(R.id.dataset_name);
-      dataSetImage1 = itemView.findViewById(R.id.dataset_image1);
-      dataSetImage2 = itemView.findViewById(R.id.dataset_image2);
-      dataSetImage3 = itemView.findViewById(R.id.dataset_image3);
+      dataSetImage = itemView.findViewById(R.id.dataset_image);
+      deleteButton = itemView.findViewById(R.id.dataset_delete);
     }
   }
 }

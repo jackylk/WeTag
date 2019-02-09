@@ -10,8 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewParent;
+import android.widget.Button;
 
 import org.cloud.wetag.dataset.DataSet;
+import org.cloud.wetag.dataset.WorkSpace;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,8 +24,6 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
 
   private DataSetAdapter adapter;
-
-  private List<DataSet> dataSetList;
 
   private RecyclerView recyclerView;
 
@@ -44,8 +45,11 @@ public class MainActivity extends BaseActivity {
     recyclerView = findViewById(R.id.recycler_view);
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
     recyclerView.setLayoutManager(layoutManager);
-    dataSetList = setupSampleDataSet();
-    adapter = new DataSetAdapter(dataSetList);
+    List<DataSet> sampleDataSet = setupSampleDataSet();
+    for (DataSet dataSet : sampleDataSet) {
+      WorkSpace.addDataSet(dataSet);
+    }
+    adapter = new DataSetAdapter(WorkSpace.getDataSetList());
     recyclerView.setAdapter(adapter);
   }
 
@@ -65,22 +69,10 @@ public class MainActivity extends BaseActivity {
           String[] labelArray = datasetLabels.split(",");
           DataSet dataSet = new DataSet(
               datasetName, new HashSet<String>(Arrays.asList(labelArray)));
-          addDataSet(dataSet);
-          adapter.notifyItemInserted(dataSetList.size() - 1);
-          recyclerView.scrollToPosition(dataSetList.size() - 1);
+          WorkSpace.addDataSet(dataSet);
+          adapter.notifyItemInserted(WorkSpace.getDataSetList().size() - 1);
+          recyclerView.scrollToPosition(WorkSpace.getDataSetList().size() - 1);
         }
-    }
-  }
-
-  public void addDataSet(DataSet dataSet) {
-    dataSetList.add(dataSet);
-  }
-
-  public void removeDataSet(final String dataSetName) {
-    for (DataSet dataSet : dataSetList) {
-      if (dataSet.getName().equals(dataSetName)) {
-        dataSetList.remove(dataSet);
-      }
     }
   }
 

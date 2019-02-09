@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
@@ -11,47 +12,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/dataset_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="5dp"
-            android:textSize="24sp"/>
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="100dp">
-            <ImageView
-                android:id="@+id/dataset_image1"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/dataset_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:layout_margin="5dp"
+                android:textSize="24sp"/>
+            <Button
+                android:id="@+id/dataset_delete"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="4dp" />
-            <ImageView
-                android:id="@+id/dataset_image2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_margin="4dp" />
-            <ImageView
-                android:id="@+id/dataset_image3"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_margin="4dp" />
+                android:background="@android:drawable/ic_menu_delete"/>
         </LinearLayout>
-
-        <LinearLayout
+        <ImageView
+            android:id="@+id/dataset_image"
             android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:layout_margin="4dp"
+            android:scaleType="centerCrop" />
+
+        <android.support.design.chip.ChipGroup
+            android:id="@+id/dataset_taggroup"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <android.support.design.chip.ChipGroup
-                android:id="@+id/dataset_taggroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-            </android.support.design.chip.ChipGroup>
-        </LinearLayout>
+        </android.support.design.chip.ChipGroup>
     </LinearLayout>
 </android.support.v7.widget.CardView>
