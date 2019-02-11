@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import org.cloud.wetag.R;
+import org.cloud.wetag.model.DataSetCollection;
 
 public class CreateDataSetActivity extends BaseActivity {
 
@@ -41,6 +42,10 @@ public class CreateDataSetActivity extends BaseActivity {
   private boolean isValidInput(View v) {
     if (name.getText().toString().isEmpty() || labels.getText().toString().isEmpty()) {
       Toast.makeText(v.getContext(), "必须填写名称和标签", Toast.LENGTH_SHORT).show();
+      return false;
+    }
+    if (DataSetCollection.getDataSet(name.getText().toString()) != null) {
+      Toast.makeText(v.getContext(), "数据集名称已存在", Toast.LENGTH_SHORT).show();
       return false;
     }
     String[] labelArray = labels.getText().toString().split(",");

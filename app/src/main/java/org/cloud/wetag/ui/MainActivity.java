@@ -1,9 +1,13 @@
 package org.cloud.wetag.ui;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -11,24 +15,27 @@ import android.view.MenuItem;
 import android.view.View;
 
 import org.cloud.wetag.R;
-import org.cloud.wetag.entity.DataSet;
-import org.cloud.wetag.entity.DataSetCollection;
-import org.cloud.wetag.ui.adapter.DataSetAdapter;
+import org.cloud.wetag.model.DataSet;
+import org.cloud.wetag.model.DataSetCollection;
+import org.cloud.wetag.model.Image;
+import org.cloud.wetag.ui.adapter.DataSetCardAdapter;
+import org.cloud.wetag.utils.FileUtils;
+import org.litepal.LitePal;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 public class MainActivity extends BaseActivity {
 
-  private DataSetAdapter adapter;
+  private DataSetCardAdapter adapter;
 
   private RecyclerView recyclerView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    LitePal.getDatabase();
     setContentView(R.layout.activity_main);
     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
@@ -44,18 +51,32 @@ public class MainActivity extends BaseActivity {
     recyclerView = findViewById(R.id.recycler_view);
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
     recyclerView.setLayoutManager(layoutManager);
-    List<DataSet> sampleDataSet = setupSampleDataSet();
-    for (DataSet dataSet : sampleDataSet) {
-      DataSetCollection.addDataSet(dataSet);
-    }
-    adapter = new DataSetAdapter();
+    adapter = new DataSetCardAdapter();
     recyclerView.setAdapter(adapter);
+
+    if (DataSetCollection.getDataSetList().isEmpty()) {
+      addExampleDataSet();
+    }
   }
 
-  private List<DataSet> setupSampleDataSet() {
-    List<DataSet> dataSets = new ArrayList<>();
-    dataSets.add(new DataSet("Pets", new HashSet<>(Arrays.asList("Cat", "Dog"))));
-    return dataSets;
+  /**
+   * Add an Example data set
+   */
+  private void addExampleDataSet() {
+    DataSet sample = new DataSet("Example");
+    sample.setLabels(new HashSet<>(Arrays.asList("Cat", "Dog")));
+    String descDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator +
+        sample.getName();
+    FileUtils.copyAssetsDir2Phone(this, "Example", descDir);
+    File[] imageFiles = new File(descDir).listFiles();
+    if (imageFiles.length > 0) {
+      for (File imageFile : imageFiles) {
+        Image image = new Image(sample.getName(), imageFile.getName());
+        image.saveThrows();
+        sample.addImage(image);
+      }
+    }
+    DataSetCollection.addDataSet(sample);
   }
 
   @Override
@@ -66,8 +87,8 @@ public class MainActivity extends BaseActivity {
           String datasetName = data.getStringExtra("dataset_name");
           String datasetLabels = data.getStringExtra("dataset_labels");
           String[] labelArray = datasetLabels.split(",");
-          DataSet dataSet = new DataSet(
-              datasetName, new HashSet<String>(Arrays.asList(labelArray)));
+          DataSet dataSet = new DataSet(datasetName);
+          dataSet.setLabels(new HashSet<>(Arrays.asList(labelArray)));
           DataSetCollection.addDataSet(dataSet);
           adapter.notifyItemInserted(DataSetCollection.getDataSetList().size() - 1);
           recyclerView.scrollToPosition(DataSetCollection.getDataSetList().size() - 1);

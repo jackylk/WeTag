@@ -1,6 +1,8 @@
 package org.cloud.wetag.ui.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.chip.Chip;
@@ -16,19 +18,19 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import org.cloud.wetag.entity.Image;
+import org.cloud.wetag.model.Image;
 import org.cloud.wetag.ui.LabelActivity;
 import org.cloud.wetag.R;
-import org.cloud.wetag.entity.DataSet;
-import org.cloud.wetag.entity.DataSetCollection;
+import org.cloud.wetag.model.DataSet;
+import org.cloud.wetag.model.DataSetCollection;
 
 import java.util.List;
 
-public class DataSetAdapter extends RecyclerView.Adapter<DataSetAdapter.DataSetViewHolder> {
+public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.DataSetViewHolder> {
 
   private Context context;
 
-  public DataSetAdapter() {
+  public DataSetCardAdapter() {
   }
 
   @NonNull
@@ -43,22 +45,38 @@ public class DataSetAdapter extends RecyclerView.Adapter<DataSetAdapter.DataSetV
 
   @Override
   public void onBindViewHolder(@NonNull DataSetViewHolder viewHolder, final int position) {
-    DataSet dataSet = DataSetCollection.getDataSetList().get(position);
+    final DataSet dataSet = DataSetCollection.getDataSetList().get(position);
     viewHolder.dataSetName.setText(dataSet.getName() + "数据集");
     viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        DataSetCollection.removeDataSet(position);
-        notifyItemRemoved(position);
+        // show a dialog to alert user
+        new AlertDialog.Builder(v.getContext())
+            .setTitle(R.string.dialog_delete_dataset_title)
+            .setMessage(R.string.dialog_delete_dataset_message)
+            .setPositiveButton(R.string.button_positive, new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                // delete the dataset by name
+                DataSetCollection.removeDataSet(dataSet.getName());
+                notifyItemRemoved(position);
+              }
+            })
+            .setNegativeButton(R.string.button_negative, new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                // do nothing
+              }
+            }).show();
       }
     });
-    List<Image> images = dataSet.getImages();
+    List<Image> images = dataSet.getOrLoadImages();
     if (images.isEmpty()) {
       // if dataset is empty, load default picture
       Glide.with(context).load(R.drawable.no_image).into(viewHolder.dataSetImage);
     } else {
       // display first image in the dataset
-      Glide.with(context).load(images.get(0).getImageUri()).into(viewHolder.dataSetImage);
+      Glide.with(context).load(images.get(0).getUri()).into(viewHolder.dataSetImage);
     }
 
     for (String label : dataSet.getLabels()) {
@@ -99,7 +117,8 @@ public class DataSetAdapter extends RecyclerView.Adapter<DataSetAdapter.DataSetV
         @Override
         public void onClick(View v) {
           Intent intent = new Intent(itemView.getContext(), LabelActivity.class);
-          intent.putExtra("dataset_index", getAdapterPosition());
+          intent.putExtra("dataset_name",
+              DataSetCollection.getDataSetList().get(getAdapterPosition()).getName());
           itemView.getContext().startActivity(intent);
         }
       });
