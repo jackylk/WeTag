@@ -1,30 +1,34 @@
-package org.cloud.wetag;
+package org.cloud.wetag.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.chip.Chip;
+import android.support.design.chip.ChipGroup;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import org.cloud.wetag.dataset.DataSet;
-import org.cloud.wetag.dataset.WorkSpace;
+import org.cloud.wetag.entity.Image;
+import org.cloud.wetag.ui.LabelActivity;
+import org.cloud.wetag.R;
+import org.cloud.wetag.entity.DataSet;
+import org.cloud.wetag.entity.DataSetCollection;
 
 import java.util.List;
 
 public class DataSetAdapter extends RecyclerView.Adapter<DataSetAdapter.DataSetViewHolder> {
 
   private Context context;
-  private List<DataSet> dataSetList;
 
-  public DataSetAdapter(List<DataSet> dataSetList) {
-    this.dataSetList = dataSetList;
+  public DataSetAdapter() {
   }
 
   @NonNull
@@ -39,42 +43,66 @@ public class DataSetAdapter extends RecyclerView.Adapter<DataSetAdapter.DataSetV
 
   @Override
   public void onBindViewHolder(@NonNull DataSetViewHolder viewHolder, final int position) {
-    DataSet dataSet = dataSetList.get(position);
+    DataSet dataSet = DataSetCollection.getDataSetList().get(position);
     viewHolder.dataSetName.setText(dataSet.getName() + "数据集");
     viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        WorkSpace.removeDataSet(position);
+        DataSetCollection.removeDataSet(position);
         notifyItemRemoved(position);
       }
     });
-    List<String> imageLocations = dataSet.getImages();
-    if (imageLocations.isEmpty()) {
+    List<Image> images = dataSet.getImages();
+    if (images.isEmpty()) {
       // if dataset is empty, load default picture
       Glide.with(context).load(R.drawable.no_image).into(viewHolder.dataSetImage);
     } else {
-      Glide.with(context).load(dataSet.getImages().get(0)).into(viewHolder.dataSetImage);
+      // display first image in the dataset
+      Glide.with(context).load(images.get(0).getImageUri()).into(viewHolder.dataSetImage);
+    }
+
+    for (String label : dataSet.getLabels()) {
+      Chip chip = new Chip(viewHolder.dataSetLabels.getContext());
+      chip.setText(label);
+      chip.setClickable(false);
+      chip.setCheckable(false);
+      chip.setEnabled(false);
+      chip.setTextSize(viewHolder.labelText.getTextSize() / 3);
+      viewHolder.dataSetLabels.addView(chip);
     }
   }
 
   @Override
   public int getItemCount() {
-    return dataSetList.size();
+    return DataSetCollection.getDataSetList().size();
   }
 
   static class DataSetViewHolder extends RecyclerView.ViewHolder {
 
     CardView cardView;
     TextView dataSetName;
-    Button deleteButton;
+    TextView labelText;
+    ImageButton deleteButton;
     ImageView dataSetImage;
+    ChipGroup dataSetLabels;
 
-    public DataSetViewHolder(@NonNull View itemView) {
+    public DataSetViewHolder(@NonNull final View itemView) {
       super(itemView);
       cardView = (CardView) itemView;
       dataSetName = itemView.findViewById(R.id.dataset_name);
       dataSetImage = itemView.findViewById(R.id.dataset_image);
       deleteButton = itemView.findViewById(R.id.dataset_delete);
+      dataSetLabels = itemView.findViewById(R.id.dataset_chipgroup);
+      labelText = itemView.findViewById(R.id.label_text);
+
+      itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          Intent intent = new Intent(itemView.getContext(), LabelActivity.class);
+          intent.putExtra("dataset_index", getAdapterPosition());
+          itemView.getContext().startActivity(intent);
+        }
+      });
     }
   }
 }

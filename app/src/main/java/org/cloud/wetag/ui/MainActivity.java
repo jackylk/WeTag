@@ -1,20 +1,19 @@
-package org.cloud.wetag;
+package org.cloud.wetag.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewParent;
-import android.widget.Button;
 
-import org.cloud.wetag.dataset.DataSet;
-import org.cloud.wetag.dataset.WorkSpace;
+import org.cloud.wetag.R;
+import org.cloud.wetag.entity.DataSet;
+import org.cloud.wetag.entity.DataSetCollection;
+import org.cloud.wetag.ui.adapter.DataSetAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,9 +46,9 @@ public class MainActivity extends BaseActivity {
     recyclerView.setLayoutManager(layoutManager);
     List<DataSet> sampleDataSet = setupSampleDataSet();
     for (DataSet dataSet : sampleDataSet) {
-      WorkSpace.addDataSet(dataSet);
+      DataSetCollection.addDataSet(dataSet);
     }
-    adapter = new DataSetAdapter(WorkSpace.getDataSetList());
+    adapter = new DataSetAdapter();
     recyclerView.setAdapter(adapter);
   }
 
@@ -69,9 +68,9 @@ public class MainActivity extends BaseActivity {
           String[] labelArray = datasetLabels.split(",");
           DataSet dataSet = new DataSet(
               datasetName, new HashSet<String>(Arrays.asList(labelArray)));
-          WorkSpace.addDataSet(dataSet);
-          adapter.notifyItemInserted(WorkSpace.getDataSetList().size() - 1);
-          recyclerView.scrollToPosition(WorkSpace.getDataSetList().size() - 1);
+          DataSetCollection.addDataSet(dataSet);
+          adapter.notifyItemInserted(DataSetCollection.getDataSetList().size() - 1);
+          recyclerView.scrollToPosition(DataSetCollection.getDataSetList().size() - 1);
         }
     }
   }

@@ -1,14 +1,12 @@
-package org.cloud.wetag.dataset;
-
-import android.support.v7.widget.RecyclerView;
+package org.cloud.wetag.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkSpace {
+public class DataSetCollection {
   private static List<DataSet> dataSetList = new ArrayList<>();
 
-  private WorkSpace() {
+  private DataSetCollection() {
   }
 
   public static List<DataSet> getDataSetList() {

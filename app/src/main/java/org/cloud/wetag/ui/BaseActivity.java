@@ -1,10 +1,12 @@
-package org.cloud.wetag;
+package org.cloud.wetag.ui;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+
+import org.cloud.wetag.R;
 
 public class BaseActivity extends AppCompatActivity {
 

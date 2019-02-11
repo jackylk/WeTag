@@ -1,4 +1,4 @@
-package org.cloud.wetag.dataset;
+package org.cloud.wetag.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ public class DataSet {
   // labels that dataset contains
   private Set<String> labels;
 
-  private List<String> images;
+  private List<Image> images;
 
   private List<Set<String>> imageLabels;
 
@@ -38,11 +38,12 @@ public class DataSet {
     this.labels = labels;
   }
 
-  public List<String> getImages() {
+  public List<Image> getImages() {
     return images;
   }
 
   public List<Set<String>> getImageLabels() {
     return imageLabels;
   }
+
 }
