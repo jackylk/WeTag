@@ -7,8 +7,12 @@
     <string name="dataset_create">创建</string>
     <string name="title_activity_label">LabelActivity</string>
     <string name="dialog_delete_dataset_title">删除数据集</string>
-    <string name="dialog_delete_dataset_message">删除数据集会删除所有标注信息，但不会删除已拍摄的图片</string>
+    <string name="dialog_delete_dataset_message">将会彻底删除该数据集下的所有图片文件和标注信息</string>
+    <string name="dialog_delete_image_title">删除图片</string>
+    <string name="dialog_delete_image_message">将会彻底删除所选图片文件和标注</string>
     <string name="button_positive">删除</string>
     <string name="button_negative">取消</string>
     <string name="button_label_confirm">确认</string>
+    <string name="item_edit">编辑数据集</string>
+    <string name="item_export">导出标签</string>
 </resources>

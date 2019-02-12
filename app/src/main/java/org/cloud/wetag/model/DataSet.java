@@ -70,4 +70,8 @@ public class DataSet extends DataSupport {
   public void addImage(Image image) {
     images.add(image);
   }
+
+  public void removeImage(Image image) {
+    images.remove(image);
+  }
 }

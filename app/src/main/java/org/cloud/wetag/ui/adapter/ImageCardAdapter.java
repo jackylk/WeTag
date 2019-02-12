@@ -20,6 +20,9 @@ import org.cloud.wetag.model.Image;
 import org.cloud.wetag.model.ImageSelection;
 import org.cloud.wetag.ui.widget.CheckView;
 
+import java.io.File;
+import java.util.Set;
+
 public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.ImageViewHolder> {
 
   private DataSet dataSet;
@@ -46,7 +49,9 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
   public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
     Image image = dataSet.getImage(position);
     Glide.with(context).load(image.getUri()).into(holder.imageView);
-    for (String label : image.getLabels()) {
+    holder.chipGroup.removeAllViews();
+    Set<String> labels = image.getOrLoadLabels();
+    for (String label : labels) {
       Chip chip = new Chip(holder.chipGroup.getContext());
       chip.setText(label);
       chip.setEnabled(false);

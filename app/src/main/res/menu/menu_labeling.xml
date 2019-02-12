@@ -8,4 +8,16 @@
         android:icon="@android:drawable/ic_menu_camera"
         app:showAsAction="always"/>
 
+    <item
+        android:id="@+id/item_edit"
+        android:title="@string/item_edit"
+        android:icon="@android:drawable/ic_menu_edit"
+        app:showAsAction="collapseActionView"/>
+
+    <item
+        android:id="@+id/item_export"
+        android:title="@string/item_export"
+        android:icon="@android:drawable/ic_menu_send"
+        app:showAsAction="collapseActionView"/>
+
 </menu>

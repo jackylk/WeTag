@@ -1,10 +1,14 @@
 package org.cloud.wetag.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
+import android.support.design.widget.Snackbar;
+import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -13,6 +17,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
@@ -39,6 +44,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
   private ImageSelection imageSelection;
   private Set<String> labelSelection;
   private Map<String, Chip> chipMap;
+  private Menu menu;
 
   private static final int REQUEST_CODE_CAPTURE = 1;
 
@@ -68,26 +74,38 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
     adapter.registerOnCheckChangedListener(this);
     recyclerView.setAdapter(adapter);
 
+    initLabelBar();
+    setEnableLabelBar(false);
+
+    findViewById(R.id.label_confirm).setOnClickListener(this);
+    setTitle(dataSet.getName());
+  }
+
+  private void initLabelBar() {
     chipGroup = findViewById(R.id.label_chipgroup);
     chipMap = new HashMap<>();
     for (String label : dataSet.getLabels()) {
       Chip chip = new Chip(chipGroup.getContext());
       chip.setText(label);
-      chip.setEnabled(true);
+      chip.setEnabled(false);
       chip.setClickable(true);
       chip.setCheckable(true);
       chip.setOnCheckedChangeListener(this);
       chipGroup.addView(chip);
       chipMap.put(label, chip);
     }
-    chipGroup.setEnabled(false);
+  }
 
-    findViewById(R.id.label_confirm).setOnClickListener(this);
-    setTitle(dataSet.getName());
+  private void setEnableLabelBar(boolean enabled) {
+    findViewById(R.id.label_confirm).setEnabled(enabled);
+    for (Chip chip : chipMap.values()) {
+      chip.setEnabled(enabled);
+    }
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
+    this.menu = menu;
     getMenuInflater().inflate(R.menu.menu_labeling, menu);
     return true;
   }
@@ -100,9 +118,52 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
           mediaStoreCompat.dispatchCaptureIntent(this, REQUEST_CODE_CAPTURE);
         }
         break;
+      case R.id.item_edit:
+        menu.clear();
+        getMenuInflater().inflate(R.menu.menu_labeling_edit, menu);
+        setEnableLabelBar(false);
+        break;
+      case R.id.item_delete:
+        final int num = imageSelection.get().size();
+        new AlertDialog.Builder(chipGroup.getContext())
+            .setTitle(R.string.dialog_delete_image_title)
+            .setMessage(R.string.dialog_delete_image_message)
+            .setPositiveButton(R.string.button_positive, new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                // delete the dataset by name
+                for (Image image : imageSelection.get()) {
+                  dataSet.removeImage(image);
+                  File imageFile = new File(image.getFilePath());
+                  imageFile.delete();
+                  image.delete();
+                }
+                Snackbar.make(chipGroup.getRootView(),
+                    "删除了" + num + "张图片", Snackbar.LENGTH_SHORT).show();
+                refreshView();
+                redrawMainMenu();
+                setEnableLabelBar(true);
+              }
+            })
+            .setNegativeButton(R.string.button_negative, new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                // do nothing
+              }
+            }).show();
+        break;
+      case R.id.item_cancel:
+        redrawMainMenu();
+        setEnableLabelBar(true);
+        break;
       default:
     }
     return super.onOptionsItemSelected(item);
+  }
+
+  private void redrawMainMenu() {
+    menu.clear();
+    getMenuInflater().inflate(R.menu.menu_labeling, menu);
   }
 
   @Override
@@ -153,9 +214,9 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
       }
     }
     if (imageSelection.get().size() > 0) {
-      chipGroup.setEnabled(true);
+      setEnableLabelBar(true);
     } else {
-      chipGroup.setEnabled(false);
+      setEnableLabelBar(false);
     }
   }
 
@@ -165,14 +226,11 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
       case R.id.label_confirm:
         for (Image image : imageSelection.get()) {
           image.setLabels(labelSelection);
+          image.saveThrows();
         }
-        if (imageSelection.get().size() > 0) {
-          imageSelection.clear();
-        }
-        if (labelSelection.size() > 0) {
-          labelSelection.clear();
-          chipGroup.clearCheck();
-        }
+        imageSelection.clear();
+        labelSelection.clear();
+        chipGroup.clearCheck();
         refreshView();
         break;
       default:

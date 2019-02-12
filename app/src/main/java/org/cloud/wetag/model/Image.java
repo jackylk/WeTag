@@ -1,5 +1,6 @@
 package org.cloud.wetag.model;
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -9,7 +10,10 @@ import org.cloud.wetag.MyApplication;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class Image extends DataSupport {
@@ -30,6 +34,13 @@ public class Image extends DataSupport {
     return fileName;
   }
 
+  public String getFilePath() {
+    File storageDir =
+        MyApplication.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    return storageDir.getAbsolutePath() + File.separator + dataSetName +
+        File.separator + fileName;
+  }
+
   public Uri getUri() {
     File storageDir =
         MyApplication.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -45,6 +56,21 @@ public class Image extends DataSupport {
 
   public Set<String> getLabels() {
     return labels;
+  }
+
+  public Set<String> getOrLoadLabels() {
+    if (this.labels.size() == 0) {
+      List<String> labelFromDb = new LinkedList<>();
+      Cursor cursor = DataSupport.findBySQL(
+          "select * from image_labels where image_id = ?", String.valueOf(id));
+      if (cursor.moveToFirst()) {
+        do {
+          labelFromDb.add(cursor.getString(cursor.getColumnIndex("labels")));
+        } while (cursor.moveToNext());
+      }
+      this.labels.addAll(labelFromDb);
+    }
+    return this.labels;
   }
 
   public void setLabels(Set<String> labels) {
