@@ -80,6 +80,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
       chipGroup.addView(chip);
       chipMap.put(label, chip);
     }
+    chipGroup.setEnabled(false);
 
     findViewById(R.id.label_confirm).setOnClickListener(this);
     setTitle(dataSet.getName());
@@ -126,29 +127,20 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
     adapter.notifyDataSetChanged();
   }
 
-  private boolean skipEvent = false;
-
   @Override
   public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-    if (skipEvent) {
-      return;
-    }
-    String label = buttonView.getText().toString();
-    List<Image> selectedImages = imageSelection.get();
-    if (isChecked) {
-      for (Image selectedImage : selectedImages) {
-        selectedImage.addLabel(label);
-      }
-    } else {
-      for (Image selectedImage : selectedImages) {
-        selectedImage.removeLabel(label);
+    if (imageSelection.get().size() > 0) {
+      String label = buttonView.getText().toString();
+      if (isChecked) {
+        labelSelection.add(label);
+      } else {
+        labelSelection.remove(label);
       }
     }
   }
 
   @Override
   public void onImageCheckedChanged(Image image, boolean checked) {
-    skipEvent = true;
     Set<String> labels = new HashSet<>();
     for (Image img : imageSelection.get()) {
       labels.addAll(img.getLabels());
@@ -160,15 +152,27 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
         chipEntry.getValue().setChecked(false);
       }
     }
-    skipEvent = false;
+    if (imageSelection.get().size() > 0) {
+      chipGroup.setEnabled(true);
+    } else {
+      chipGroup.setEnabled(false);
+    }
   }
 
   @Override
   public void onClick(View v) {
     switch (v.getId()) {
       case R.id.label_confirm:
-        imageSelection.clear();
-        chipGroup.clearCheck();
+        for (Image image : imageSelection.get()) {
+          image.setLabels(labelSelection);
+        }
+        if (imageSelection.get().size() > 0) {
+          imageSelection.clear();
+        }
+        if (labelSelection.size() > 0) {
+          labelSelection.clear();
+          chipGroup.clearCheck();
+        }
         refreshView();
         break;
       default:

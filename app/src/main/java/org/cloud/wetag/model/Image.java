@@ -48,7 +48,8 @@ public class Image extends DataSupport {
   }
 
   public void setLabels(Set<String> labels) {
-    this.labels = labels;
+    this.labels.clear();
+    this.labels.addAll(labels);
   }
 
   public String getDataSetName() {

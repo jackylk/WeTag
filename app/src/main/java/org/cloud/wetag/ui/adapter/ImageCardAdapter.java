@@ -95,7 +95,7 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
               checkView.setChecked(false);
               listener.onImageCheckedChanged(image,false);
             }
-          } else if (v instanceof ImageView){
+          } else if (v instanceof ImageView) {
             Log.e("TAG", v.toString());
           } else if (v instanceof ChipGroup) {
             Log.e("TAG", v.toString());
