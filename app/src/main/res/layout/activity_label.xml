@@ -29,22 +29,24 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:alpha="50">
+            android:layout_alignParentBottom="true" >
 
             <android.support.design.chip.ChipGroup
                 android:id="@+id/label_chipgroup"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                app:chipSpacing="@dimen/sp_16"
+                android:layout_margin="5dp"/>
 
             <Button
                 android:id="@+id/label_confirm"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/button_label_confirm"/>
+                android:text="@string/button_label_confirm"
+                android:layout_margin="5dp"/>
 
         </LinearLayout>
     </RelativeLayout>

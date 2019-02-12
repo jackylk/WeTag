@@ -41,16 +41,16 @@ public class CreateDataSetActivity extends BaseActivity {
 
   private boolean isValidInput(View v) {
     if (name.getText().toString().isEmpty() || labels.getText().toString().isEmpty()) {
-      Toast.makeText(v.getContext(), "必须填写名称和标签", Toast.LENGTH_SHORT).show();
+      Toast.makeText(v.getContext(), "必须填写名称和标签", Toast.LENGTH_LONG).show();
       return false;
     }
     if (DataSetCollection.getDataSet(name.getText().toString()) != null) {
-      Toast.makeText(v.getContext(), "数据集名称已存在", Toast.LENGTH_SHORT).show();
+      Toast.makeText(v.getContext(), "数据集名称已存在", Toast.LENGTH_LONG).show();
       return false;
     }
     String[] labelArray = labels.getText().toString().split(",");
     if (labelArray.length < 2) {
-      Toast.makeText(v.getContext(), "标签必须要有两个或以上，以逗号分隔", Toast.LENGTH_SHORT).show();
+      Toast.makeText(v.getContext(), "标签必须要有两个或以上，以逗号分隔", Toast.LENGTH_LONG).show();
       return false;
     }
     return true;

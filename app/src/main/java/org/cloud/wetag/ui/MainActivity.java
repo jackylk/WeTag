@@ -1,5 +1,7 @@
 package org.cloud.wetag.ui;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -108,13 +110,15 @@ public class MainActivity extends BaseActivity {
     // Handle action bar item clicks here. The action bar will
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
-    int id = item.getItemId();
-
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      return true;
+    switch (item.getItemId()) {
+      case R.id.item_login:
+      case R.id.item_get_job:
+      case R.id.item_score:
+      case R.id.item_setting:
+        new AlertDialog.Builder(this).setMessage("开发中，敬请期待").show();
+        break;
+      default:
     }
-
     return super.onOptionsItemSelected(item);
   }
 
