@@ -10,4 +10,5 @@
     <string name="dialog_delete_dataset_message">删除数据集会删除所有标注信息，但不会删除已拍摄的图片</string>
     <string name="button_positive">删除</string>
     <string name="button_negative">取消</string>
+    <string name="button_label_confirm">确认</string>
 </resources>

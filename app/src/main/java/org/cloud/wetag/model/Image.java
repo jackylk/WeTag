@@ -54,4 +54,16 @@ public class Image extends DataSupport {
   public String getDataSetName() {
     return dataSetName;
   }
+
+  public void addLabel(String label) {
+    labels.add(label);
+  }
+
+  public void addLabels(Set<String> labels) {
+    labels.addAll(labels);
+  }
+
+  public void removeLabel(String lable) {
+    labels.remove(lable);
+  }
 }

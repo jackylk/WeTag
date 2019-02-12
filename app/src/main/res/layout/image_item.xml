@@ -7,23 +7,27 @@
     app:cardCornerRadius="4dp">
 
     <RelativeLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/image_iv"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="200dp"
             android:scaleType="centerCrop" />
+
+        <org.cloud.wetag.ui.widget.CheckView
+            android:id="@+id/check_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/image_iv"
+            android:layout_alignTop="@id/image_iv" />
 
         <android.support.design.chip.ChipGroup
             android:id="@+id/image_chipgroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="4dp"
-            android:layout_alignBottom="@id/image_iv"/>
+            android:layout_below="@id/image_iv"/>
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

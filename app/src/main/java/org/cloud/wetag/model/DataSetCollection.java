@@ -27,13 +27,8 @@ public class DataSetCollection {
     for (DataSet dataSet : INSTANCE.dataSets) {
       if (dataSet.getName().equals(dataSetName)) {
         INSTANCE.dataSets.remove(dataSet);
+        dataSet.delete();
       }
-    }
-  }
-
-  public static void removeDataSet(int index) {
-    if (INSTANCE.dataSets.size() > index) {
-      INSTANCE.dataSets.remove(index);
     }
   }
 

@@ -79,6 +79,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       Glide.with(context).load(images.get(0).getUri()).into(viewHolder.dataSetImage);
     }
 
+    viewHolder.dataSetLabels.removeAllViews();
     for (String label : dataSet.getLabels()) {
       Chip chip = new Chip(viewHolder.dataSetLabels.getContext());
       chip.setText(label);

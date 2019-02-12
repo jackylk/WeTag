@@ -117,4 +117,10 @@ public class MainActivity extends BaseActivity {
 
     return super.onOptionsItemSelected(item);
   }
+
+  @Override
+  protected void onPostResume() {
+    super.onPostResume();
+    adapter.notifyDataSetChanged();
+  }
 }
