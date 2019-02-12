@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.design.widget.Snackbar;
-import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
@@ -30,7 +28,6 @@ import org.cloud.wetag.utils.MediaStoreCompat;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -90,6 +87,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
       chip.setEnabled(false);
       chip.setClickable(true);
       chip.setCheckable(true);
+      chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
       chip.setOnCheckedChangeListener(this);
       chipGroup.addView(chip);
       chipMap.put(label, chip);

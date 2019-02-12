@@ -54,7 +54,8 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
     for (String label : labels) {
       Chip chip = new Chip(holder.chipGroup.getContext());
       chip.setText(label);
-      chip.setEnabled(false);
+      chip.setEnabled(true);
+      chip.setClickable(false);
       holder.chipGroup.addView(chip);
     }
     holder.checkView.setChecked(false);
