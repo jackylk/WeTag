@@ -3,19 +3,25 @@ package org.cloud.wetag.ui;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.JsonWriter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
@@ -26,6 +32,9 @@ import org.cloud.wetag.utils.CaptureStrategy;
 import org.cloud.wetag.utils.MediaStoreCompat;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -42,6 +51,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
   private Set<String> labelSelection;
   private Map<String, Chip> chipMap;
   private Menu menu;
+  private boolean isEditingDataSet = false;
 
   private static final int REQUEST_CODE_CAPTURE = 1;
 
@@ -116,10 +126,28 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
           mediaStoreCompat.dispatchCaptureIntent(this, REQUEST_CODE_CAPTURE);
         }
         break;
+      case R.id.item_export:
+        try {
+          final File file = exportLabel();
+          Snackbar bar = Snackbar.make(chipGroup.getRootView(),
+               "文件导出成功: " + file.getName(), Snackbar.LENGTH_SHORT);
+          bar.setAction("打开", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              startViewFileActivity(file);
+            }
+          }).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Snackbar.make(chipGroup.getRootView(),
+                "文件导出失败, 原因：" + e.getMessage(), Snackbar.LENGTH_LONG).show();
+        }
+        break;
       case R.id.item_edit:
         menu.clear();
         getMenuInflater().inflate(R.menu.menu_labeling_edit, menu);
         setEnableLabelBar(false);
+        isEditingDataSet = true;
         break;
       case R.id.item_delete:
         final int num = imageSelection.get().size();
@@ -140,7 +168,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
                     "删除了" + num + "张图片", Snackbar.LENGTH_SHORT).show();
                 refreshView();
                 redrawMainMenu();
-                setEnableLabelBar(true);
+                isEditingDataSet = false;
               }
             })
             .setNegativeButton(R.string.button_negative, new DialogInterface.OnClickListener() {
@@ -152,11 +180,64 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
         break;
       case R.id.item_cancel:
         redrawMainMenu();
-        setEnableLabelBar(true);
+        isEditingDataSet = false;
         break;
       default:
     }
     return super.onOptionsItemSelected(item);
+  }
+
+  private void startViewFileActivity(File file) {
+    Uri uri = null;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      uri = FileProvider.getUriForFile(
+          MyApplication.getContext(), "org.cloud.wetag.fileprovider", file);
+    } else {
+      uri = Uri.fromFile(file);
+    }
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    intent.setDataAndType(uri, "text/plain");
+    startActivity(intent);
+  }
+
+  /**
+   * write label to file
+   * @return the output file
+   * @throws IOException if IO errors
+   */
+  private File exportLabel() throws IOException {
+    File storeDir = MyApplication.getContext()
+        .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+    storeDir = new File(storeDir, dataSet.getName());
+    if (!storeDir.exists()) {
+      storeDir.mkdir();
+    }
+    File file = new File(storeDir, dataSet.getName() + ".json");
+    if (file.exists()) {
+      file.delete();
+    }
+    file.createNewFile();
+    Writer out = new FileWriter(file);
+    JsonWriter writer = new JsonWriter(out);
+    writer.beginArray();
+    for (int i = 0; i < dataSet.getImageCount(); i++) {
+      Image image = dataSet.getImage(i);
+      if (image.getLabels().size() > 0) {
+        writer.beginObject();
+        writer.name("file_name");
+        writer.value(image.getFileName());
+        writer.name("label");
+        writer.value(image.getLabels().toString());
+        writer.endObject();
+      }
+    }
+    writer.endArray();
+    writer.flush();
+    writer.close();
+    out.close();
+    return file;
   }
 
   private void redrawMainMenu() {
@@ -211,7 +292,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
         chipEntry.getValue().setChecked(false);
       }
     }
-    if (imageSelection.get().size() > 0) {
+    if (imageSelection.get().size() > 0 && !isEditingDataSet) {
       setEnableLabelBar(true);
     } else {
       setEnableLabelBar(false);

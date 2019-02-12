@@ -86,7 +86,6 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       chip.setClickable(false);
       chip.setCheckable(false);
       chip.setEnabled(false);
-      chip.setTextSize(viewHolder.labelText.getTextSize() / 3);
       chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
       viewHolder.dataSetLabels.addView(chip);
     }
