@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabItem;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
@@ -20,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.TableLayout;
 import android.widget.Toast;
 
 import org.cloud.wetag.MyApplication;
@@ -87,8 +89,15 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
 
     findViewById(R.id.label_confirm).setOnClickListener(this);
     setTitle(dataSet.getName() + "数据集");
+    initTabs();
   }
 
+  private void initTabs() {
+    TableLayout tableLayout = findViewById(R.id.label_tab_layout);
+    TabItem tab1 = new TabItem(tableLayout.getContext());
+    tab1.
+    tableLayout.addView(new TabItem());
+  }
   private void initLabelBar() {
     chipGroup = findViewById(R.id.label_chipgroup);
     chipMap = new HashMap<>();
