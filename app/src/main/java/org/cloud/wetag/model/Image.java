@@ -10,8 +10,6 @@ import org.cloud.wetag.MyApplication;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +21,7 @@ public class Image extends DataSupport {
 
   private String dataSetName;
 
-  private Set<String> labels = new HashSet<>();
+  private List<String> labels = new LinkedList<>();
 
   public Image(String dataSetName, String fileName) {
     this.dataSetName = dataSetName;
@@ -54,11 +52,11 @@ public class Image extends DataSupport {
     }
   }
 
-  public Set<String> getLabels() {
+  public List<String> getLabels() {
     return labels;
   }
 
-  public Set<String> getOrLoadLabels() {
+  public List<String> getOrLoadLabels() {
     if (this.labels.size() == 0) {
       List<String> labelFromDb = new LinkedList<>();
       Cursor cursor = DataSupport.findBySQL(
@@ -73,7 +71,7 @@ public class Image extends DataSupport {
     return this.labels;
   }
 
-  public void setLabels(Set<String> labels) {
+  public void setLabels(List<String> labels) {
     this.labels.clear();
     this.labels.addAll(labels);
   }

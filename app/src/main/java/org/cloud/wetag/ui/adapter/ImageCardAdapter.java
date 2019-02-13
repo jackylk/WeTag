@@ -19,23 +19,67 @@ import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.Image;
 import org.cloud.wetag.model.ImageSelection;
+import org.cloud.wetag.ui.PageFragment;
 import org.cloud.wetag.ui.widget.CheckView;
+import org.cloud.wetag.utils.ColorUtils;
 
-import java.io.File;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import static org.cloud.wetag.ui.PageFragment.ALL;
+import static org.cloud.wetag.ui.PageFragment.ALL_LABELED;
+import static org.cloud.wetag.ui.PageFragment.ALL_UNLABELED;
+import static org.cloud.wetag.ui.PageFragment.SINGLE_LABELED;
+
 public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.ImageViewHolder> {
 
-  private DataSet dataSet;
   private Context context;
   private ImageSelection imageSelection;
   private OnCheckChangedListener listener;
 
-  public ImageCardAdapter(DataSet dataSet, ImageSelection imageSelection) {
-    this.dataSet = dataSet;
+  private DataSet dataSet;
+  private List<Image> images;
+
+  // type can be constant value in PageFragment
+  private int type;
+  private String filterLabel;
+
+  public ImageCardAdapter(DataSet dataSet, ImageSelection imageSelection, int type,
+                           String filterLabel) {
     this.imageSelection = imageSelection;
+    this.dataSet = dataSet;
+    this.type = type;
+    this.filterLabel = filterLabel;
+    refreshImages();
+  }
+
+  public void refreshImages() {
+    if (type == ALL) {
+      images = dataSet.getImages();
+    } else if (type == ALL_UNLABELED) {
+      images = new LinkedList<>();
+      for (Image image : dataSet.getImages()) {
+        if (image.getLabels().size() == 0) {
+          images.add(image);
+        }
+      }
+    } else if (type == ALL_LABELED) {
+      images = new LinkedList<>();
+      for (Image image : dataSet.getImages()) {
+        if (image.getLabels().size() > 0) {
+          images.add(image);
+        }
+      }
+    } else {
+      images = new LinkedList<>();
+      for (Image image : dataSet.getImages()) {
+        if (image.getLabels().contains(filterLabel)) {
+          images.add(image);
+        }
+      }
+    }
+    notifyDataSetChanged();
   }
 
   @NonNull
@@ -50,10 +94,10 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
 
   @Override
   public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-    Image image = dataSet.getImage(position);
+    Image image = images.get(position);
     Glide.with(context).load(image.getUri()).into(holder.imageView);
     holder.chipGroup.removeAllViews();
-    Set<String> labels = image.getOrLoadLabels();
+    List<String> labels = image.getOrLoadLabels();
     for (String label : labels) {
       Chip chip = new Chip(holder.chipGroup.getContext());
       chip.setText(label);
@@ -61,7 +105,8 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
       chip.setClickable(false);
       chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
       chip.setTextColor(ContextCompat.getColor(context, R.color.white));
-      chip.setChipBackgroundColorResource(dataSet.getLabelBackgroundColor(label));
+      chip.setChipBackgroundColorResource(
+          ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), label));
       holder.chipGroup.addView(chip);
     }
     holder.checkView.setChecked(false);
@@ -69,7 +114,7 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
 
   @Override
   public int getItemCount() {
-    return dataSet.getImageCount();
+    return images.size();
   }
 
   public void registerOnCheckChangedListener(OnCheckChangedListener listener) {
@@ -97,7 +142,7 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
         public void onClick(View v) {
           if (v instanceof CheckView) {
             int position = getAdapterPosition();
-            Image image = dataSet.getImage(position);
+            Image image = images.get(position);
             if (!imageSelection.exist(image)) {
               imageSelection.add(image);
               checkView.setChecked(true);

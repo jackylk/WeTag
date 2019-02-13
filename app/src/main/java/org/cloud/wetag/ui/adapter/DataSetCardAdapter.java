@@ -25,6 +25,7 @@ import org.cloud.wetag.ui.LabelActivity;
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
+import org.cloud.wetag.utils.ColorUtils;
 
 import java.util.List;
 
@@ -90,7 +91,8 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       chip.setEnabled(false);
       chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
       chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
-      chip.setChipBackgroundColorResource(dataSet.getLabelBackgroundColor(label));
+      chip.setChipBackgroundColorResource(
+          ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), label));
       viewHolder.dataSetLabels.addView(chip);
     }
   }

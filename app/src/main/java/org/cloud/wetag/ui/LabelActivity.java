@@ -8,20 +8,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.design.chip.Chip;
-import android.support.design.chip.ChipGroup;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabItem;
-import android.support.v4.content.ContextCompat;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.FileProvider;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.view.ViewPager;
 import android.util.JsonWriter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.TableLayout;
 import android.widget.Toast;
 
 import org.cloud.wetag.MyApplication;
@@ -30,7 +25,7 @@ import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.model.Image;
 import org.cloud.wetag.model.ImageSelection;
-import org.cloud.wetag.ui.adapter.ImageCardAdapter;
+import org.cloud.wetag.ui.adapter.LabelFragmentPagerAdapter;
 import org.cloud.wetag.utils.CaptureStrategy;
 import org.cloud.wetag.utils.MediaStoreCompat;
 
@@ -38,21 +33,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-public class LabelActivity extends BaseActivity implements View.OnClickListener,
-    CompoundButton.OnCheckedChangeListener, ImageCardAdapter.OnCheckChangedListener {
+public class LabelActivity extends BaseActivity {
 
   private DataSet dataSet;
-  private ImageCardAdapter adapter;
+  private LabelFragmentPagerAdapter adapter;
   private MediaStoreCompat mediaStoreCompat;
-  private ChipGroup chipGroup;
   private ImageSelection imageSelection;
-  private Set<String> labelSelection;
-  private Map<String, Chip> chipMap;
+
   private Menu menu;
   private boolean isEditingDataSet = false;
 
@@ -63,8 +51,6 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_label);
 
-    imageSelection = new ImageSelection();
-    labelSelection = new HashSet<>();
     String datasetName = getIntent().getStringExtra("dataset_name");
     if (datasetName == null) {
       Toast.makeText(getApplicationContext(), "error: should pass dataset_name",
@@ -77,50 +63,34 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
     mediaStoreCompat.setCaptureStrategy(
         new CaptureStrategy(false, "org.cloud.wetag.fileprovider", datasetName));
 
-    RecyclerView recyclerView = findViewById(R.id.images_rv);
-    RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
-    recyclerView.setLayoutManager(layoutManager);
-    adapter = new ImageCardAdapter(dataSet, imageSelection);
-    adapter.registerOnCheckChangedListener(this);
-    recyclerView.setAdapter(adapter);
-
-    initLabelBar();
-    setEnableLabelBar(false);
-
-    findViewById(R.id.label_confirm).setOnClickListener(this);
     setTitle(dataSet.getName() + "数据集");
     initTabs();
   }
 
   private void initTabs() {
-    TableLayout tableLayout = findViewById(R.id.label_tab_layout);
-    TabItem tab1 = new TabItem(tableLayout.getContext());
-    tab1.
-    tableLayout.addView(new TabItem());
-  }
-  private void initLabelBar() {
-    chipGroup = findViewById(R.id.label_chipgroup);
-    chipMap = new HashMap<>();
-    for (String label : dataSet.getLabels()) {
-      Chip chip = new Chip(chipGroup.getContext());
-      chip.setText(label);
-      chip.setEnabled(false);
-      chip.setClickable(true);
-      chip.setCheckable(true);
-      chip.setTextAppearance(R.style.TextAppearance_AppCompat_Large);
-      chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
-      chip.setChipBackgroundColorResource(dataSet.getLabelBackgroundColor(label));
-      chip.setOnCheckedChangeListener(this);
-      chipGroup.addView(chip);
-      chipMap.put(label, chip);
-    }
-  }
+    TabLayout tabLayout = findViewById(R.id.label_tab_layout);
+    ViewPager viewPager = findViewById(R.id.view_pager);
+    imageSelection = new ImageSelection();
+    adapter = new LabelFragmentPagerAdapter(getSupportFragmentManager(), dataSet, imageSelection);
+    viewPager.setAdapter(adapter);
+    tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+      @Override
+      public void onTabSelected(TabLayout.Tab tab) {
+        int position = tab.getPosition();
+        adapter.refreshFragment(position);
+      }
 
-  private void setEnableLabelBar(boolean enabled) {
-    findViewById(R.id.label_confirm).setEnabled(enabled);
-    for (Chip chip : chipMap.values()) {
-      chip.setEnabled(enabled);
-    }
+      @Override
+      public void onTabUnselected(TabLayout.Tab tab) {
+
+      }
+
+      @Override
+      public void onTabReselected(TabLayout.Tab tab) {
+
+      }
+    });
+    tabLayout.setupWithViewPager(viewPager);
   }
 
   @Override
@@ -131,7 +101,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
   }
 
   @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
+  public boolean onOptionsItemSelected(final MenuItem item) {
     switch (item.getItemId()) {
       case R.id.item_camera:
         if (mediaStoreCompat != null) {
@@ -141,7 +111,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
       case R.id.item_export:
         try {
           final File file = exportLabel();
-          Snackbar bar = Snackbar.make(chipGroup.getRootView(),
+          Snackbar bar = Snackbar.make(item.getActionView(),
                "标签文件导出成功: " + file.getName(), Snackbar.LENGTH_SHORT);
           bar.setAction("打开", new View.OnClickListener() {
             @Override
@@ -151,19 +121,19 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
           }).show();
         } catch (IOException e) {
             e.printStackTrace();
-            Snackbar.make(chipGroup.getRootView(),
+            Snackbar.make(item.getActionView(),
                 "标签文件导出失败, 原因：" + e.getMessage(), Snackbar.LENGTH_LONG).show();
         }
         break;
       case R.id.item_edit:
         menu.clear();
         getMenuInflater().inflate(R.menu.menu_labeling_edit, menu);
-        setEnableLabelBar(false);
+        adapter.setEnableLabelBar(false);
         isEditingDataSet = true;
         break;
       case R.id.item_delete:
         final int num = imageSelection.get().size();
-        new AlertDialog.Builder(chipGroup.getContext())
+        new AlertDialog.Builder(MyApplication.getContext())
             .setTitle(R.string.dialog_delete_image_title)
             .setMessage(R.string.dialog_delete_image_message)
             .setPositiveButton(R.string.button_positive, new DialogInterface.OnClickListener() {
@@ -176,7 +146,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
                   imageFile.delete();
                   image.delete();
                 }
-                Snackbar.make(chipGroup.getRootView(),
+                Snackbar.make(item.getActionView(),
                     "删除了" + num + "张图片", Snackbar.LENGTH_SHORT).show();
                 refreshView();
                 redrawMainMenu();
@@ -276,56 +246,6 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
   }
 
   private void refreshView() {
-    adapter.notifyDataSetChanged();
-  }
-
-  @Override
-  public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-    if (imageSelection.get().size() > 0) {
-      String label = buttonView.getText().toString();
-      if (isChecked) {
-        labelSelection.add(label);
-      } else {
-        labelSelection.remove(label);
-      }
-    }
-  }
-
-  @Override
-  public void onImageCheckedChanged(Image image, boolean checked) {
-    Set<String> labels = new HashSet<>();
-    for (Image img : imageSelection.get()) {
-      labels.addAll(img.getLabels());
-    }
-    for (Map.Entry<String, Chip> chipEntry : chipMap.entrySet()) {
-      if (labels.contains(chipEntry.getKey())) {
-        chipEntry.getValue().setChecked(true);
-      } else {
-        chipEntry.getValue().setChecked(false);
-      }
-    }
-    if (imageSelection.get().size() > 0 && !isEditingDataSet) {
-      setEnableLabelBar(true);
-    } else {
-      setEnableLabelBar(false);
-    }
-  }
-
-  @Override
-  public void onClick(View v) {
-    switch (v.getId()) {
-      case R.id.label_confirm:
-        for (Image image : imageSelection.get()) {
-          image.setLabels(labelSelection);
-          image.saveThrows();
-        }
-        imageSelection.clear();
-        labelSelection.clear();
-        chipGroup.clearCheck();
-        refreshView();
-        break;
-      default:
-        break;
-    }
+    adapter.refreshAllFragments();
   }
 }

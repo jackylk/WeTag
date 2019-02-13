@@ -65,6 +65,10 @@ public class DataSet extends DataSupport {
     return images.size();
   }
 
+  public List<Image> getImages() {
+    return images;
+  }
+
   public Image getImage(int index) {
     return images.get(index);
   }
@@ -77,14 +81,5 @@ public class DataSet extends DataSupport {
     images.remove(image);
   }
 
-  public int getLabelBackgroundColor(String label) {
-    int index = getLabels().indexOf(label);
-    if (index == 0) {
-      return R.color.blue_dark;
-    } else if (index == 1) {
-      return R.color.red;
-    } else {
-      return R.color.gray;
-    }
-  }
+
 }
