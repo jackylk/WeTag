@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +22,8 @@ import org.cloud.wetag.model.ImageSelection;
 import org.cloud.wetag.ui.widget.CheckView;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.ImageViewHolder> {
@@ -56,6 +59,9 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
       chip.setText(label);
       chip.setEnabled(true);
       chip.setClickable(false);
+      chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
+      chip.setTextColor(ContextCompat.getColor(context, R.color.white));
+      chip.setChipBackgroundColorResource(dataSet.getLabelBackgroundColor(label));
       holder.chipGroup.addView(chip);
     }
     holder.checkView.setChecked(false);

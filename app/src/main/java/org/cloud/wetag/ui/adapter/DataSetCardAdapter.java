@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.model.Image;
 import org.cloud.wetag.ui.LabelActivity;
 import org.cloud.wetag.R;
@@ -87,6 +89,8 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       chip.setCheckable(false);
       chip.setEnabled(false);
       chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
+      chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
+      chip.setChipBackgroundColorResource(dataSet.getLabelBackgroundColor(label));
       viewHolder.dataSetLabels.addView(chip);
     }
   }

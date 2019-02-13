@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
+import org.cloud.wetag.R;
 import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
@@ -23,7 +24,7 @@ public class DataSet extends DataSupport {
 
   // labels that dataset contains
   @Column(nullable = false)
-  private Set<String> labels = new HashSet<>();
+  private List<String> labels = new ArrayList<>();
 
   private List<Image> images = new ArrayList<>();
 
@@ -41,11 +42,12 @@ public class DataSet extends DataSupport {
     this.name = name;
   }
 
-  public void setLabels(Set<String> labels) {
-    this.labels = labels;
+  public void setLabels(List<String> labels) {
+    this.labels.clear();
+    this.labels.addAll(labels);
   }
 
-  public Set<String> getLabels() {
+  public List<String> getLabels() {
     return labels;
   }
 
@@ -73,5 +75,16 @@ public class DataSet extends DataSupport {
 
   public void removeImage(Image image) {
     images.remove(image);
+  }
+
+  public int getLabelBackgroundColor(String label) {
+    int index = getLabels().indexOf(label);
+    if (index == 0) {
+      return R.color.blue_dark;
+    } else if (index == 1) {
+      return R.color.red;
+    } else {
+      return R.color.gray;
+    }
   }
 }

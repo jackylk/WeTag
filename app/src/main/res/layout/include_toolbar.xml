@@ -7,5 +7,5 @@
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     android:background="@color/blue"
-    app:layout_scrollFlags="scroll|enterAlways" />
+    app:layout_scrollFlags="scroll|enterAlways|snap" />
 

@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -85,7 +86,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
     setEnableLabelBar(false);
 
     findViewById(R.id.label_confirm).setOnClickListener(this);
-    setTitle(dataSet.getName());
+    setTitle(dataSet.getName() + "数据集");
   }
 
   private void initLabelBar() {
@@ -97,7 +98,9 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
       chip.setEnabled(false);
       chip.setClickable(true);
       chip.setCheckable(true);
-      chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
+      chip.setTextAppearance(R.style.TextAppearance_AppCompat_Large);
+      chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
+      chip.setChipBackgroundColorResource(dataSet.getLabelBackgroundColor(label));
       chip.setOnCheckedChangeListener(this);
       chipGroup.addView(chip);
       chipMap.put(label, chip);
@@ -130,7 +133,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
         try {
           final File file = exportLabel();
           Snackbar bar = Snackbar.make(chipGroup.getRootView(),
-               "文件导出成功: " + file.getName(), Snackbar.LENGTH_SHORT);
+               "标签文件导出成功: " + file.getName(), Snackbar.LENGTH_SHORT);
           bar.setAction("打开", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,7 +143,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
         } catch (IOException e) {
             e.printStackTrace();
             Snackbar.make(chipGroup.getRootView(),
-                "文件导出失败, 原因：" + e.getMessage(), Snackbar.LENGTH_LONG).show();
+                "标签文件导出失败, 原因：" + e.getMessage(), Snackbar.LENGTH_LONG).show();
         }
         break;
       case R.id.item_edit:

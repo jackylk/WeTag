@@ -15,4 +15,5 @@
     <string name="button_label_confirm">确认</string>
     <string name="item_edit">编辑数据集</string>
     <string name="item_export">导出标签</string>
+    <string name="main_activity_title">数据集管理</string>
 </resources>

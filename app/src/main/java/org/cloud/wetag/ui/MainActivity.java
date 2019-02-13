@@ -39,6 +39,8 @@ public class MainActivity extends BaseActivity {
     super.onCreate(savedInstanceState);
     LitePal.getDatabase();
     setContentView(R.layout.activity_main);
+
+    setTitle(R.string.main_activity_title);
     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
     FloatingActionButton fab = findViewById(R.id.fab_add_dataset);
@@ -66,7 +68,7 @@ public class MainActivity extends BaseActivity {
    */
   private void addExampleDataSet() {
     DataSet sample = new DataSet("Example");
-    sample.setLabels(new HashSet<>(Arrays.asList("Cat", "Dog")));
+    sample.setLabels(Arrays.asList("Cat", "Dog"));
     String descDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator +
         sample.getName();
     FileUtils.copyAssetsDir2Phone(this, "Example", descDir);
@@ -90,7 +92,7 @@ public class MainActivity extends BaseActivity {
           String datasetLabels = data.getStringExtra("dataset_labels");
           String[] labelArray = datasetLabels.split(",");
           DataSet dataSet = new DataSet(datasetName);
-          dataSet.setLabels(new HashSet<>(Arrays.asList(labelArray)));
+          dataSet.setLabels(Arrays.asList(labelArray));
           DataSetCollection.addDataSet(dataSet);
           adapter.notifyItemInserted(DataSetCollection.getDataSetList().size() - 1);
           recyclerView.scrollToPosition(DataSetCollection.getDataSetList().size() - 1);
