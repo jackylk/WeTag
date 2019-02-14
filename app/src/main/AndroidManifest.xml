@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.cloud.wetag">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".MyApplication"
@@ -26,8 +26,7 @@
         <activity android:name=".ui.BaseActivity" />
         <activity
             android:name=".ui.LabelActivity"
-            android:label="@string/title_activity_label">
-        </activity>
+            android:label="@string/title_activity_label"></activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -36,8 +35,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
+
+        <activity android:name=".ui.ImagePreviewActivity"></activity>
     </application>
 
 </manifest>

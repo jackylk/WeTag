@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import org.cloud.wetag.model.DataSet;
+import org.cloud.wetag.model.Image;
 import org.cloud.wetag.model.ImageSelection;
 import org.cloud.wetag.ui.PageFragment;
 
@@ -23,7 +24,8 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
   private List<PageFragment> fragments;
 
   public LabelFragmentPagerAdapter(FragmentManager fm, DataSet dataSet,
-                                   ImageSelection imageSelection) {
+                                   ImageSelection imageSelection,
+                                   ImageCardAdapter.OnImageCheckChangedListener listener) {
     super(fm);
     this.dataSet = dataSet;
 
@@ -40,26 +42,22 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
     // in this class, for image deletion menu item to work
     for (PageFragment fragment : this.fragments) {
       fragment.setImageSelection(imageSelection);
-      fragment.setParentAdapter(this);
+      fragment.registerOnCheckChangedListener(listener);
     }
   }
 
   public void refreshFragment(int position) {
-    if (position > 0 && position < fragments.size()) {
+    if (position >= 0 && position < fragments.size()) {
       ImageCardAdapter adapter = fragments.get(position).getAdapter();
-      adapter.refreshImages();
+      if (adapter != null) {
+        adapter.refreshImages();
+      }
     }
   }
 
   public void refreshAllFragments() {
     for (int i = 0; i < fragments.size(); i++) {
       refreshFragment(i);
-    }
-  }
-
-  public void setEnableLabelBar(boolean enabled) {
-    for (PageFragment fragment : fragments) {
-      fragment.setEnableLabelBar(enabled);
     }
   }
 
@@ -76,14 +74,51 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
   @Nullable
   @Override
   public CharSequence getPageTitle(int position) {
-    if (position == ALL) {
-      return "所有";
-    } else if (position == ALL_UNLABELED) {
-      return "未标注";
-    } else if (position == ALL_LABELED) {
-      return "已标注";
+    ImageCardAdapter adapter = fragments.get(position).getAdapter();
+    int count;
+    if (adapter != null) {
+      count = fragments.get(position).getAdapter().getItemCount();
     } else {
-      return dataSet.getLabels().get(position - 3);
+      if (position > 2) {
+        count = countImages(position, dataSet.getLabels().get(position - 3));
+      } else {
+        count = countImages(position, null);
+      }
     }
+    if (position == ALL) {
+      return "所有(" + count + ")";
+    } else if (position == ALL_UNLABELED) {
+      return "未标注(" + count + ")";
+    } else if (position == ALL_LABELED) {
+      return "已标注(" + count + ")";
+    } else {
+      return dataSet.getLabels().get(position - 3) + "(" + count + ")";
+    }
+  }
+
+  private int countImages(int position, String filterLabel) {
+    int count = 0;
+    if (position == ALL) {
+      count = dataSet.getImages().size();
+    } else if (position == ALL_UNLABELED) {
+      for (Image image : dataSet.getImages()) {
+        if (image.getLabels().size() == 0) {
+          count++;
+        }
+      }
+    } else if (position == ALL_LABELED) {
+      for (Image image : dataSet.getImages()) {
+        if (image.getLabels().size() > 0) {
+          count++;
+        }
+      }
+    } else {
+      for (Image image : dataSet.getImages()) {
+        if (image.getLabels().contains(filterLabel)) {
+          count++;
+        }
+      }
+    }
+    return count;
   }
 }

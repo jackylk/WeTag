@@ -57,6 +57,9 @@ public class DataSet extends DataSupport {
           .where("dataSetName = ?", name)
           .find(Image.class);
       this.images = images;
+      for (Image image : images) {
+        image.getOrLoadLabels();
+      }
     }
     return this.images;
   }

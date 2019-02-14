@@ -12,8 +12,8 @@
         android:id="@+id/label_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabMode="fixed"
-        app:tabGravity="fill" />
+        app:tabMode="scrollable"
+        app:tabGravity="center" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
@@ -22,4 +22,5 @@
         android:layout_weight="1"
         android:background="#ffffff"/>
 
+    <include layout="@layout/label_bar" />
 </LinearLayout>

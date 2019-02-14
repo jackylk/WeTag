@@ -19,24 +19,21 @@ import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.Image;
 import org.cloud.wetag.model.ImageSelection;
-import org.cloud.wetag.ui.PageFragment;
 import org.cloud.wetag.ui.widget.CheckView;
 import org.cloud.wetag.utils.ColorUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import static org.cloud.wetag.ui.PageFragment.ALL;
 import static org.cloud.wetag.ui.PageFragment.ALL_LABELED;
 import static org.cloud.wetag.ui.PageFragment.ALL_UNLABELED;
-import static org.cloud.wetag.ui.PageFragment.SINGLE_LABELED;
 
 public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.ImageViewHolder> {
 
   private Context context;
   private ImageSelection imageSelection;
-  private OnCheckChangedListener listener;
+  private OnImageCheckChangedListener listener;
 
   private DataSet dataSet;
   private List<Image> images;
@@ -117,12 +114,13 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
     return images.size();
   }
 
-  public void registerOnCheckChangedListener(OnCheckChangedListener listener) {
+  public void registerOnCheckChangedListener(OnImageCheckChangedListener listener) {
     this.listener = listener;
   }
 
-  public interface OnCheckChangedListener {
-    void onImageCheckedChanged(Image image, boolean check);
+  public interface OnImageCheckChangedListener {
+    void onImageCheckClicked(Image image, boolean check);
+    void onImageClicked(Image image);
   }
 
   class ImageViewHolder extends RecyclerView.ViewHolder {
@@ -133,8 +131,14 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
 
     public ImageViewHolder(@NonNull View itemView) {
       super(itemView);
-      CardView card = (CardView) itemView;
+      final CardView card = (CardView) itemView;
       imageView = card.findViewById(R.id.image_iv);
+      imageView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          listener.onImageClicked(images.get(getAdapterPosition()));
+        }
+      });
       chipGroup = card.findViewById(R.id.image_chipgroup);
       checkView = card.findViewById(R.id.check_view);
       checkView.setOnClickListener(new View.OnClickListener() {
@@ -146,11 +150,11 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
             if (!imageSelection.exist(image)) {
               imageSelection.add(image);
               checkView.setChecked(true);
-              listener.onImageCheckedChanged(image,true);
+              listener.onImageCheckClicked(image,true);
             } else {
               imageSelection.remove(image);
               checkView.setChecked(false);
-              listener.onImageCheckedChanged(image,false);
+              listener.onImageCheckClicked(image,false);
             }
           } else if (v instanceof ImageView) {
             Log.e("TAG", v.toString());
