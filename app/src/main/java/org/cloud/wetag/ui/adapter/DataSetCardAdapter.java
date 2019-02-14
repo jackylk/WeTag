@@ -49,7 +49,12 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
   @Override
   public void onBindViewHolder(@NonNull DataSetViewHolder viewHolder, final int position) {
     final DataSet dataSet = DataSetCollection.getDataSetList().get(position);
-    viewHolder.dataSetName.setText(dataSet.getName() + "数据集");
+    viewHolder.dataSetName.setText(dataSet.getName());
+    if (dataSet.getDesc() != null) {
+      viewHolder.dataSetDesc.setText(dataSet.getDesc());
+    } else {
+      viewHolder.dataSetDesc.setText("无描述");
+    }
     viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -106,6 +111,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
 
     CardView cardView;
     TextView dataSetName;
+    TextView dataSetDesc;
     TextView labelText;
     ImageButton deleteButton;
     ImageView dataSetImage;
@@ -115,6 +121,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       super(itemView);
       cardView = (CardView) itemView;
       dataSetName = itemView.findViewById(R.id.dataset_name);
+      dataSetDesc = itemView.findViewById(R.id.dataset_desc);
       dataSetImage = itemView.findViewById(R.id.dataset_image);
       deleteButton = itemView.findViewById(R.id.dataset_delete);
       dataSetLabels = itemView.findViewById(R.id.dataset_chipgroup);

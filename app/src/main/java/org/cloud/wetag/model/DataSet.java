@@ -22,6 +22,9 @@ public class DataSet extends DataSupport {
   @Column(unique = true)
   private String name;
 
+  @Column(nullable = true)
+  private String desc;
+
   // labels that dataset contains
   @Column(nullable = false)
   private List<String> labels = new ArrayList<>();
@@ -84,5 +87,11 @@ public class DataSet extends DataSupport {
     images.remove(image);
   }
 
+  public String getDesc() {
+    return desc;
+  }
 
+  public void setDesc(String desc) {
+    this.desc = desc;
+  }
 }

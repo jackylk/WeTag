@@ -9,17 +9,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
-import android.support.design.chip.ChipGroup;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.util.JsonWriter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.cloud.wetag.MyApplication;
@@ -30,36 +28,33 @@ import org.cloud.wetag.model.Image;
 import org.cloud.wetag.model.ImageSelection;
 import org.cloud.wetag.ui.adapter.ImageCardAdapter;
 import org.cloud.wetag.ui.adapter.LabelFragmentPagerAdapter;
+import org.cloud.wetag.ui.widget.LabelBar;
 import org.cloud.wetag.utils.CaptureStrategy;
-import org.cloud.wetag.utils.ColorUtils;
 import org.cloud.wetag.utils.MediaStoreCompat;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class LabelActivity extends BaseActivity implements View.OnClickListener,
-    CompoundButton.OnCheckedChangeListener, ImageCardAdapter.OnImageCheckChangedListener,
-    TabLayout.OnTabSelectedListener {
+    ImageCardAdapter.OnImageCheckChangedListener, TabLayout.OnTabSelectedListener {
 
   private DataSet dataSet;
   private TabLayout tabLayout;
   private LabelFragmentPagerAdapter adapter;
   private MediaStoreCompat mediaStoreCompat;
   private ImageSelection imageSelection;
-  private List<String> labelSelection;
 
   private Menu menu;
+  private LabelBar labelBar;
   private boolean isEditingDataSet = false;
 
   private static final int REQUEST_CODE_CAPTURE = 1;
+  private static final int REQUEST_CODE_PREVIEW = 2;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -77,11 +72,12 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
     mediaStoreCompat = new MediaStoreCompat(this);
     mediaStoreCompat.setCaptureStrategy(
         new CaptureStrategy(false, "org.cloud.wetag.fileprovider", datasetName));
-    labelSelection = new LinkedList<>();
 
+    LinearLayout linearLayout = findViewById(R.id.label_bar);
+    labelBar = new LabelBar(linearLayout, dataSet, this);
+    labelBar.setEnableLabelBar(false);
     setTitle(dataSet.getName() + "数据集");
     initTabs();
-    initLabelBar();
   }
 
   private void initTabs() {
@@ -93,27 +89,6 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
     viewPager.setAdapter(adapter);
     tabLayout.addOnTabSelectedListener(this);
     tabLayout.setupWithViewPager(viewPager, true);
-  }
-
-  private void initLabelBar() {
-    findViewById(R.id.label_confirm).setOnClickListener(this);
-    chipGroup = findViewById(R.id.label_chipgroup);
-    chipMap = new HashMap<>();
-    for (String label : dataSet.getLabels()) {
-      Chip chip = new Chip(chipGroup.getContext());
-      chip.setText(label);
-      chip.setEnabled(false);
-      chip.setClickable(true);
-      chip.setCheckable(true);
-      chip.setTextAppearance(R.style.TextAppearance_AppCompat_Large);
-      chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
-      chip.setChipBackgroundColorResource(
-          ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), label));
-      chip.setOnCheckedChangeListener(this);
-      chipGroup.addView(chip);
-      chipMap.put(label, chip);
-    }
-    setEnableLabelBar(false);
   }
 
   @Override
@@ -151,7 +126,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
       case R.id.item_edit:
         menu.clear();
         getMenuInflater().inflate(R.menu.menu_labeling_edit, menu);
-        setEnableLabelBar(false);
+        labelBar.setEnableLabelBar(false);
         isEditingDataSet = true;
         break;
       case R.id.item_delete:
@@ -231,8 +206,8 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
       Image image = dataSet.getImage(i);
       if (image.getLabels().size() > 0) {
         writer.beginObject();
-        writer.name("file_name");
-        writer.value(image.getFileName());
+        writer.name("file");
+        writer.value(image.getFilePath());
         writer.name("label");
         writer.value(image.getLabels().toString());
         writer.endObject();
@@ -265,6 +240,8 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
         dataSet.saveThrows();
         refreshView();
       }
+    } else if (requestCode == REQUEST_CODE_PREVIEW) {
+      refreshView();
     }
   }
 
@@ -273,28 +250,10 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
     adapter.notifyDataSetChanged();
   }
 
-  public void setEnableLabelBar(boolean enabled) {
-    findViewById(R.id.label_confirm).setEnabled(enabled);
-    for (Chip chip : chipMap.values()) {
-      chip.setEnabled(enabled);
-    }
-  }
-
-  public void setCheckedLabelBar(boolean checked) {
-    findViewById(R.id.label_confirm).setEnabled(checked);
-    for (Chip chip : chipMap.values()) {
-      chip.setChecked(checked);
-    }
-  }
-
   // image clicked
   @Override
   public void onImageClicked(Image image) {
-    Intent intent = new Intent(MyApplication.getContext(), ImagePreviewActivity.class);
-    intent.putExtra("dataset_name", dataSet.getName());
-    intent.putExtra("image_index", dataSet.getImages().indexOf(image));
-    intent.putExtra("image_path", image.getFilePath());
-    startActivity(intent);
+    ImagePreviewActivity.start(this, dataSet, image, REQUEST_CODE_PREVIEW);
   }
 
   // image check clicked
@@ -307,7 +266,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
         labels.addAll(img.getLabels());
       }
       // set chips status in label bar
-      for (Map.Entry<String, Chip> chipEntry : chipMap.entrySet()) {
+      for (Map.Entry<String, Chip> chipEntry : labelBar.getChipMap().entrySet()) {
         if (labels.contains(chipEntry.getKey())) {
           chipEntry.getValue().setChecked(true);
         } else {
@@ -316,23 +275,10 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
       }
     }
     if (imageSelection.get().size() > 0 && !isEditingDataSet) {
-      setEnableLabelBar(true);
+      labelBar.setEnableLabelBar(true);
     } else {
-      setCheckedLabelBar(false);
-      setEnableLabelBar(false);
-    }
-  }
-
-  // chip clicked
-  @Override
-  public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-    if (imageSelection.get().size() > 0) {
-      String label = buttonView.getText().toString();
-      if (isChecked) {
-        labelSelection.add(label);
-      } else {
-        labelSelection.remove(label);
-      }
+      labelBar.setCheckedLabelBar(false);
+      labelBar.setEnableLabelBar(false);
     }
   }
 
@@ -342,13 +288,12 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
     switch (v.getId()) {
       case R.id.label_confirm:
         for (Image image : imageSelection.get()) {
-          image.setLabels(labelSelection);
+          image.setLabels(labelBar.getLabelSelection());
           image.saveThrows();
         }
         imageSelection.clear();
-        labelSelection.clear();
-        chipGroup.clearCheck();
-        setEnableLabelBar(false);
+        labelBar.clear();
+        labelBar.setEnableLabelBar(false);
         refreshView();
         break;
       default:
@@ -368,4 +313,6 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
 
   @Override
   public void onTabReselected(TabLayout.Tab tab) { }
+
+
 }

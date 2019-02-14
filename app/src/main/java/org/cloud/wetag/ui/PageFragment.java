@@ -74,7 +74,7 @@ public class PageFragment extends Fragment {
                            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_label, container, false);
     RecyclerView recyclerView = view.findViewById(R.id.images_rv);
-    RecyclerView.LayoutManager layoutManager = new GridLayoutManager(view.getContext(), 2);
+    RecyclerView.LayoutManager layoutManager = new GridLayoutManager(view.getContext(), 3);
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setAdapter(adapter);
     return view;

@@ -68,6 +68,7 @@ public class MainActivity extends BaseActivity {
    */
   private void addExampleDataSet() {
     DataSet sample = new DataSet("Example");
+    sample.setDesc("猫狗图片分类数据集");
     sample.setLabels(Arrays.asList("Cat", "Dog"));
     String descDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator +
         sample.getName();

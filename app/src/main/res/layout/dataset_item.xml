@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:elevation="4dp"
+    app:cardElevation="@dimen/sp_16"
     app:cardCornerRadius="4dp" >
 
     <LinearLayout
@@ -20,7 +21,7 @@
                 android:id="@+id/dataset_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_marginLeft="@dimen/dp_8"
                 android:textAppearance="?android:textAppearanceLarge"/>
             <ImageButton
                 android:id="@+id/dataset_delete"
@@ -30,34 +31,41 @@
                 android:layout_centerVertical="true"
                 android:background="@android:drawable/ic_menu_delete"/>
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/dataset_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_8"
+            android:textAppearance="?android:textAppearanceMedium"/>
+
         <ImageView
             android:id="@+id/dataset_image"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_weight="1"
-            android:layout_margin="5dp"
             android:scaleType="centerCrop" />
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/label_text"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dp_4"
                 android:layout_gravity="center_vertical"
-                android:layout_margin="5dp"
                 android:text="@string/dataset_labels"
                 android:textAppearance="?android:textAppearanceMedium"/>
 
             <android.support.design.chip.ChipGroup
                 android:id="@+id/dataset_chipgroup"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_alignLeft="@+id/label_text"
+                android:layout_margin="@dimen/dp_4"
                 app:chipSpacing="@dimen/sp_16" />
 
         </LinearLayout>

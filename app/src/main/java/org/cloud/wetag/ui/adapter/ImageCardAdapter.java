@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -100,7 +101,7 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
       chip.setText(label);
       chip.setEnabled(true);
       chip.setClickable(false);
-      chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
+      chip.setTextAppearance(R.style.TextAppearance_MaterialComponents_Body1);
       chip.setTextColor(ContextCompat.getColor(context, R.color.white));
       chip.setChipBackgroundColorResource(
           ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), label));
