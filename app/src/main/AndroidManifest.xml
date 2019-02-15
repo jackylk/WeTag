@@ -25,8 +25,8 @@
         <activity android:name=".ui.CreateDataSetActivity" />
         <activity android:name=".ui.BaseActivity" />
         <activity
-            android:name=".ui.LabelActivity"
-            android:label="@string/title_activity_label"></activity>
+            android:name=".ui.ImageLabelingActivity"
+            android:label="@string/title_activity_label" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -38,7 +38,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".ui.ImagePreviewActivity"></activity>
+        <activity android:name=".ui.ImagePreviewActivity" />
     </application>
 
 </manifest>

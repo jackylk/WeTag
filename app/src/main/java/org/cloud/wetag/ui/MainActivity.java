@@ -38,7 +38,7 @@ public class MainActivity extends BaseActivity {
     setTitle(R.string.main_activity_title);
     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-    FloatingActionButton fab = findViewById(R.id.fab_add_dataset);
+    FloatingActionButton fab = findViewById(R.id.fab_add_image_dataset);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -62,12 +62,12 @@ public class MainActivity extends BaseActivity {
    * Add an Example data set
    */
   private void addExampleDataSet() {
-    DataSet sample = new DataSet("Example");
+    DataSet sample = new DataSet("ImageClassificationExample");
     sample.setDesc("猫狗图片分类数据集");
     sample.setLabels(Arrays.asList("Cat", "Dog"));
     String destDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator +
         sample.getName();
-    FileUtils.copyAssetsDir2Phone(this, "Example", destDir);
+    FileUtils.copyAssetsDir2Phone(this, "ImageClassificationExample", destDir);
     File[] imageFiles = new File(destDir).listFiles();
     if (imageFiles.length > 0) {
       for (File imageFile : imageFiles) {

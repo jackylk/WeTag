@@ -21,7 +21,7 @@ import com.bumptech.glide.Glide;
 
 import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.model.Image;
-import org.cloud.wetag.ui.LabelActivity;
+import org.cloud.wetag.ui.ImageLabelingActivity;
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
@@ -130,7 +130,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          Intent intent = new Intent(itemView.getContext(), LabelActivity.class);
+          Intent intent = new Intent(itemView.getContext(), ImageLabelingActivity.class);
           intent.putExtra("dataset_name",
               DataSetCollection.getDataSetList().get(getAdapterPosition()).getName());
           itemView.getContext().startActivity(intent);

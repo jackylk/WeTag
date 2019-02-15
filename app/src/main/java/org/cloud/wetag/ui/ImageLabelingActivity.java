@@ -15,10 +15,8 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.util.JsonWriter;
-import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -50,7 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LabelActivity extends BaseActivity implements View.OnClickListener,
+public class ImageLabelingActivity extends BaseActivity implements View.OnClickListener,
     ImageCardAdapter.OnImageCheckChangedListener, TabLayout.OnTabSelectedListener {
 
   private DataSet dataSet;
@@ -70,7 +68,7 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_label);
+    setContentView(R.layout.activity_image_labeling);
 
     String datasetName = getIntent().getStringExtra("dataset_name");
     if (datasetName == null) {
