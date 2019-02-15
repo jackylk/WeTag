@@ -16,4 +16,5 @@
     <string name="item_edit">编辑数据集</string>
     <string name="item_export">导出标签</string>
     <string name="main_activity_title">数据集管理</string>
+    <string name="error_gif">长宽不小于 %1$dpx，且大小不超过 %2$sM。</string>
 </resources>

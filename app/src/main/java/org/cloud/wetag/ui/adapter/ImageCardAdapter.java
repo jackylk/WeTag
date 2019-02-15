@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -107,7 +106,8 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
           ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), label));
       holder.chipGroup.addView(chip);
     }
-    holder.checkView.setChecked(false);
+    holder.checkView.setChecked(imageSelection.exist(image));
+    holder.checkView.setTag(position);
   }
 
   @Override
@@ -122,6 +122,20 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
   public interface OnImageCheckChangedListener {
     void onImageCheckClicked(Image image, boolean check);
     void onImageClicked(Image image);
+  }
+
+  public void onImageCheckClicked(int position) {
+    Image image = images.get(position);
+    if (!imageSelection.exist(image)) {
+      imageSelection.add(image);
+//      checkView.setChecked(true);
+      listener.onImageCheckClicked(image,true);
+    } else {
+      imageSelection.remove(image);
+//      checkView.setChecked(false);
+      listener.onImageCheckClicked(image,false);
+    }
+    notifyItemChanged(position);
   }
 
   class ImageViewHolder extends RecyclerView.ViewHolder {
@@ -141,22 +155,12 @@ public class ImageCardAdapter extends RecyclerView.Adapter<ImageCardAdapter.Imag
         }
       });
       chipGroup = card.findViewById(R.id.image_chipgroup);
-      checkView = card.findViewById(R.id.check_view);
+      checkView = card.findViewById(R.id.image_check_view);
       checkView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
           if (v instanceof CheckView) {
-            int position = getAdapterPosition();
-            Image image = images.get(position);
-            if (!imageSelection.exist(image)) {
-              imageSelection.add(image);
-              checkView.setChecked(true);
-              listener.onImageCheckClicked(image,true);
-            } else {
-              imageSelection.remove(image);
-              checkView.setChecked(false);
-              listener.onImageCheckClicked(image,false);
-            }
+            onImageCheckClicked(getAdapterPosition());
           } else if (v instanceof ImageView) {
             Log.e("TAG", v.toString());
           } else if (v instanceof ChipGroup) {

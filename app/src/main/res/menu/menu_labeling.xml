@@ -9,6 +9,11 @@
         app:showAsAction="always"/>
 
     <item
+        android:id="@+id/item_import_album"
+        android:title="从相册导入"
+        app:showAsAction="collapseActionView"/>
+
+    <item
         android:id="@+id/item_edit"
         android:title="@string/item_edit"
         android:icon="@android:drawable/ic_menu_edit"

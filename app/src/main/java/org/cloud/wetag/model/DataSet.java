@@ -56,9 +56,7 @@ public class DataSet extends DataSupport {
 
   public List<Image> getOrLoadImages() {
     if (this.images.size() == 0) {
-      List<Image> images = DataSupport.select("id", "fileName", "dataSetName")
-          .where("dataSetName = ?", name)
-          .find(Image.class);
+      List<Image> images = DataSupport.where("dataSetName = ?", name).find(Image.class);
       this.images = images;
       for (Image image : images) {
         image.getOrLoadLabels();

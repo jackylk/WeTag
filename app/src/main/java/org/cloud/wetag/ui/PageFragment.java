@@ -4,9 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,8 +17,14 @@ import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.model.ImageSelection;
 import org.cloud.wetag.ui.adapter.ImageCardAdapter;
+import org.cloud.wetag.ui.widget.CheckView;
+import org.cloud.wetag.ui.widget.SwipeSelectRecyclerView;
 
-public class PageFragment extends Fragment {
+import java.util.LinkedList;
+import java.util.List;
+
+public class PageFragment extends Fragment
+    implements SwipeSelectRecyclerView.OnDispatchTouchListener {
 
   public final static int ALL = 0;
   public final static int ALL_UNLABELED = 1;
@@ -26,6 +34,7 @@ public class PageFragment extends Fragment {
   private ImageCardAdapter adapter;
   private ImageSelection imageSelection;
   private ImageCardAdapter.OnImageCheckChangedListener listener;
+  private SwipeSelectRecyclerView recyclerView;
 
   public static PageFragment newInstance(DataSet dataSet, int pageType, String filterLabel) {
     PageFragment fragment = new PageFragment();
@@ -73,11 +82,42 @@ public class PageFragment extends Fragment {
   public View onCreateView(@NonNull LayoutInflater inflater,
                            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_label, container, false);
-    RecyclerView recyclerView = view.findViewById(R.id.images_rv);
-    RecyclerView.LayoutManager layoutManager = new GridLayoutManager(view.getContext(), 3);
-    recyclerView.setLayoutManager(layoutManager);
+    recyclerView = view.findViewById(R.id.images_rv);
+    recyclerView.registerOnDispatchTouchListener(this);
+    recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
     recyclerView.setAdapter(adapter);
     return view;
   }
 
+  private List<Integer> picked = new LinkedList<>();
+  private CheckView currentView;
+
+  @Override
+  public void onDispatchTouch(MotionEvent event) {
+    switch (event.getAction()) {
+      case MotionEvent.ACTION_DOWN:
+        picked.clear();
+        break;
+      case MotionEvent.ACTION_MOVE:
+        CardView v = (CardView) recyclerView.findChildViewUnder(event.getX(), event.getY());
+        if (v != null) {
+          CheckView checkView = v.findViewById(R.id.image_check_view);
+          Log.e("TAG", checkView.getTag().toString());
+          if (checkView != currentView) {
+            Integer position = (Integer) checkView.getTag();
+            if (!checkView.isChecked()){
+              picked.add(position);
+              adapter.onImageCheckClicked(position);
+            } else {
+              picked.remove(position);
+            }
+            currentView = checkView;
+          }
+        }
+        break;
+      case MotionEvent.ACTION_UP:
+        picked.clear();
+        break;
+    }
+  }
 }

@@ -17,33 +17,32 @@ import java.util.Set;
 public class Image extends DataSupport {
   private int id;
 
-  private String fileName;
+  // true if this image is captured in this app, we should delete it
+  // only if it is true, otherwise do not delete it
+  private boolean capturedInApp;
+
+  private String filePath;
 
   private String dataSetName;
 
   private List<String> labels = new LinkedList<>();
 
-  public Image(String dataSetName, String fileName) {
+  public Image(String dataSetName, String filePath, boolean capturedInApp) {
     this.dataSetName = dataSetName;
-    this.fileName = fileName;
+    this.filePath = filePath;
+    this.capturedInApp = capturedInApp;
   }
 
-  public String getFileName() {
-    return fileName;
+  public boolean isCapturedInApp() {
+    return capturedInApp;
   }
 
   public String getFilePath() {
-    File storageDir =
-        MyApplication.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    return storageDir.getAbsolutePath() + File.separator + dataSetName +
-        File.separator + fileName;
+    return filePath;
   }
 
   public Uri getUri() {
-    File storageDir =
-        MyApplication.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    File imageFile = new File(storageDir.getAbsolutePath() + File.separator + dataSetName +
-      File.separator + fileName);
+    File imageFile = new File(filePath);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       return FileProvider.getUriForFile(MyApplication.getContext(),
           "org.cloud.wetag.fileprovider", imageFile);
