@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <org.cloud.wetag.ui.widget.SwipeSelectRecyclerView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/images_rv"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"

@@ -94,18 +94,6 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
   private void initTabs() {
     tabLayout = findViewById(R.id.label_tab_layout);
     ViewPager viewPager = findViewById(R.id.view_pager);
-    viewPager.setOnTouchListener(new View.OnTouchListener() {
-      @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        return false;
-      }
-    });
-    viewPager.setOnDragListener(new View.OnDragListener() {
-      @Override
-      public boolean onDrag(View v, DragEvent event) {
-        return false;
-      }
-    });
     imageSelection = new ImageSelection();
     adapter = new LabelFragmentPagerAdapter(getSupportFragmentManager(), dataSet, imageSelection,
         this);
@@ -184,14 +172,13 @@ public class LabelActivity extends BaseActivity implements View.OnClickListener,
             int ignored = 0;
             int deleted = 0;
             for (Image image : imageSelection.get()) {
+              dataSet.removeImage(image);
+              image.delete();
               if (image.isCapturedInApp()) {
-                dataSet.removeImage(image);
                 File imageFile = new File(image.getFilePath());
                 imageFile.delete();
-                image.delete();
                 deleted++;
               } else {
-                dataSet.removeImage(image);
                 ignored++;
               }
             }
