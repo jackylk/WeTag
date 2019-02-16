@@ -6,12 +6,13 @@
     android:layout_margin="10dp"
     android:elevation="4dp"
     app:cardElevation="@dimen/sp_16"
-    app:cardCornerRadius="4dp" >
+    app:cardCornerRadius="4dp">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/card_item_background" >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -22,7 +23,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/dp_8"
-                android:textAppearance="?android:textAppearanceLarge"/>
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/card_item_text_primary"/>
             <ImageButton
                 android:id="@+id/dataset_delete"
                 android:layout_width="wrap_content"
@@ -37,7 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_8"
-            android:textAppearance="?android:textAppearanceMedium"/>
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/card_item_text_secondary"/>
 
         <ImageView
             android:id="@+id/dataset_image"
@@ -57,7 +60,8 @@
                 android:layout_margin="@dimen/dp_4"
                 android:layout_gravity="center_vertical"
                 android:text="@string/dataset_labels"
-                android:textAppearance="?android:textAppearanceMedium"/>
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="@color/card_item_text_secondary"/>
 
             <android.support.design.chip.ChipGroup
                 android:id="@+id/dataset_chipgroup"

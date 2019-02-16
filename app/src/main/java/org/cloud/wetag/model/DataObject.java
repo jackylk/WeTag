@@ -3,7 +3,6 @@ package org.cloud.wetag.model;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.support.v4.content.FileProvider;
 
 import org.cloud.wetag.MyApplication;
@@ -14,22 +13,33 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class Image extends DataSupport {
+/**
+ * Object that to be labeled. It can be image file, audio file, text, etc
+ */
+public class DataObject extends DataSupport {
   private int id;
 
-  // true if this image is captured in this app, we should delete it
-  // only if it is true, otherwise do not delete it
+  // true if this object is captured in this app (for example, image snapshot in this app),
+  // we should delete it only if it is true, otherwise do not delete it
   private boolean capturedInApp;
 
-  private String filePath;
+  private String source;
 
   private String dataSetName;
 
   private List<String> labels = new LinkedList<>();
 
-  public Image(String dataSetName, String filePath, boolean capturedInApp) {
+  /**
+   *
+   * @param dataSetName name of the dataset
+   * @param source for file related data (like image and audio), source is the
+   *               file path of the object; for text related data, source is the
+   *               text content itself
+   * @param capturedInApp
+   */
+  public DataObject(String dataSetName, String source, boolean capturedInApp) {
     this.dataSetName = dataSetName;
-    this.filePath = filePath;
+    this.source = source;
     this.capturedInApp = capturedInApp;
   }
 
@@ -37,12 +47,12 @@ public class Image extends DataSupport {
     return capturedInApp;
   }
 
-  public String getFilePath() {
-    return filePath;
+  public String getSource() {
+    return source;
   }
 
   public Uri getUri() {
-    File imageFile = new File(filePath);
+    File imageFile = new File(source);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       return FileProvider.getUriForFile(MyApplication.getContext(),
           "org.cloud.wetag.fileprovider", imageFile);
@@ -59,7 +69,7 @@ public class Image extends DataSupport {
     if (this.labels.size() == 0) {
       List<String> labelFromDb = new LinkedList<>();
       Cursor cursor = DataSupport.findBySQL(
-          "select * from image_labels where image_id = ?", String.valueOf(id));
+          "select * from dataobject_labels where dataobject_id = ?", String.valueOf(id));
       if (cursor.moveToFirst()) {
         do {
           labelFromDb.add(cursor.getString(cursor.getColumnIndex("labels")));

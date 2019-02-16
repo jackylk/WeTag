@@ -2,17 +2,13 @@ package org.cloud.wetag.model;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 
-import org.cloud.wetag.R;
 import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class DataSet extends DataSupport {
 
@@ -29,12 +25,46 @@ public class DataSet extends DataSupport {
   @Column(nullable = false)
   private List<String> labels = new ArrayList<>();
 
-  private List<Image> images = new ArrayList<>();
+  @Column(nullable = false)
+  private int type;
+
+  private List<DataObject> dataObjects = new ArrayList<>();
+
+  // dataset type for image classification labeling, it can be object detection in future version
+  public static final int IMAGE = 0;
+
+  // dataset type for text classification labeling
+  public static final int TEXT_CLASSIFICATION = 1;
 
   @TargetApi(Build.VERSION_CODES.KITKAT)
-  public DataSet(String name) {
+  private DataSet(String name, int type) {
     Objects.requireNonNull(name);
     this.name = name;
+    this.type = type;
+  }
+
+  public static DataSet newImageDataSet(String name) {
+    return new DataSet(name, IMAGE);
+  }
+
+  public static DataSet newTextClassificationDataSet(String name) {
+    return new DataSet(name, TEXT_CLASSIFICATION);
+  }
+
+  public boolean isImageDataSet() {
+    return type == IMAGE;
+  }
+
+  public boolean isTextClassificationDataSet() {
+    return type == TEXT_CLASSIFICATION;
+  }
+
+  public int getType() {
+    return type;
+  }
+
+  public void setType(int type) {
+    this.type = type;
   }
 
   public String getName() {
@@ -54,35 +84,35 @@ public class DataSet extends DataSupport {
     return labels;
   }
 
-  public List<Image> getOrLoadImages() {
-    if (this.images.size() == 0) {
-      List<Image> images = DataSupport.where("dataSetName = ?", name).find(Image.class);
-      this.images = images;
-      for (Image image : images) {
-        image.getOrLoadLabels();
+  public List<DataObject> getOrLoadObjects() {
+    if (this.dataObjects.size() == 0) {
+      List<DataObject> dataObjects = DataSupport.where("dataSetName = ?", name).find(DataObject.class);
+      this.dataObjects = dataObjects;
+      for (DataObject dataObject : dataObjects) {
+        dataObject.getOrLoadLabels();
       }
     }
-    return this.images;
+    return this.dataObjects;
   }
 
-  public int getImageCount() {
-    return images.size();
+  public int getObjectCount() {
+    return dataObjects.size();
   }
 
-  public List<Image> getImages() {
-    return images;
+  public List<DataObject> getDataObjects() {
+    return dataObjects;
   }
 
-  public Image getImage(int index) {
-    return images.get(index);
+  public DataObject getDataObject(int index) {
+    return dataObjects.get(index);
   }
 
-  public void addImage(Image image) {
-    images.add(image);
+  public void addObject(DataObject dataObject) {
+    dataObjects.add(dataObject);
   }
 
-  public void removeImage(Image image) {
-    images.remove(image);
+  public void removeObject(DataObject dataObject) {
+    dataObjects.remove(dataObject);
   }
 
   public String getDesc() {

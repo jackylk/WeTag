@@ -2,7 +2,6 @@ package org.cloud.wetag.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -13,14 +12,19 @@ import android.view.MenuItem;
 import android.view.View;
 
 import org.cloud.wetag.R;
+import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
-import org.cloud.wetag.model.Image;
 import org.cloud.wetag.ui.adapter.DataSetCardAdapter;
 import org.cloud.wetag.utils.FileUtils;
 import org.litepal.LitePal;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 
 public class MainActivity extends BaseActivity {
@@ -28,6 +32,8 @@ public class MainActivity extends BaseActivity {
   private DataSetCardAdapter adapter;
 
   private RecyclerView recyclerView;
+
+  private static final int REQUEST_CODE_CREATE_DATASET = 1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +49,7 @@ public class MainActivity extends BaseActivity {
       @Override
       public void onClick(View view) {
         Intent intent = new Intent(MainActivity.this, CreateDataSetActivity.class);
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, REQUEST_CODE_CREATE_DATASET);
       }
     });
 
@@ -53,41 +59,93 @@ public class MainActivity extends BaseActivity {
     adapter = new DataSetCardAdapter();
     recyclerView.setAdapter(adapter);
 
+    // when user launch this app for first time, add some example datasets
     if (DataSetCollection.getDataSetList().isEmpty()) {
-      addExampleDataSet();
+      addExampleCatDogDataSet();
+      addExampleMovieCommentDataSet();
     }
   }
 
   /**
-   * Add an Example data set
+   * Add an example data set: cat and dog image classification
    */
-  private void addExampleDataSet() {
-    DataSet sample = new DataSet("ImageClassificationExample");
+  private void addExampleCatDogDataSet() {
+    DataSet sample = DataSet.newImageDataSet("CatDogExample");
     sample.setDesc("猫狗图片分类数据集");
     sample.setLabels(Arrays.asList("Cat", "Dog"));
-    String destDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator +
-        sample.getName();
+    String destDir = createDataSetSourceFolder(sample.getName());
     FileUtils.copyAssetsDir2Phone(this, "ImageClassificationExample", destDir);
-    File[] imageFiles = new File(destDir).listFiles();
-    if (imageFiles.length > 0) {
-      for (File imageFile : imageFiles) {
-        Image image = new Image(sample.getName(), imageFile.getPath(), true);
-        image.saveThrows();
-        sample.addImage(image);
+    File[] files = new File(destDir).listFiles();
+    if (files.length > 0) {
+      for (File file : files) {
+        if (!file.isDirectory()) {
+          DataObject dataObject = new DataObject(sample.getName(), file.getPath(), true);
+          dataObject.saveThrows();
+          sample.addObject(dataObject);
+        }
       }
     }
     DataSetCollection.addDataSet(sample);
   }
 
+  /**
+   * Add an example data set: movie comment text classification
+   */
+  private void addExampleMovieCommentDataSet() {
+    DataSet sample = DataSet.newTextClassificationDataSet("MovieCommentExample");
+    sample.setDesc("电影评论文本分类数据集");
+    sample.setLabels(Arrays.asList("正面", "负面", "中性"));
+    String destDir = createDataSetSourceFolder(sample.getName());
+    FileUtils.copyAssetsDir2Phone(this, "TextClassificationExample", destDir);
+    File[] files = new File(destDir).listFiles();
+    if (files.length > 0) {
+      try {
+        for (File file : files) {
+          if (!file.isDirectory()) {
+            FileInputStream in = new FileInputStream(file);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while ((line = reader.readLine()) != null) {
+              DataObject dataObject = new DataObject(sample.getName(), line, true);
+              dataObject.saveThrows();
+              sample.addObject(dataObject);
+            }
+            reader.close();
+            in.close();
+          }
+        }
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    DataSetCollection.addDataSet(sample);
+  }
+
+  private String createDataSetSourceFolder(String dataSetName) {
+    File storeDir = new File(getExternalFilesDir(null) + File.separator + dataSetName);
+    if (!storeDir.exists()) {
+      storeDir.mkdir();
+    }
+    storeDir = new File(storeDir, "source");
+    if (!storeDir.exists()) {
+      storeDir.mkdir();
+    }
+    return storeDir.getPath();
+  }
+
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     switch (requestCode) {
-      case 1:
+      case REQUEST_CODE_CREATE_DATASET:
         if (resultCode == RESULT_OK) {
           String datasetName = data.getStringExtra("dataset_name");
           String datasetLabels = data.getStringExtra("dataset_labels");
           String[] labelArray = datasetLabels.split(",");
-          DataSet dataSet = new DataSet(datasetName);
+
+          // TODO: add branch for text dataset
+          DataSet dataSet = DataSet.newImageDataSet(datasetName);
           dataSet.setLabels(Arrays.asList(labelArray));
           DataSetCollection.addDataSet(dataSet);
           adapter.notifyItemInserted(DataSetCollection.getDataSetList().size() - 1);

@@ -9,7 +9,7 @@ public class ColorUtils {
   public static int getLabelBackgroundColor(List<String> labelDefinition, String inputLabel) {
     int index = labelDefinition.indexOf(inputLabel);
     if (index == 0) {
-      return R.color.blue_dark;
+      return R.color.green;
     } else if (index == 1) {
       return R.color.red;
     } else {

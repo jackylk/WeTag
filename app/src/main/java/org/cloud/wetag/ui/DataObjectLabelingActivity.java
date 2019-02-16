@@ -6,7 +6,6 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
 import android.support.design.widget.Snackbar;
@@ -27,11 +26,11 @@ import com.zhihu.matisse.filter.Filter;
 
 import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
+import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
-import org.cloud.wetag.model.Image;
-import org.cloud.wetag.model.ImageSelection;
-import org.cloud.wetag.ui.adapter.ImageCardAdapter;
+import org.cloud.wetag.model.ObjectSelection;
+import org.cloud.wetag.ui.adapter.DataObjectCardAdapter;
 import org.cloud.wetag.ui.adapter.LabelFragmentPagerAdapter;
 import org.cloud.wetag.ui.widget.LabelBar;
 import org.cloud.wetag.utils.CaptureStrategy;
@@ -48,27 +47,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ImageLabelingActivity extends BaseActivity implements View.OnClickListener,
-    ImageCardAdapter.OnImageCheckChangedListener, TabLayout.OnTabSelectedListener {
+public class DataObjectLabelingActivity extends BaseActivity implements View.OnClickListener,
+    DataObjectCardAdapter.OnDataObjectCheckChangedListener, TabLayout.OnTabSelectedListener {
 
   private DataSet dataSet;
   private TabLayout tabLayout;
   private LabelFragmentPagerAdapter adapter;
   private MediaStoreCompat mediaStoreCompat;
-  private ImageSelection imageSelection;
+  private ObjectSelection objectSelection;
 
   private Menu menu;
   private LabelBar labelBar;
   private boolean isEditingDataSet = false;
 
   private static final int REQUEST_CODE_CAPTURE = 1;
-  private static final int REQUEST_CODE_PREVIEW = 2;
+  public static final int REQUEST_CODE_PREVIEW = 2;
   private static final int REQUEST_CODE_ALBUM = 3;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_image_labeling);
+    setContentView(R.layout.activity_labeling);
 
     String datasetName = getIntent().getStringExtra("dataset_name");
     if (datasetName == null) {
@@ -82,18 +81,25 @@ public class ImageLabelingActivity extends BaseActivity implements View.OnClickL
     mediaStoreCompat.setCaptureStrategy(
         new CaptureStrategy(false, "org.cloud.wetag.fileprovider", datasetName));
 
+    setTitle(dataSet.getName() + "数据集");
+    initLabelBar();
+    initTabs();
+  }
+
+  private void initLabelBar() {
     LinearLayout linearLayout = findViewById(R.id.label_bar);
     labelBar = new LabelBar(linearLayout, dataSet, this);
     labelBar.setEnableLabelBar(false);
-    setTitle(dataSet.getName() + "数据集");
-    initTabs();
+    if (dataSet.isTextClassificationDataSet()) {
+      labelBar.setVisible(false);
+    }
   }
 
   private void initTabs() {
     tabLayout = findViewById(R.id.label_tab_layout);
     ViewPager viewPager = findViewById(R.id.view_pager);
-    imageSelection = new ImageSelection();
-    adapter = new LabelFragmentPagerAdapter(getSupportFragmentManager(), dataSet, imageSelection,
+    objectSelection = new ObjectSelection();
+    adapter = new LabelFragmentPagerAdapter(getSupportFragmentManager(), dataSet, objectSelection,
         this);
     viewPager.setAdapter(adapter);
     tabLayout.addOnTabSelectedListener(this);
@@ -169,11 +175,11 @@ public class ImageLabelingActivity extends BaseActivity implements View.OnClickL
             // delete all selected images, delete it only if it is captured in this app.
             int ignored = 0;
             int deleted = 0;
-            for (Image image : imageSelection.get()) {
-              dataSet.removeImage(image);
-              image.delete();
-              if (image.isCapturedInApp()) {
-                File imageFile = new File(image.getFilePath());
+            for (DataObject dataObject : objectSelection.get()) {
+              dataSet.removeObject(dataObject);
+              dataObject.delete();
+              if (dataObject.isCapturedInApp()) {
+                File imageFile = new File(dataObject.getSource());
                 imageFile.delete();
                 deleted++;
               } else {
@@ -229,13 +235,15 @@ public class ImageLabelingActivity extends BaseActivity implements View.OnClickL
    * @throws IOException if IO errors
    */
   private File exportLabel() throws IOException {
-    File storeDir = MyApplication.getContext()
-        .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-    storeDir = new File(storeDir, dataSet.getName());
+    File storeDir = new File(getExternalFilesDir(null), dataSet.getName());
     if (!storeDir.exists()) {
       storeDir.mkdir();
     }
-    File file = new File(storeDir, dataSet.getName() + ".json");
+    storeDir = new File(storeDir, "output");
+    if (!storeDir.exists()) {
+      storeDir.mkdir();
+    }
+    File file = new File(storeDir, "manifest.json");
     if (file.exists()) {
       file.delete();
     }
@@ -243,14 +251,14 @@ public class ImageLabelingActivity extends BaseActivity implements View.OnClickL
     Writer out = new FileWriter(file);
     JsonWriter writer = new JsonWriter(out);
     writer.beginArray();
-    for (int i = 0; i < dataSet.getImageCount(); i++) {
-      Image image = dataSet.getImage(i);
-      if (image.getLabels().size() > 0) {
+    for (int i = 0; i < dataSet.getObjectCount(); i++) {
+      DataObject dataObject = dataSet.getDataObject(i);
+      if (dataObject.getLabels().size() > 0) {
         writer.beginObject();
         writer.name("file");
-        writer.value(image.getFilePath());
+        writer.value(dataObject.getSource());
         writer.name("label");
-        writer.value(image.getLabels().toString());
+        writer.value(dataObject.getLabels().toString());
         writer.endObject();
       }
     }
@@ -275,9 +283,9 @@ public class ImageLabelingActivity extends BaseActivity implements View.OnClickL
     if (requestCode == REQUEST_CODE_CAPTURE) {
       File imageFile = new File(mediaStoreCompat.getCurrentPhotoPath());
       if (imageFile.exists() && imageFile.length() > 0) {
-        Image image = new Image(dataSet.getName(), mediaStoreCompat.getCurrentPhotoPath(), true);
-        image.saveThrows();
-        dataSet.addImage(image);
+        DataObject dataObject = new DataObject(dataSet.getName(), mediaStoreCompat.getCurrentPhotoPath(), true);
+        dataObject.saveThrows();
+        dataSet.addObject(dataObject);
         dataSet.saveThrows();
         refreshView();
       }
@@ -286,9 +294,9 @@ public class ImageLabelingActivity extends BaseActivity implements View.OnClickL
     } else if (requestCode == REQUEST_CODE_ALBUM) {
       List<String> pathList = Matisse.obtainPathResult(data);
       for (String path : pathList) {
-        Image image = new Image(dataSet.getName(), path, false);
-        image.saveThrows();
-        dataSet.addImage(image);
+        DataObject dataObject = new DataObject(dataSet.getName(), path, false);
+        dataObject.saveThrows();
+        dataSet.addObject(dataObject);
         dataSet.saveThrows();
       }
       refreshView();
@@ -300,19 +308,29 @@ public class ImageLabelingActivity extends BaseActivity implements View.OnClickL
     adapter.notifyDataSetChanged();
   }
 
-  // image clicked
+  // dataObject clicked
   @Override
-  public void onImageClicked(Image image) {
-    ImagePreviewActivity.start(this, dataSet, image, REQUEST_CODE_PREVIEW);
+  public void onDataObjectClicked(DataObject dataObject) {
+      ImagePreviewActivity.start(this, dataSet, dataObject, REQUEST_CODE_PREVIEW);
   }
 
-  // image check clicked
   @Override
-  public void onImageCheckClicked(Image image, boolean check) {
-    if (image.getLabels().size() > 0) {
+  public void onDataObjectChipClicked(Chip chip, DataObject dataObject) {
+    if (dataObject.getLabels().contains(chip.getText().toString())) {
+      dataObject.removeLabel(chip.getText().toString());
+    } else {
+      dataObject.addLabel(chip.getText().toString());
+    }
+    refreshView();
+  }
+
+  // dataObject check clicked
+  @Override
+  public void onDataObjectCheckClicked(DataObject dataObject, boolean check) {
+    if (dataObject.getLabels().size() > 0) {
       // gather labels from all select images
       Set<String> labels = new HashSet<>();
-      for (Image img : imageSelection.get()) {
+      for (DataObject img : objectSelection.get()) {
         labels.addAll(img.getLabels());
       }
       // set chips status in label bar
@@ -324,7 +342,7 @@ public class ImageLabelingActivity extends BaseActivity implements View.OnClickL
         }
       }
     }
-    if (imageSelection.get().size() > 0 && !isEditingDataSet) {
+    if (objectSelection.get().size() > 0 && !isEditingDataSet) {
       labelBar.setEnableLabelBar(true);
     } else {
       labelBar.setCheckedLabelBar(false);
@@ -337,11 +355,11 @@ public class ImageLabelingActivity extends BaseActivity implements View.OnClickL
   public void onClick(View v) {
     switch (v.getId()) {
       case R.id.label_confirm:
-        for (Image image : imageSelection.get()) {
-          image.setLabels(labelBar.getLabelSelection());
-          image.saveThrows();
+        for (DataObject dataObject : objectSelection.get()) {
+          dataObject.setLabels(labelBar.getLabelSelection());
+          dataObject.saveThrows();
         }
-        imageSelection.clear();
+        objectSelection.clear();
         labelBar.clear();
         labelBar.setEnableLabelBar(false);
         refreshView();

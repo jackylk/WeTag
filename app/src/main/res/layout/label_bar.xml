@@ -5,7 +5,8 @@
     android:id="@+id/label_bar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@color/dracula_bottom_toolbar_bg">
 
     <android.support.design.chip.ChipGroup
         android:id="@+id/label_chipgroup"
@@ -23,6 +24,8 @@
         android:layout_marginRight="20dp"
         android:layout_weight="1"
         android:text="@string/button_label_confirm"
+        android:background="@color/dracula_primary_dark"
+        android:textColor="@color/white"
         android:textAppearance="?android:textAppearanceLarge" />
 
 </LinearLayout>

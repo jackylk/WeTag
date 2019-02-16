@@ -5,9 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;
-import org.cloud.wetag.model.Image;
-import org.cloud.wetag.model.ImageSelection;
+import org.cloud.wetag.model.ObjectSelection;
 import org.cloud.wetag.ui.PageFragment;
 
 import java.util.LinkedList;
@@ -24,8 +24,8 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
   private List<PageFragment> fragments;
 
   public LabelFragmentPagerAdapter(FragmentManager fm, DataSet dataSet,
-                                   ImageSelection imageSelection,
-                                   ImageCardAdapter.OnImageCheckChangedListener listener) {
+                                   ObjectSelection objectSelection,
+                                   DataObjectCardAdapter.OnDataObjectCheckChangedListener listener) {
     super(fm);
     this.dataSet = dataSet;
 
@@ -41,16 +41,16 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
     // set image selection in all fragment, so that we can get the image selection
     // in this class, for image deletion menu item to work
     for (PageFragment fragment : this.fragments) {
-      fragment.setImageSelection(imageSelection);
+      fragment.setObjectSelection(objectSelection);
       fragment.registerOnCheckChangedListener(listener);
     }
   }
 
   public void refreshFragment(int position) {
     if (position >= 0 && position < fragments.size()) {
-      ImageCardAdapter adapter = fragments.get(position).getAdapter();
+      DataObjectCardAdapter adapter = fragments.get(position).getAdapter();
       if (adapter != null) {
-        adapter.refreshImages();
+        adapter.refreshAllCards();
       }
     }
   }
@@ -74,7 +74,7 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
   @Nullable
   @Override
   public CharSequence getPageTitle(int position) {
-    ImageCardAdapter adapter = fragments.get(position).getAdapter();
+    DataObjectCardAdapter adapter = fragments.get(position).getAdapter();
     int count;
     if (adapter != null) {
       count = fragments.get(position).getAdapter().getItemCount();
@@ -99,22 +99,22 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
   private int countImages(int position, String filterLabel) {
     int count = 0;
     if (position == ALL) {
-      count = dataSet.getImages().size();
+      count = dataSet.getDataObjects().size();
     } else if (position == ALL_UNLABELED) {
-      for (Image image : dataSet.getImages()) {
-        if (image.getLabels().size() == 0) {
+      for (DataObject dataObject : dataSet.getDataObjects()) {
+        if (dataObject.getLabels().size() == 0) {
           count++;
         }
       }
     } else if (position == ALL_LABELED) {
-      for (Image image : dataSet.getImages()) {
-        if (image.getLabels().size() > 0) {
+      for (DataObject dataObject : dataSet.getDataObjects()) {
+        if (dataObject.getLabels().size() > 0) {
           count++;
         }
       }
     } else {
-      for (Image image : dataSet.getImages()) {
-        if (image.getLabels().contains(filterLabel)) {
+      for (DataObject dataObject : dataSet.getDataObjects()) {
+        if (dataObject.getLabels().contains(filterLabel)) {
           count++;
         }
       }

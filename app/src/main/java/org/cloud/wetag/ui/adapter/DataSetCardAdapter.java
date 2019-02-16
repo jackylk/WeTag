@@ -20,8 +20,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import org.cloud.wetag.MyApplication;
-import org.cloud.wetag.model.Image;
-import org.cloud.wetag.ui.ImageLabelingActivity;
+import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.ui.DataObjectLabelingActivity;
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
@@ -78,13 +78,13 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
             }).show();
       }
     });
-    List<Image> images = dataSet.getOrLoadImages();
-    if (images.isEmpty()) {
-      // if dataset is empty, load default picture
-      Glide.with(context).load(R.drawable.no_image).into(viewHolder.dataSetImage);
+    List<DataObject> dataObjects = dataSet.getOrLoadObjects();
+    if (dataObjects.isEmpty() || !dataSet.isImageDataSet()) {
+      // load default picture
+      Glide.with(context).load(R.drawable.empty_dark).into(viewHolder.dataSetImage);
     } else {
       // display first image in the dataset
-      Glide.with(context).load(images.get(0).getUri()).into(viewHolder.dataSetImage);
+      Glide.with(context).load(dataObjects.get(0).getUri()).into(viewHolder.dataSetImage);
     }
 
     viewHolder.dataSetLabels.removeAllViews();
@@ -130,7 +130,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          Intent intent = new Intent(itemView.getContext(), ImageLabelingActivity.class);
+          Intent intent = new Intent(itemView.getContext(), DataObjectLabelingActivity.class);
           intent.putExtra("dataset_name",
               DataSetCollection.getDataSetList().get(getAdapterPosition()).getName());
           itemView.getContext().startActivity(intent);

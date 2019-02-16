@@ -4,7 +4,6 @@ import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.CompoundButton;
 
 import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
@@ -16,9 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class LabelBar implements CompoundButton.OnCheckedChangeListener {
+public class LabelBar {
 
-//  private List<String> labelSelection;
   private ChipGroup chipGroup;
   private Map<String, Chip> chipMap;
   private View parentView;
@@ -27,7 +25,6 @@ public class LabelBar implements CompoundButton.OnCheckedChangeListener {
   public LabelBar(View parentView, DataSet dataSet, View.OnClickListener confirmListener) {
     this.parentView = parentView;
     this.dataSet = dataSet;
-//    this.labelSelection = new LinkedList<>();
     initLabelBar(confirmListener);
   }
 
@@ -45,7 +42,6 @@ public class LabelBar implements CompoundButton.OnCheckedChangeListener {
       chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
       chip.setChipBackgroundColorResource(
           ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), label));
-      chip.setOnCheckedChangeListener(this);
       chipGroup.addView(chip);
       chipMap.put(label, chip);
     }
@@ -65,13 +61,20 @@ public class LabelBar implements CompoundButton.OnCheckedChangeListener {
     }
   }
 
+  public void setVisible(boolean visible) {
+    if (visible) {
+      parentView.setVisibility(View.VISIBLE);
+    } else {
+      parentView.setVisibility(View.GONE);
+    }
+  }
+
   public Map<String, Chip> getChipMap() {
     return chipMap;
   }
 
   public void clear() {
     chipGroup.clearCheck();
-//    labelSelection.clear();
   }
 
   public List<String> getLabelSelection() {
@@ -82,16 +85,5 @@ public class LabelBar implements CompoundButton.OnCheckedChangeListener {
       }
     }
     return labelSelection;
-  }
-
-  // chip clicked
-  @Override
-  public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//      String label = buttonView.getText().toString();
-//      if (isChecked) {
-//        labelSelection.add(label);
-//      } else {
-//        labelSelection.remove(label);
-//      }
   }
 }
