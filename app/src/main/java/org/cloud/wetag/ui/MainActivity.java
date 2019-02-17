@@ -70,8 +70,8 @@ public class MainActivity extends BaseActivity {
    * Add an example data set: cat and dog image classification
    */
   private void addExampleCatDogDataSet() {
-    DataSet sample = DataSet.newImageDataSet("CatDogExample");
-    sample.setDesc("猫狗图片分类数据集");
+    DataSet sample = DataSet.newImageDataSet("猫狗图片分类");
+    sample.setDesc("样例数据集1：猫狗图片分类");
     sample.setLabels(Arrays.asList("Cat", "Dog"));
     String destDir = createDataSetSourceFolder(sample.getName());
     FileUtils.copyAssetsDir2Phone(this, "ImageClassificationExample", destDir);
@@ -79,9 +79,11 @@ public class MainActivity extends BaseActivity {
     if (files.length > 0) {
       for (File file : files) {
         if (!file.isDirectory()) {
-          DataObject dataObject = new DataObject(sample.getName(), file.getPath(), true);
-          dataObject.saveThrows();
-          sample.addObject(dataObject);
+          try {
+            sample.addSource(file);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
         }
       }
     }
@@ -92,8 +94,8 @@ public class MainActivity extends BaseActivity {
    * Add an example data set: movie comment text classification
    */
   private void addExampleMovieCommentDataSet() {
-    DataSet sample = DataSet.newTextClassificationDataSet("MovieCommentExample");
-    sample.setDesc("电影评论文本分类数据集");
+    DataSet sample = DataSet.newTextClassificationDataSet("《流浪地球》短评文本分类");
+    sample.setDesc("样例数据集2：电影评论文本分类");
     sample.setLabels(Arrays.asList("正面", "负面", "中性"));
     String destDir = createDataSetSourceFolder(sample.getName());
     FileUtils.copyAssetsDir2Phone(this, "TextClassificationExample", destDir);
@@ -102,16 +104,7 @@ public class MainActivity extends BaseActivity {
       try {
         for (File file : files) {
           if (!file.isDirectory()) {
-            FileInputStream in = new FileInputStream(file);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while ((line = reader.readLine()) != null) {
-              DataObject dataObject = new DataObject(sample.getName(), line, true);
-              dataObject.saveThrows();
-              sample.addObject(dataObject);
-            }
-            reader.close();
-            in.close();
+            sample.addSource(file);
           }
         }
       } catch (FileNotFoundException e) {
@@ -122,6 +115,8 @@ public class MainActivity extends BaseActivity {
     }
     DataSetCollection.addDataSet(sample);
   }
+
+
 
   private String createDataSetSourceFolder(String dataSetName) {
     File storeDir = new File(getExternalFilesDir(null) + File.separator + dataSetName);

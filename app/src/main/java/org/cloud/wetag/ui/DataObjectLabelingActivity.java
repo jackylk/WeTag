@@ -1,11 +1,16 @@
 package org.cloud.wetag.ui;
 
+import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
 import android.support.design.widget.Snackbar;
@@ -60,9 +65,10 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   private LabelBar labelBar;
   private boolean isEditingDataSet = false;
 
-  private static final int REQUEST_CODE_CAPTURE = 1;
+  public static final int REQUEST_CODE_CAPTURE = 1;
   public static final int REQUEST_CODE_PREVIEW = 2;
-  private static final int REQUEST_CODE_ALBUM = 3;
+  public static final int REQUEST_CODE_ALBUM = 3;
+  public static final int REQUEST_CODE_CHOOSE_FILE = 4;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +105,9 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     tabLayout = findViewById(R.id.label_tab_layout);
     ViewPager viewPager = findViewById(R.id.view_pager);
     objectSelection = new ObjectSelection();
+    if (dataSet.isTextClassificationDataSet()) {
+      objectSelection.setSelectEnabled(false);
+    }
     adapter = new LabelFragmentPagerAdapter(getSupportFragmentManager(), dataSet, objectSelection,
         this);
     viewPager.setAdapter(adapter);
@@ -109,7 +118,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     this.menu = menu;
-    getMenuInflater().inflate(R.menu.menu_labeling, menu);
+    drawMainMenu();
     return true;
   }
 
@@ -146,27 +155,51 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
         getMenuInflater().inflate(R.menu.menu_labeling_edit, menu);
         labelBar.setEnableLabelBar(false);
         isEditingDataSet = true;
+        if (dataSet.isTextClassificationDataSet()) {
+          // make the check box visible in UI so that user can select text to delete
+          objectSelection.setSelectEnabled(true);
+          adapter.refreshAllFragments();
+        }
         break;
       case R.id.item_delete:
-        showDeleteImageConfirmDialog();
+        showDeleteDataObjectConfirmDialog();
         break;
       case R.id.item_cancel:
-        redrawMainMenu();
+        drawMainMenu();
         isEditingDataSet = false;
+        if (dataSet.isTextClassificationDataSet()) {
+          // make the check box invisible in UI
+          objectSelection.setSelectEnabled(false);
+          adapter.refreshAllFragments();
+        }
+        break;
+      case R.id.item_add_text:
+        startFileChooseActivity();
         break;
       default:
     }
     return super.onOptionsItemSelected(item);
   }
 
-  private void showDeleteImageConfirmDialog() {
+  private void startFileChooseActivity() {
+    Intent intent = new Intent("android.intent.action.GET_CONTENT");
+    intent.setType("test/*");
+    startActivityForResult(intent, REQUEST_CODE_CHOOSE_FILE);
+  }
+
+  /**
+   * @return true if confirmed, otherwise canceled
+   */
+  private void showDeleteDataObjectConfirmDialog() {
     new AlertDialog.Builder(tabLayout.getContext())
-        .setTitle(R.string.dialog_delete_image_title)
+        .setTitle(R.string.dialog_delete_dataobject_title)
         .setMessage(R.string.dialog_delete_image_message)
         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            // do nothing
+            if (dataSet.isTextClassificationDataSet()) {
+              objectSelection.setSelectEnabled(true);
+            }
           }
         })
         .setPositiveButton(R.string.button_positive, new DialogInterface.OnClickListener() {
@@ -186,15 +219,23 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
                 ignored++;
               }
             }
-            String msg;
-            if (ignored != 0) {
-              msg = "删除了" + deleted + "张图片, 忽略了" + ignored + "张图片（来自相册）";
-            } else {
-              msg = "删除了" + deleted + "张图片";
+            String msg = "";
+            if (dataSet.isImageDataSet()) {
+              if (ignored != 0) {
+                msg = "删除了" + deleted + "张图片, 忽略了" + ignored + "张图片（来自相册）";
+              } else {
+                msg = "删除了" + deleted + "张图片";
+              }
+            } else if (dataSet.isTextClassificationDataSet()){
+              msg = "删除了" + deleted + "个文本";
+            }
+
+            if (dataSet.isTextClassificationDataSet()) {
+              objectSelection.setSelectEnabled(false);
             }
             Snackbar.make(tabLayout.getRootView(), msg, Snackbar.LENGTH_LONG).show();
             refreshView();
-            redrawMainMenu();
+            drawMainMenu();
             isEditingDataSet = false;
           }
         })
@@ -269,11 +310,16 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     return file;
   }
 
-  private void redrawMainMenu() {
+  private void drawMainMenu() {
     menu.clear();
-    getMenuInflater().inflate(R.menu.menu_labeling, menu);
+    if (dataSet.isImageDataSet()) {
+      getMenuInflater().inflate(R.menu.menu_image_labeling, menu);
+    } else if (dataSet.isTextClassificationDataSet()) {
+      getMenuInflater().inflate(R.menu.menu_text_labeling, menu);
+    }
   }
 
+  @TargetApi(Build.VERSION_CODES.KITKAT)
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
@@ -292,6 +338,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     } else if (requestCode == REQUEST_CODE_PREVIEW) {
       refreshView();
     } else if (requestCode == REQUEST_CODE_ALBUM) {
+      // returned from image chooser, add the image to the dataset and refresh UI
       List<String> pathList = Matisse.obtainPathResult(data);
       for (String path : pathList) {
         DataObject dataObject = new DataObject(dataSet.getName(), path, false);
@@ -300,7 +347,44 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
         dataSet.saveThrows();
       }
       refreshView();
+    } else if (requestCode == REQUEST_CODE_CHOOSE_FILE) {
+      // returned from file chooser, add the text to the dataset and refresh UI
+      String filePath = null;
+      Uri uri = data.getData();
+      if (DocumentsContract.isDocumentUri(this, uri)) {
+        String docId = DocumentsContract.getDocumentId(uri);
+        if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
+          String id = docId.split(":")[1];
+          String selection = MediaStore.Images.Media._ID + "=" + id;
+          filePath = getFilePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+        } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
+          Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
+          filePath = getFilePath(contentUri, null);
+        }
+      } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+        filePath = getFilePath(uri, null);
+      } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+        filePath = uri.getPath();
+      }
+      try {
+        dataSet.addSource(new File(filePath));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      refreshView();
     }
+  }
+
+  private String getFilePath(Uri uri, String selection) {
+    String path = null;
+    Cursor c = getContentResolver().query(uri, null, selection, null, null);
+    if (c != null) {
+      if (c.moveToFirst()) {
+        path = c.getString(c.getColumnIndex(MediaStore.Images.Media.DATA));
+      }
+      c.close();
+    }
+    return path;
   }
 
   private void refreshView() {
@@ -311,7 +395,9 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   // dataObject clicked
   @Override
   public void onDataObjectClicked(DataObject dataObject) {
+    if (dataSet.isImageDataSet()) {
       ImagePreviewActivity.start(this, dataSet, dataObject, REQUEST_CODE_PREVIEW);
+    }
   }
 
   @Override

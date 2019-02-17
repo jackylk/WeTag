@@ -4,7 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectSelection {
+
+  private boolean selectEnabled = true;
+
   private List<DataObject> selectedDataObject = new ArrayList<>();
+
+  public boolean isSelectEnabled() {
+    return selectEnabled;
+  }
+
+  public void setSelectEnabled(boolean selectEnabled) {
+    this.selectEnabled = selectEnabled;
+  }
 
   public void add(DataObject dataObject) {
     selectedDataObject.add(dataObject);

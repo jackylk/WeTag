@@ -2,6 +2,7 @@ package org.cloud.wetag.ui.adapter;
 
 import android.content.Context;
 import android.support.design.chip.Chip;
+import android.view.View;
 import android.widget.TextView;
 
 import org.cloud.wetag.model.DataObject;
@@ -29,6 +30,16 @@ public class TextCardAdapter extends DataObjectCardAdapter {
       }
     }
     ((TextView) holder.dataObjectView).setText(dataObject.getSource());
+    if (objectSelection.isSelectEnabled()) {
+      holder.checkView.setVisibility(View.VISIBLE);
+      if (objectSelection.get().contains(dataObject)) {
+        holder.checkView.setChecked(true);
+      } else {
+        holder.checkView.setChecked(false);
+      }
+    } else {
+      holder.checkView.setVisibility(View.GONE);
+    }
   }
 
 }
