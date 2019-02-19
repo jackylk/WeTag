@@ -2,12 +2,18 @@ package org.cloud.wetag.utils;
 
 import android.app.Activity;
 import android.os.Environment;
+import android.util.JsonWriter;
 import android.util.Log;
+
+import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.model.DataSet;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 
 public class FileUtils {
 
@@ -48,5 +54,49 @@ public class FileUtils {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public static String getExportLableFilePath(String baseDir, DataSet dataSet) {
+    File storeDir = new File(baseDir, dataSet.getName());
+    if (!storeDir.exists()) {
+      storeDir.mkdir();
+    }
+    storeDir = new File(storeDir, "output");
+    if (!storeDir.exists()) {
+      storeDir.mkdir();
+    }
+    File file = new File(storeDir, "manifest.json");
+    return file.getPath();
+  }
+
+  /**
+   * write label to file
+   * @param exportFilePath file path to write
+   * @throws IOException if IO errors
+   */
+  public static void exportLabel(String exportFilePath, DataSet dataSet) throws IOException {
+    File file = new File(exportFilePath);
+    if (file.exists()) {
+      file.delete();
+    }
+    file.createNewFile();
+    Writer out = new FileWriter(file);
+    JsonWriter writer = new JsonWriter(out);
+    writer.beginArray();
+    for (int i = 0; i < dataSet.getObjectCount(); i++) {
+      DataObject dataObject = dataSet.getDataObject(i);
+      if (dataObject.getLabels().size() > 0) {
+        writer.beginObject();
+        writer.name("file");
+        writer.value(dataObject.getSource());
+        writer.name("label");
+        writer.value(dataObject.getLabels().toString());
+        writer.endObject();
+      }
+    }
+    writer.endArray();
+    writer.flush();
+    writer.close();
+    out.close();
   }
 }

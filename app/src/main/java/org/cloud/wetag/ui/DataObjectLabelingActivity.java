@@ -1,11 +1,14 @@
 package org.cloud.wetag.ui;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -20,12 +23,14 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.util.JsonWriter;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.filter.Filter;
@@ -40,6 +45,7 @@ import org.cloud.wetag.ui.adapter.DataObjectCardAdapter;
 import org.cloud.wetag.ui.adapter.LabelFragmentPagerAdapter;
 import org.cloud.wetag.ui.widget.LabelBar;
 import org.cloud.wetag.utils.CaptureStrategy;
+import org.cloud.wetag.utils.FileUtils;
 import org.cloud.wetag.utils.GifSizeFilter;
 import org.cloud.wetag.utils.Glide4Engine;
 import org.cloud.wetag.utils.MediaStoreCompat;
@@ -52,6 +58,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 public class DataObjectLabelingActivity extends BaseActivity implements View.OnClickListener,
     DataObjectCardAdapter.OnDataObjectCheckChangedListener, TabLayout.OnTabSelectedListener {
@@ -141,21 +150,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
         startMatisseActivity();
         break;
       case R.id.item_export:
-        try {
-          final File file = exportLabel();
-          Snackbar bar = Snackbar.make(tabLayout.getRootView(),
-               "标签文件导出成功: " + file.getName(), Snackbar.LENGTH_LONG);
-          bar.setAction("打开", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              startViewFileActivity(file);
-            }
-          }).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Snackbar.make(item.getActionView(),
-                "标签文件导出失败, 原因：" + e.getMessage(), Snackbar.LENGTH_LONG).show();
-        }
+        showExportLabelDialog();
         break;
       case R.id.item_edit:
         menu.clear();
@@ -194,14 +189,49 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     startActivityForResult(intent, REQUEST_CODE_CHOOSE_FILE);
   }
 
+  private void showExportLabelDialog() {
+    final String filePath = FileUtils.getExportLableFilePath(getExternalFilesDir(null).getPath(), dataSet);
+    String message = getResources().getString(R.string.dialog_export_label_message) + filePath;
+    new AlertDialog.Builder(tabLayout.getContext())
+        .setTitle(R.string.dialog_export_label_title)
+        .setMessage(message)
+        .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            // do nothing
+          }
+        })
+        .setPositiveButton(R.string.dialog_button_positive, new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            try {
+              FileUtils.exportLabel(filePath, dataSet);
+              Snackbar bar = Snackbar.make(tabLayout.getRootView(),
+                  "导出成功", Snackbar.LENGTH_LONG);
+              bar.setAction("打开", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                  startViewFileActivity(filePath);
+                }
+              }).show();
+            } catch (IOException e) {
+              e.printStackTrace();
+              Snackbar.make(findViewById(R.id.recycler_view),
+                  "导出失败, 原因：" + e.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+          }
+        })
+        .show();
+  }
+
   /**
-   * @return true if confirmed, otherwise canceled
+   * show dialog and delete data object
    */
   private void showDeleteDataObjectConfirmDialog() {
     new AlertDialog.Builder(tabLayout.getContext())
         .setTitle(R.string.dialog_delete_dataobject_title)
         .setMessage(R.string.dialog_delete_image_message)
-        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+        .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             if (dataSet.isTextClassificationDataSet()) {
@@ -250,19 +280,42 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   }
 
   private void startMatisseActivity() {
-    Matisse.from(this)
-        .choose(new HashSet<MimeType>(){{add(MimeType.JPEG);}})
-        .countable(true)
-        .maxSelectable(100)
-        .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
-        .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
-        .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-        .thumbnailScale(0.85f)
-        .imageEngine(new Glide4Engine())    // for glide-V4
-        .forResult(REQUEST_CODE_ALBUM);
+    RxPermissions rxPermissions = new RxPermissions(this);
+    rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+        .subscribe(new Observer<Boolean>() {
+          @Override
+          public void onSubscribe(Disposable d) {
+
+          }
+
+          @Override
+          public void onNext(Boolean aBoolean) {
+            Matisse.from(DataObjectLabelingActivity.this)
+                .choose(new HashSet<MimeType>(){{add(MimeType.JPEG);}})
+                .countable(true)
+                .maxSelectable(100)
+                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
+                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                .thumbnailScale(0.85f)
+                .imageEngine(new Glide4Engine())    // for glide-V4
+                .forResult(REQUEST_CODE_ALBUM);
+          }
+
+          @Override
+          public void onError(Throwable e) {
+            Log.e(DataObjectLabelingActivity.this.getClass().getName(), e.toString());
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
   }
 
-  private void startViewFileActivity(File file) {
+  private void startViewFileActivity(String filePath) {
+    File file = new File(filePath);
     Uri uri = null;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       uri = FileProvider.getUriForFile(
@@ -275,46 +328,6 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     intent.setDataAndType(uri, "text/plain");
     startActivity(intent);
-  }
-
-  /**
-   * write label to file
-   * @return the output file
-   * @throws IOException if IO errors
-   */
-  private File exportLabel() throws IOException {
-    File storeDir = new File(getExternalFilesDir(null), dataSet.getName());
-    if (!storeDir.exists()) {
-      storeDir.mkdir();
-    }
-    storeDir = new File(storeDir, "output");
-    if (!storeDir.exists()) {
-      storeDir.mkdir();
-    }
-    File file = new File(storeDir, "manifest.json");
-    if (file.exists()) {
-      file.delete();
-    }
-    file.createNewFile();
-    Writer out = new FileWriter(file);
-    JsonWriter writer = new JsonWriter(out);
-    writer.beginArray();
-    for (int i = 0; i < dataSet.getObjectCount(); i++) {
-      DataObject dataObject = dataSet.getDataObject(i);
-      if (dataObject.getLabels().size() > 0) {
-        writer.beginObject();
-        writer.name("file");
-        writer.value(dataObject.getSource());
-        writer.name("label");
-        writer.value(dataObject.getLabels().toString());
-        writer.endObject();
-      }
-    }
-    writer.endArray();
-    writer.flush();
-    writer.close();
-    out.close();
-    return file;
   }
 
   private void drawMainMenu() {
