@@ -43,7 +43,7 @@ public class DataSet extends DataSupport {
   public static final int TEXT_CLASSIFICATION = 1;
 
   @TargetApi(Build.VERSION_CODES.KITKAT)
-  private DataSet(String name, int type) {
+  public DataSet(String name, int type) {
     Objects.requireNonNull(name);
     this.name = name;
     this.type = type;

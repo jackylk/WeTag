@@ -1,17 +1,18 @@
 <resources>
-    <string name="app_name">WeTag</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">爱标注</string>
     <string name="dataset_name">名称:</string>
     <string name="dataset_desc">描述:</string>
     <string name="dataset_labels">标签:</string>
     <string name="dataset_create">创建</string>
+    <string name="dialog_create_dataset_title">选择数据集类型</string>
     <string name="title_activity_label">LabelActivity</string>
     <string name="dialog_delete_dataset_title">删除数据集</string>
     <string name="dialog_delete_dataset_message">将会彻底删除该数据集下的所有数据文件和标注信息</string>
     <string name="dialog_delete_dataobject_title">删除数据</string>
     <string name="dialog_delete_image_message">将会彻底删除所选数据和标注</string>
-    <string name="button_positive">删除</string>
-    <string name="button_negative">取消</string>
+    <string name="dialog_delete_dataobject_button_positive">删除</string>
+    <string name="dialog_button_negative">取消</string>
+    <string name="dialog_button_positive">确认</string>
     <string name="button_label_confirm">确认</string>
     <string name="item_edit">编辑数据集</string>
     <string name="item_export">导出标签</string>

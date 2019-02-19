@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="dataset_type_array">
+        <item>图片分类</item>
+        <item>文本分类</item>
+    </array>
+</resources>

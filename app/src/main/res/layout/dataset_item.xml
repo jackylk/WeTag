@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
+    android:foreground="?attr/selectableItemBackground"
     android:elevation="4dp"
     app:cardElevation="@dimen/sp_16"
     app:cardCornerRadius="4dp">
@@ -26,21 +27,21 @@
                 android:textAppearance="?android:textAppearanceLarge"
                 android:textColor="@color/card_item_text_primary"/>
             <ImageButton
-                android:id="@+id/dataset_delete"
+                android:id="@+id/dataset_menu_dot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:background="@android:drawable/ic_menu_delete"/>
+                android:background="@drawable/ic_more_options"/>
         </RelativeLayout>
 
         <TextView
-            android:id="@+id/dataset_desc"
+            android:id="@+id/dataset_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_8"
             android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/card_item_text_secondary"/>
+            android:textColor="@color/card_item_text_secondary" />
 
         <ImageView
             android:id="@+id/dataset_image"
@@ -50,16 +51,15 @@
             android:scaleType="centerCrop" />
 
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/label_text"
-                android:layout_width="wrap_content"
+                android:id="@+id/dataset_desc"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dp_4"
-                android:layout_gravity="center_vertical"
-                android:text="@string/dataset_labels"
+                android:layout_marginLeft="@dimen/dp_8"
                 android:textAppearance="?android:textAppearanceMedium"
                 android:textColor="@color/card_item_text_secondary"/>
 

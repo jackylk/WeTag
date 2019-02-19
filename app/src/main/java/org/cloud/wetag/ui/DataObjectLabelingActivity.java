@@ -2,6 +2,7 @@ package org.cloud.wetag.ui;
 
 import android.annotation.TargetApi;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -69,6 +70,12 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   public static final int REQUEST_CODE_PREVIEW = 2;
   public static final int REQUEST_CODE_ALBUM = 3;
   public static final int REQUEST_CODE_CHOOSE_FILE = 4;
+
+  public static void start(Context context, DataSet dataSet) {
+    Intent intent = new Intent(context, DataObjectLabelingActivity.class);
+    intent.putExtra("dataset_name", dataSet.getName());
+    context.startActivity(intent);
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -202,7 +209,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
             }
           }
         })
-        .setPositiveButton(R.string.button_positive, new DialogInterface.OnClickListener() {
+        .setPositiveButton(R.string.dialog_delete_dataobject_button_positive, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             // delete all selected images, delete it only if it is captured in this app.

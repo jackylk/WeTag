@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import org.cloud.wetag.R;
+import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 
 public class CreateDataSetActivity extends BaseActivity implements View.OnClickListener {
@@ -15,12 +16,14 @@ public class CreateDataSetActivity extends BaseActivity implements View.OnClickL
   private EditText name;
   private EditText desc;
   private EditText labels;
+  private int datasetType;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_create_data_set);
 
+    datasetType = getIntent().getIntExtra("dataset_type", 0);
     name = findViewById(R.id.dataset_name_input);
     name.setHint("请输入数据集名字");
     desc = findViewById(R.id.dataset_desc_input);
@@ -56,7 +59,13 @@ public class CreateDataSetActivity extends BaseActivity implements View.OnClickL
       return;
     }
     Intent intent = new Intent();
+    intent.putExtra("dataset_type", datasetType);
     intent.putExtra("dataset_name", name.getText().toString());
+    if (desc.getText() != null) {
+      intent.putExtra("dataset_desc", desc.getText().toString());
+    } else {
+      intent.putExtra("dataset_desc", "无描述");
+    }
     intent.putExtra("dataset_labels", labels.getText().toString());
     setResult(RESULT_OK, intent);
     finish();
