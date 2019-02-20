@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_alignLeft="@+id/label_text"
-                android:layout_margin="@dimen/dp_4"
+                android:layout_margin="@dimen/dp_8"
                 app:chipSpacing="@dimen/sp_16" />
 
         </LinearLayout>

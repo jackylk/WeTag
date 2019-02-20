@@ -2,12 +2,16 @@ package org.cloud.wetag.ui.adapter;
 
 import android.content.Context;
 import android.support.design.chip.Chip;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
 
+import org.cloud.wetag.MyApplication;
+import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.ObjectSelection;
+import org.cloud.wetag.utils.ColorUtils;
 
 import java.util.List;
 
@@ -28,6 +32,9 @@ public class TextCardAdapter extends DataObjectCardAdapter {
       } else {
         chip.setChecked(false);
       }
+      chip.setChipBackgroundColorResource(
+          ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), chip.getText().toString()));
+      chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
     }
     ((TextView) holder.dataObjectView).setText(dataObject.getSource());
     if (objectSelection.isSelectEnabled()) {

@@ -33,7 +33,7 @@ public class CreateDataSetActivity extends BaseActivity implements View.OnClickL
 
     Button button = findViewById(R.id.create_dataset_button);
     button.setOnClickListener(this);
-    setTitle("创建数据集");
+    setTitle("新建数据集");
   }
 
   private boolean isValidInput(View v) {

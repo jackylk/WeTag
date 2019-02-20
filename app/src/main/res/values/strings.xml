@@ -4,7 +4,7 @@
     <string name="dataset_desc">描述:</string>
     <string name="dataset_labels">标签:</string>
     <string name="dataset_create">创建</string>
-    <string name="dialog_create_dataset_title">选择数据集类型</string>
+    <string name="dialog_create_dataset_title">新建数据集</string>
     <string name="title_activity_label">LabelActivity</string>
     <string name="dialog_delete_dataset_title">删除数据集</string>
     <string name="dialog_delete_dataset_message">将会彻底删除该数据集下的所有数据文件和标注信息</string>
