@@ -171,8 +171,6 @@ public abstract class DataObjectCardAdapter extends
         chip.setCheckable(true);
         chip.setTextAppearance(R.style.TextAppearance_MaterialComponents_Body1);
         chip.setTextColor(ContextCompat.getColor(context, R.color.white));
-        chip.setChipBackgroundColorResource(
-            ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), labelDef));
         chip.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {

@@ -4,6 +4,7 @@ import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.Button;
 
 import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
@@ -39,17 +40,26 @@ public class LabelBar {
       chip.setClickable(true);
       chip.setCheckable(true);
       chip.setTextAppearance(R.style.TextAppearance_AppCompat_Large);
-      chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
-      chip.setChipBackgroundColorResource(
-          ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), label));
       chipGroup.addView(chip);
       chipMap.put(label, chip);
     }
   }
 
   public void setEnableLabelBar(boolean enabled) {
-    parentView.findViewById(R.id.label_confirm).setEnabled(enabled);
+    int textColor = enabled ? ContextCompat.getColor(MyApplication.getContext(), R.color.white) :
+        ContextCompat.getColor(MyApplication.getContext(), R.color.gray);
+    Button confirmButton = parentView.findViewById(R.id.label_confirm);
+    confirmButton.setEnabled(enabled);
+    confirmButton.setTextColor(textColor);
     for (Chip chip : chipMap.values()) {
+      if (enabled) {
+        chip.setChipBackgroundColorResource(
+            ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), chip.getText().toString()));
+        chip.setTextColor(textColor);
+      } else {
+        chip.setChipBackgroundColorResource(R.color.dracula_primary_dark);
+        chip.setTextColor(textColor);
+      }
       chip.setEnabled(enabled);
     }
   }

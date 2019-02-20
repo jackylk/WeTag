@@ -77,8 +77,8 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
     if (adapter != null) {
       count = fragments.get(position).getAdapter().getItemCount();
     } else {
-      if (position > 2) {
-        count = countImages(position, dataSet.getLabels().get(position - 3));
+      if (position > ALL_LABELED) {
+        count = countImages(position, dataSet.getLabels().get(position - SINGLE_LABELED));
       } else {
         count = countImages(position, null);
       }
@@ -88,7 +88,7 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
     } else if (position == ALL_LABELED) {
       return "已标注(" + count + ")";
     } else {
-      return dataSet.getLabels().get(position - 2) + "(" + count + ")";
+      return dataSet.getLabels().get(position - SINGLE_LABELED) + "(" + count + ")";
     }
   }
 

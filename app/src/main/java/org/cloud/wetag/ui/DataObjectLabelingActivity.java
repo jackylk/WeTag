@@ -132,6 +132,15 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   }
 
   @Override
+  public void onBackPressed() {
+    if (isEditingDataSet) {
+      cancelEdit();
+    } else {
+      super.onBackPressed();
+    }
+  }
+
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     this.menu = menu;
     drawMainMenu();
@@ -167,13 +176,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
         showDeleteDataObjectConfirmDialog();
         break;
       case R.id.item_cancel:
-        drawMainMenu();
-        isEditingDataSet = false;
-        if (dataSet.isTextClassificationDataSet()) {
-          // make the check box invisible in UI
-          objectSelection.setSelectEnabled(false);
-          adapter.refreshAllFragments();
-        }
+        cancelEdit();
         break;
       case R.id.item_add_text:
         startFileChooseActivity();
@@ -181,6 +184,16 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
       default:
     }
     return super.onOptionsItemSelected(item);
+  }
+
+  private void cancelEdit() {
+    drawMainMenu();
+    isEditingDataSet = false;
+    if (dataSet.isTextClassificationDataSet()) {
+      // make the check box invisible in UI
+      objectSelection.setSelectEnabled(false);
+      adapter.refreshAllFragments();
+    }
   }
 
   private void startFileChooseActivity() {

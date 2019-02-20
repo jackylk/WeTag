@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@color/dracula_bottom_toolbar_bg">
+    android:background="@color/dracula_page_bg">
 
     <android.support.design.chip.ChipGroup
         android:id="@+id/label_chipgroup"
