@@ -53,6 +53,13 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
   @Override
   public void onBindViewHolder(@NonNull final DataSetViewHolder viewHolder, final int position) {
     final DataSet dataSet = DataSetCollection.getDataSetList().get(position);
+    viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        DataObjectLabelingActivity.start(viewHolder.itemView.getContext(),
+            DataSetCollection.getDataSetList().get(position));
+      }
+    });
     viewHolder.dataSetName.setText(dataSet.getName());
     viewHolder.dataSetType.setText(dataSetType[dataSet.getType()]);
     if (dataSet.getDesc() != null) {
@@ -120,6 +127,8 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
 
   private void updateDataSet(final int position, View view) {
     final DataSet dataSet = DataSetCollection.getDataSetList().get(position);
+
+    
   }
 
   private void deletDataSet(final int position, View view) {
@@ -165,13 +174,6 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       moreButton = itemView.findViewById(R.id.dataset_menu_dot);
       dataSetLabels = itemView.findViewById(R.id.dataset_chipgroup);
       labelText = itemView.findViewById(R.id.label_text);
-      itemView.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          DataObjectLabelingActivity.start(itemView.getContext(),
-              DataSetCollection.getDataSetList().get(getAdapterPosition()));
-        }
-      });
     }
   }
 }

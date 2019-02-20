@@ -21,7 +21,6 @@ import org.cloud.wetag.utils.ColorUtils;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.cloud.wetag.ui.PageFragment.ALL;
 import static org.cloud.wetag.ui.PageFragment.ALL_LABELED;
 import static org.cloud.wetag.ui.PageFragment.ALL_UNLABELED;
 
@@ -49,9 +48,7 @@ public abstract class DataObjectCardAdapter extends
   }
 
   public void refreshAllCards() {
-    if (type == ALL) {
-      dataObjects = dataSet.getDataObjects();
-    } else if (type == ALL_UNLABELED) {
+    if (type == ALL_UNLABELED) {
       dataObjects = new LinkedList<>();
       for (DataObject dataObject : dataSet.getDataObjects()) {
         if (dataObject.getLabels().size() == 0) {

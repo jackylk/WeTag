@@ -13,7 +13,6 @@ import org.cloud.wetag.ui.PageFragment;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.cloud.wetag.ui.PageFragment.ALL;
 import static org.cloud.wetag.ui.PageFragment.ALL_LABELED;
 import static org.cloud.wetag.ui.PageFragment.ALL_UNLABELED;
 import static org.cloud.wetag.ui.PageFragment.SINGLE_LABELED;
@@ -31,7 +30,6 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
 
     // tabs are: All, All unlabled, All labeled, every single label
     this.fragments = new LinkedList<>();
-    this.fragments.add(PageFragment.newInstance(dataSet, ALL, null));
     this.fragments.add(PageFragment.newInstance(dataSet, ALL_UNLABELED, null));
     this.fragments.add(PageFragment.newInstance(dataSet, ALL_LABELED, null));
     for (String label : dataSet.getLabels()) {
@@ -85,22 +83,18 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
         count = countImages(position, null);
       }
     }
-    if (position == ALL) {
-      return "所有(" + count + ")";
-    } else if (position == ALL_UNLABELED) {
+    if (position == ALL_UNLABELED) {
       return "未标注(" + count + ")";
     } else if (position == ALL_LABELED) {
       return "已标注(" + count + ")";
     } else {
-      return dataSet.getLabels().get(position - 3) + "(" + count + ")";
+      return dataSet.getLabels().get(position - 2) + "(" + count + ")";
     }
   }
 
   private int countImages(int position, String filterLabel) {
     int count = 0;
-    if (position == ALL) {
-      count = dataSet.getDataObjects().size();
-    } else if (position == ALL_UNLABELED) {
+    if (position == ALL_UNLABELED) {
       for (DataObject dataObject : dataSet.getDataObjects()) {
         if (dataObject.getLabels().size() == 0) {
           count++;

@@ -21,10 +21,9 @@ import org.cloud.wetag.ui.adapter.TextCardAdapter;
 
 public class PageFragment extends Fragment {
 
-  public final static int ALL = 0;
-  public final static int ALL_UNLABELED = 1;
-  public final static int ALL_LABELED = 2;
-  public final static int SINGLE_LABELED = 3;
+  public final static int ALL_UNLABELED = 0;
+  public final static int ALL_LABELED = 1;
+  public final static int SINGLE_LABELED = 2;
 
   private DataObjectCardAdapter adapter;
   private ObjectSelection objectSelection;
@@ -62,9 +61,7 @@ public class PageFragment extends Fragment {
   }
 
   private DataObjectCardAdapter createImageCardAdapter(int pageType, String labelName, DataSet dataSet) {
-    if (pageType == ALL) {
-      return new ImageCardAdapter(dataSet, objectSelection, ALL, null);
-    } else if (pageType == ALL_UNLABELED) {
+    if (pageType == ALL_UNLABELED) {
       return new ImageCardAdapter(dataSet, objectSelection, ALL_UNLABELED, null);
     } else if (pageType == ALL_LABELED) {
       return new ImageCardAdapter(dataSet, objectSelection, ALL_LABELED, null);
@@ -74,9 +71,7 @@ public class PageFragment extends Fragment {
   }
 
   private DataObjectCardAdapter createTextCardAdapter(int pageType, String labelName, DataSet dataSet) {
-    if (pageType == ALL) {
-      return new TextCardAdapter(dataSet, objectSelection, ALL, null);
-    } else if (pageType == ALL_UNLABELED) {
+    if (pageType == ALL_UNLABELED) {
       return new TextCardAdapter(dataSet, objectSelection, ALL_UNLABELED, null);
     } else if (pageType == ALL_LABELED) {
       return new TextCardAdapter(dataSet, objectSelection, ALL_LABELED, null);

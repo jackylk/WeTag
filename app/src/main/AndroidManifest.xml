@@ -39,6 +39,7 @@
         </provider>
 
         <activity android:name=".ui.ImagePreviewActivity" />
+        <activity android:name=".ui.ModifyDataSetActivity"></activity>
     </application>
 
 </manifest>

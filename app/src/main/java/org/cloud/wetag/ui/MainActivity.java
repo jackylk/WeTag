@@ -127,8 +127,10 @@ public class MainActivity extends BaseActivity {
           String datasetDesc = data.getStringExtra("dataset_desc");
           String datasetLabels = data.getStringExtra("dataset_labels");
           String[] labelArray = datasetLabels.split(",");
+          if (labelArray.length < 2) {
+            labelArray = datasetLabels.split("，");
+          }
 
-          // TODO: add branch for text dataset
           DataSet dataSet = new DataSet(datasetName, datasetType);
           dataSet.setDesc(datasetDesc);
           dataSet.setLabels(Arrays.asList(labelArray));

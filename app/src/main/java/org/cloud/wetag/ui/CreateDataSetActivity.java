@@ -27,7 +27,7 @@ public class CreateDataSetActivity extends BaseActivity implements View.OnClickL
     name = findViewById(R.id.dataset_name_input);
     name.setHint("请输入数据集名字");
     desc = findViewById(R.id.dataset_desc_input);
-    desc.setHint("一句话描述数据集");
+    desc.setHint("可选项，一句话描述数据集");
     labels = findViewById(R.id.dataset_labels_input);
     labels.setHint("用于打标签的标签名，以逗号分隔");
 
@@ -47,8 +47,11 @@ public class CreateDataSetActivity extends BaseActivity implements View.OnClickL
     }
     String[] labelArray = labels.getText().toString().split(",");
     if (labelArray.length < 2) {
-      Toast.makeText(v.getContext(), "标签必须要有两个或以上，以英文逗号分隔", Toast.LENGTH_LONG).show();
-      return false;
+      labelArray = labels.getText().toString().split("，");
+      if (labelArray.length < 2) {
+        Toast.makeText(v.getContext(), "标签必须要有两个或以上，以逗号分隔", Toast.LENGTH_LONG).show();
+        return false;
+      }
     }
     return true;
   }
