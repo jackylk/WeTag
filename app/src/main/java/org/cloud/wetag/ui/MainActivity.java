@@ -181,20 +181,6 @@ public class MainActivity extends BaseActivity implements
     return super.onOptionsItemSelected(item);
   }
 
-//  private void startCreateDataSetActivity(List<Integer> selected) {
-//    Intent intent = new Intent(MainActivity.this, EditDataSetActivity.class);
-//    intent.putExtra("mode", EditDataSetActivity.CREATE_DATASET);
-//    int choice = selected.get(0);
-//    if (choice == 0) {
-//      intent.putExtra("dataset_type", DataSet.IMAGE);
-//    } else if (choice == 1) {
-//      intent.putExtra("dataset_type", DataSet.TEXT_CLASSIFICATION);
-//    } else {
-//      throw new UnsupportedOperationException();
-//    }
-//    startActivityForResult(intent, REQUEST_CODE_CREATE_DATASET);
-//  }
-
   @Override
   protected void onPostResume() {
     super.onPostResume();

@@ -40,7 +40,7 @@
 
         <activity android:name=".ui.ImagePreviewActivity" />
         <activity android:name=".ui.ModifyDataSetActivity" />
-        <activity android:name=".ui.ManageLabelActivity"></activity>
+        <activity android:name=".ui.EditLabelActivity"></activity>
     </application>
 
 </manifest>

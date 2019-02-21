@@ -12,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,8 +23,7 @@ import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.ui.DataObjectLabelingActivity;
-import org.cloud.wetag.ui.EditDataSetActivity;
-import org.cloud.wetag.ui.ManageLabelActivity;
+import org.cloud.wetag.ui.EditLabelActivity;
 
 import java.util.List;
 
@@ -66,34 +64,28 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
         showPopupMenu(position, v);
       }
     });
-
     viewHolder.startLabelingButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        DataObjectLabelingActivity.start(viewHolder.itemView.getContext(), dataSet);
+        if (dataSet.getLabels().isEmpty()) {
+          new AlertDialog.Builder(v.getContext())
+              .setTitle("还没有标签，请先添加标签")
+              .setPositiveButton("好的", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  EditLabelActivity.start(viewHolder.itemView.getContext(), dataSet);
+                }
+              })
+              .show();
+        } else {
+          DataObjectLabelingActivity.start(viewHolder.itemView.getContext(), dataSet);
+        }
       }
     });
     viewHolder.modifyDataSetButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        ManageLabelActivity.start(v.getContext(), dataSet);
-
-//        final EditText et = new EditText(v.getContext());
-//        new AlertDialog.Builder(v.getContext()).setTitle("搜索")
-//            .setIcon(android.R.drawable.ic_dialog_info)
-//            .setView(et)
-//            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-//              public void onClick(DialogInterface dialog, int which) {
-//                String input = et.getText().toString();
-//                if (input.equals("")) {
-//                  Toast.makeText(MyApplication.getContext(), "搜索内容不能为空！" + input, Toast.LENGTH_LONG).show();
-//                } else {
-//                  Toast.makeText(MyApplication.getContext(), input, Toast.LENGTH_LONG).show();
-//                }
-//              }
-//            })
-//            .setNegativeButton("取消", null)
-//            .show();
+        EditLabelActivity.start(v.getContext(), dataSet);
       }
     });
     List<DataObject> dataObjects = dataSet.getOrLoadObjects();
