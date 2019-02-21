@@ -208,12 +208,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     new AlertDialog.Builder(tabLayout.getContext())
         .setTitle(R.string.dialog_export_label_title)
         .setMessage(message)
-        .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            // do nothing
-          }
-        })
+        .setNegativeButton(R.string.dialog_button_negative, null)
         .setPositiveButton(R.string.dialog_button_positive, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {

@@ -59,8 +59,8 @@ public class MainActivity extends BaseActivity {
    * Add an example data set: cat and dog image classification
    */
   private void addExampleCatDogDataSet() {
-    DataSet sample = DataSet.newImageDataSet("猫狗图片分类");
-    sample.setDesc("样例数据集1：猫狗图片分类");
+    DataSet sample = DataSet.newImageDataSet("样例1");
+    sample.setDesc("Kaggle猫狗图片分类数据集");
     sample.setLabels(Arrays.asList("Cat", "Dog"));
     String destDir = createDataSetSourceFolder(sample.getName());
     FileUtils.copyAssetsDir2Phone(this, "ImageClassificationExample", destDir);
@@ -83,8 +83,8 @@ public class MainActivity extends BaseActivity {
    * Add an example data set: movie comment text classification
    */
   private void addExampleMovieCommentDataSet() {
-    DataSet sample = DataSet.newTextClassificationDataSet("《流浪地球》短评文本分类");
-    sample.setDesc("样例数据集2：电影评论文本分类");
+    DataSet sample = DataSet.newTextClassificationDataSet("样例2");
+    sample.setDesc("《流浪地球》电影评论文本分类数据集");
     sample.setLabels(Arrays.asList("正面", "负面", "中性"));
     String destDir = createDataSetSourceFolder(sample.getName());
     FileUtils.copyAssetsDir2Phone(this, "TextClassificationExample", destDir);
@@ -122,22 +122,10 @@ public class MainActivity extends BaseActivity {
     switch (requestCode) {
       case REQUEST_CODE_CREATE_DATASET:
         if (resultCode == RESULT_OK) {
-          int datasetType = data.getIntExtra("dataset_type", 0);
-          String datasetName = data.getStringExtra("dataset_name");
-          String datasetDesc = data.getStringExtra("dataset_desc");
-          String datasetLabels = data.getStringExtra("dataset_labels");
-          String[] labelArray = datasetLabels.split(",");
-          if (labelArray.length < 2) {
-            labelArray = datasetLabels.split("，");
-          }
-
-          DataSet dataSet = new DataSet(datasetName, datasetType);
-          dataSet.setDesc(datasetDesc);
-          dataSet.setLabels(Arrays.asList(labelArray));
-          DataSetCollection.addDataSet(dataSet);
           adapter.notifyItemInserted(DataSetCollection.getDataSetList().size() - 1);
           recyclerView.scrollToPosition(DataSetCollection.getDataSetList().size() - 1);
         }
+        break;
     }
   }
 
@@ -169,30 +157,31 @@ public class MainActivity extends BaseActivity {
             .setPositiveButton(R.string.dialog_button_positive, new DialogInterface.OnClickListener() {
               @Override
               public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(MainActivity.this, CreateDataSetActivity.class);
-                int choice = selected.get(0);
-                if (choice == 0) {
-                  intent.putExtra("dataset_type", DataSet.IMAGE);
-                } else if (choice == 1) {
-                  intent.putExtra("dataset_type", DataSet.TEXT_CLASSIFICATION);
-                } else {
-                  throw new UnsupportedOperationException();
-                }
-                startActivityForResult(intent, REQUEST_CODE_CREATE_DATASET);
+                EditDataSetActivity.startCreateDataSetActivity(
+                    MainActivity.this, REQUEST_CODE_CREATE_DATASET, selected.get(0));
               }
             })
-            .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int which) {
-
-              }
-            })
+            .setNegativeButton(R.string.dialog_button_negative, null)
             .show();
         break;
       default:
     }
     return super.onOptionsItemSelected(item);
   }
+
+//  private void startCreateDataSetActivity(List<Integer> selected) {
+//    Intent intent = new Intent(MainActivity.this, EditDataSetActivity.class);
+//    intent.putExtra("mode", EditDataSetActivity.CREATE_DATASET);
+//    int choice = selected.get(0);
+//    if (choice == 0) {
+//      intent.putExtra("dataset_type", DataSet.IMAGE);
+//    } else if (choice == 1) {
+//      intent.putExtra("dataset_type", DataSet.TEXT_CLASSIFICATION);
+//    } else {
+//      throw new UnsupportedOperationException();
+//    }
+//    startActivityForResult(intent, REQUEST_CODE_CREATE_DATASET);
+//  }
 
   @Override
   protected void onPostResume() {

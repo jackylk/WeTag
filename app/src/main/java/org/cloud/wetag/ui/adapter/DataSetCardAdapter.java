@@ -3,9 +3,6 @@ package org.cloud.wetag.ui.adapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
-import android.support.design.chip.Chip;
-import android.support.design.chip.ChipGroup;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
@@ -15,19 +12,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
 import org.cloud.wetag.MyApplication;
-import org.cloud.wetag.model.DataObject;
-import org.cloud.wetag.ui.DataObjectLabelingActivity;
 import org.cloud.wetag.R;
+import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
-import org.cloud.wetag.utils.ColorUtils;
+import org.cloud.wetag.ui.DataObjectLabelingActivity;
+import org.cloud.wetag.ui.EditDataSetActivity;
 
 import java.util.List;
 
@@ -53,13 +52,6 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
   @Override
   public void onBindViewHolder(@NonNull final DataSetViewHolder viewHolder, final int position) {
     final DataSet dataSet = DataSetCollection.getDataSetList().get(position);
-    viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        DataObjectLabelingActivity.start(viewHolder.itemView.getContext(),
-            DataSetCollection.getDataSetList().get(position));
-      }
-    });
     viewHolder.dataSetName.setText(dataSet.getName());
     viewHolder.dataSetType.setText(dataSetType[dataSet.getType()]);
     if (dataSet.getDesc() != null) {
@@ -68,10 +60,40 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       viewHolder.dataSetDesc.setText("无描述");
     }
 
-    viewHolder.moreButton.setOnClickListener(new View.OnClickListener() {
+//    viewHolder.moreButton.setOnClickListener(new View.OnClickListener() {
+//      @Override
+//      public void onClick(View v) {
+//        showPopupMenu(position, v);
+//      }
+//    });
+
+    viewHolder.startLabelingButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        showPopupMenu(position, v);
+        DataObjectLabelingActivity.start(viewHolder.itemView.getContext(), dataSet);
+      }
+    });
+    viewHolder.modifyDataSetButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        EditDataSetActivity.startUpdateDataSetActivity(v.getContext(), dataSet.getName());
+
+//        final EditText et = new EditText(v.getContext());
+//        new AlertDialog.Builder(v.getContext()).setTitle("搜索")
+//            .setIcon(android.R.drawable.ic_dialog_info)
+//            .setView(et)
+//            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//              public void onClick(DialogInterface dialog, int which) {
+//                String input = et.getText().toString();
+//                if (input.equals("")) {
+//                  Toast.makeText(MyApplication.getContext(), "搜索内容不能为空！" + input, Toast.LENGTH_LONG).show();
+//                } else {
+//                  Toast.makeText(MyApplication.getContext(), input, Toast.LENGTH_LONG).show();
+//                }
+//              }
+//            })
+//            .setNegativeButton("取消", null)
+//            .show();
       }
     });
     List<DataObject> dataObjects = dataSet.getOrLoadObjects();
@@ -81,20 +103,6 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     } else {
       // display first image in the dataset
       Glide.with(context).load(dataObjects.get(0).getUri()).into(viewHolder.dataSetImage);
-    }
-
-    viewHolder.dataSetLabels.removeAllViews();
-    for (String label : dataSet.getLabels()) {
-      Chip chip = new Chip(viewHolder.dataSetLabels.getContext());
-      chip.setText(label);
-      chip.setClickable(false);
-      chip.setCheckable(false);
-      chip.setEnabled(false);
-      chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
-      chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
-      chip.setChipBackgroundColorResource(
-          ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), label));
-      viewHolder.dataSetLabels.addView(chip);
     }
   }
 
@@ -116,7 +124,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
             updateDataSet(position, view);
             break;
           case R.id.dataset_delete:
-            deletDataSet(position, view);
+            deleteDataSet(position, view);
             break;
         }
         return false;
@@ -131,7 +139,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     
   }
 
-  private void deletDataSet(final int position, View view) {
+  private void deleteDataSet(final int position, View view) {
     final DataSet dataSet = DataSetCollection.getDataSetList().get(position);
     // show a dialog to alert user
     new AlertDialog.Builder(view.getContext())
@@ -145,12 +153,8 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
             notifyItemRemoved(position);
           }
         })
-        .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            // do nothing
-          }
-        }).show();
+        .setNegativeButton(R.string.dialog_button_negative, null)
+        .show();
   }
 
   static class DataSetViewHolder extends RecyclerView.ViewHolder {
@@ -159,10 +163,9 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     TextView dataSetName;
     TextView dataSetType;
     TextView dataSetDesc;
-    TextView labelText;
-    ImageButton moreButton;
+//    ImageButton moreButton;
     ImageView dataSetImage;
-    ChipGroup dataSetLabels;
+    Button startLabelingButton, modifyDataSetButton;
 
     public DataSetViewHolder(@NonNull final View itemView) {
       super(itemView);
@@ -171,9 +174,9 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       dataSetType = itemView.findViewById(R.id.dataset_type);
       dataSetDesc = itemView.findViewById(R.id.dataset_desc);
       dataSetImage = itemView.findViewById(R.id.dataset_image);
-      moreButton = itemView.findViewById(R.id.dataset_menu_dot);
-      dataSetLabels = itemView.findViewById(R.id.dataset_chipgroup);
-      labelText = itemView.findViewById(R.id.label_text);
+      startLabelingButton = itemView.findViewById(R.id.buttong_start_labeling);
+      modifyDataSetButton = itemView.findViewById(R.id.button_modify_label);
+//      moreButton = itemView.findViewById(R.id.dataset_menu_dot);
     }
   }
 }

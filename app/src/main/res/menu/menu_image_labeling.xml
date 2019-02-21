@@ -15,13 +15,13 @@
 
     <item
         android:id="@+id/item_edit"
-        android:title="@string/item_delete_image"
+        android:title="@string/menu_item_delete_image"
         android:icon="@android:drawable/ic_menu_edit"
         app:showAsAction="collapseActionView"/>
 
     <item
         android:id="@+id/item_export"
-        android:title="@string/item_export"
+        android:title="@string/menu_item_export"
         android:icon="@android:drawable/ic_menu_send"
         app:showAsAction="collapseActionView"/>
 

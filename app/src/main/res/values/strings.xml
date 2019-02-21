@@ -4,6 +4,8 @@
     <string name="dataset_desc">描述:</string>
     <string name="dataset_labels">标签:</string>
     <string name="dataset_create">创建</string>
+    <string name="button_start_labeling">打标签</string>
+    <string name="button_edit_label">修改</string>
     <string name="dialog_create_dataset_title">新建数据集</string>
     <string name="title_activity_label">LabelActivity</string>
     <string name="dialog_delete_dataset_title">删除数据集</string>
@@ -16,8 +18,10 @@
     <string name="dialog_export_label_title">导出标注文件</string>
     <string name="dialog_export_label_message">导出路径为</string>
     <string name="button_label_confirm">确认</string>
-    <string name="item_delete_image">删除图片</string>
-    <string name="item_export">导出标注文件</string>
+    <string name="menu_item_delete_image">删除图片</string>
+    <string name="menu_item_export">导出标注文件</string>
+    <string name="menu_item_create_dataset">新建</string>
+    <string name="menu_item_save">保存</string>
     <string name="main_activity_title">数据集管理</string>
     <string name="error_gif">长宽不小于 %1$dpx，且大小不超过 %2$sM。</string>
 </resources>

@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.CreateDataSetActivity" />
+        <activity android:name=".ui.EditDataSetActivity" />
         <activity android:name=".ui.BaseActivity" />
         <activity
             android:name=".ui.DataObjectLabelingActivity"

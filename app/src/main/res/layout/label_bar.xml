@@ -17,7 +17,7 @@
         android:layout_marginLeft="20dp"
         android:layout_weight="3" />
 
-    <Button
+    <android.support.design.button.MaterialButton
         android:id="@+id/label_confirm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -26,6 +26,6 @@
         android:text="@string/button_label_confirm"
         android:background="@color/dracula_primary_dark"
         android:textColor="@color/white"
-        android:textAppearance="?android:textAppearanceLarge" />
+        android:textAppearance="?android:textAppearanceMedium" />
 
 </LinearLayout>

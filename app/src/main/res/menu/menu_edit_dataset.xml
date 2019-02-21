@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.cloud.wetag.ui.MainActivity">
     <item
-        android:id="@+id/add_dataset"
-        android:title="@string/menu_item_create_dataset"
+        android:id="@+id/item_save"
+        android:title="@string/menu_item_save"
         app:showAsAction="always" />
 
 </menu>

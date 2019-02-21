@@ -15,35 +15,6 @@
         android:layout_height="wrap_content"
         android:background="@color/card_item_background" >
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            
-            <TextView
-                android:id="@+id/dataset_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dp_8"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:textColor="@color/card_item_text_primary"/>
-            <ImageButton
-                android:id="@+id/dataset_menu_dot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dp_8"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/ic_more_options"/>
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/dataset_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_8"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/card_item_text_secondary" />
-
         <ImageView
             android:id="@+id/dataset_image"
             android:layout_width="match_parent"
@@ -51,28 +22,64 @@
             android:layout_weight="1"
             android:scaleType="centerCrop" />
 
-        <LinearLayout
-            android:orientation="vertical"
+        <TextView
+            android:id="@+id/dataset_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_8"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/card_item_text_primary"/>
+
+        <TextView
+            android:id="@+id/dataset_type"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_8"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="@color/card_item_text_secondary" />
 
-            <TextView
-                android:id="@+id/dataset_desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dp_8"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:textColor="@color/card_item_text_secondary"/>
+        <TextView
+            android:id="@+id/dataset_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_8"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@color/card_item_text_secondary"/>
 
-            <android.support.design.chip.ChipGroup
-                android:id="@+id/dataset_chipgroup"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.button.MaterialButton
+                android:id="@+id/buttong_start_labeling"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_alignLeft="@+id/label_text"
                 android:layout_margin="@dimen/dp_8"
-                app:chipSpacing="@dimen/sp_16" />
+                android:backgroundTint="@android:color/holo_purple"
+                app:strokeColor="@android:color/transparent"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="@android:color/white"
+                android:text="@string/button_start_labeling"/>
 
-        </LinearLayout>
+            <android.support.design.button.MaterialButton
+                android:id="@+id/button_modify_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dp_8"
+                android:background="@android:color/transparent"
+                android:backgroundTint="@android:color/transparent"
+                android:text="@string/button_edit_label"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="@android:color/white"
+                app:strokeColor="@color/card_item_background" />
+
+            <android.support.design.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_margin="@dimen/dp_8"
+                app:icon="@drawable/ic_more_options"/>
+        </RelativeLayout>
+
     </LinearLayout>
 </android.support.v7.widget.CardView>
