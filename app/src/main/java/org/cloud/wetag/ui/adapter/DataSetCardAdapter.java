@@ -13,14 +13,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;
@@ -60,12 +58,12 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       viewHolder.dataSetDesc.setText("无描述");
     }
 
-//    viewHolder.moreButton.setOnClickListener(new View.OnClickListener() {
-//      @Override
-//      public void onClick(View v) {
-//        showPopupMenu(position, v);
-//      }
-//    });
+    viewHolder.moreButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        showPopupMenu(position, v);
+      }
+    });
 
     viewHolder.startLabelingButton.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -163,9 +161,10 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     TextView dataSetName;
     TextView dataSetType;
     TextView dataSetDesc;
-//    ImageButton moreButton;
+    ImageButton moreButton;
     ImageView dataSetImage;
-    Button startLabelingButton, modifyDataSetButton;
+    Button startLabelingButton;
+    TextView modifyDataSetButton;
 
     public DataSetViewHolder(@NonNull final View itemView) {
       super(itemView);
@@ -174,9 +173,9 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       dataSetType = itemView.findViewById(R.id.dataset_type);
       dataSetDesc = itemView.findViewById(R.id.dataset_desc);
       dataSetImage = itemView.findViewById(R.id.dataset_image);
-      startLabelingButton = itemView.findViewById(R.id.buttong_start_labeling);
+      startLabelingButton = itemView.findViewById(R.id.button_start_labeling);
       modifyDataSetButton = itemView.findViewById(R.id.button_modify_label);
-//      moreButton = itemView.findViewById(R.id.dataset_menu_dot);
+      moreButton = itemView.findViewById(R.id.dataset_menu_dot);
     }
   }
 }
