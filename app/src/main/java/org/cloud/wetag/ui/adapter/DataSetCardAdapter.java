@@ -25,6 +25,7 @@ import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.ui.DataObjectLabelingActivity;
 import org.cloud.wetag.ui.EditDataSetActivity;
+import org.cloud.wetag.ui.ManageLabelActivity;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
 
   private Context context;
   private String[] dataSetType;
+  private OnEditDataSetClickListener listener;
 
   public DataSetCardAdapter(String[] dataSetType) {
     this.dataSetType = dataSetType;
@@ -74,7 +76,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     viewHolder.modifyDataSetButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        EditDataSetActivity.startUpdateDataSetActivity(v.getContext(), dataSet.getName());
+        ManageLabelActivity.start(v.getContext(), dataSet);
 
 //        final EditText et = new EditText(v.getContext());
 //        new AlertDialog.Builder(v.getContext()).setTitle("搜索")
@@ -119,7 +121,9 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
           case R.id.dataset_modify:
-            updateDataSet(position, view);
+            if (listener != null) {
+              listener.onEditDataSetClicked(DataSetCollection.getDataSetList().get(position));
+            }
             break;
           case R.id.dataset_delete:
             deleteDataSet(position, view);
@@ -129,12 +133,6 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       }
     });
     popup.show();
-  }
-
-  private void updateDataSet(final int position, View view) {
-    final DataSet dataSet = DataSetCollection.getDataSetList().get(position);
-
-    
   }
 
   private void deleteDataSet(final int position, View view) {
@@ -155,6 +153,14 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
         .show();
   }
 
+  public void registerEditDataSetClickListener(OnEditDataSetClickListener listener) {
+    this.listener = listener;
+  }
+
+  public interface OnEditDataSetClickListener {
+    void onEditDataSetClicked(DataSet dataSet);
+  }
+
   static class DataSetViewHolder extends RecyclerView.ViewHolder {
 
     CardView cardView;
@@ -163,7 +169,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     TextView dataSetDesc;
     ImageButton moreButton;
     ImageView dataSetImage;
-    Button startLabelingButton;
+    TextView startLabelingButton;
     TextView modifyDataSetButton;
 
     public DataSetViewHolder(@NonNull final View itemView) {

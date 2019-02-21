@@ -39,7 +39,8 @@
         </provider>
 
         <activity android:name=".ui.ImagePreviewActivity" />
-        <activity android:name=".ui.ModifyDataSetActivity"></activity>
+        <activity android:name=".ui.ModifyDataSetActivity" />
+        <activity android:name=".ui.ManageLabelActivity"></activity>
     </application>
 
 </manifest>

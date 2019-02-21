@@ -21,4 +21,5 @@
 
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="grid_expected_size">120dp</dimen>
+    <dimen name="dataset_card_item_text_margin">16dp</dimen>
 </resources>

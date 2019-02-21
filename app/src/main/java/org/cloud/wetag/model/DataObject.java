@@ -25,20 +25,15 @@ public class DataObject extends DataSupport {
 
   private String source;
 
-  private String dataSetName;
-
   private List<String> labels = new LinkedList<>();
 
   /**
-   *
-   * @param dataSetName name of the dataset
-   * @param source for file related data (like image and audio), source is the
+   *  @param source for file related data (like image and audio), source is the
    *               file path of the object; for text related data, source is the
    *               text content itself
    * @param capturedInApp
    */
-  public DataObject(String dataSetName, String source, boolean capturedInApp) {
-    this.dataSetName = dataSetName;
+  public DataObject(String source, boolean capturedInApp) {
     this.source = source;
     this.capturedInApp = capturedInApp;
   }
@@ -83,10 +78,6 @@ public class DataObject extends DataSupport {
   public void setLabels(List<String> labels) {
     this.labels.clear();
     this.labels.addAll(labels);
-  }
-
-  public String getDataSetName() {
-    return dataSetName;
   }
 
   public void addLabel(String label) {

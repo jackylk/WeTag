@@ -24,13 +24,15 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements
+    DataSetCardAdapter.OnEditDataSetClickListener {
 
   private DataSetCardAdapter adapter;
 
   private RecyclerView recyclerView;
 
   private static final int REQUEST_CODE_CREATE_DATASET = 1;
+  private static final int REQUEST_CODE_UPDATE_DATASET = 2;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class MainActivity extends BaseActivity {
     recyclerView.setLayoutManager(layoutManager);
     String[] dataSetType = getResources().getStringArray(R.array.dataset_type_array);
     adapter = new DataSetCardAdapter(dataSetType);
+    adapter.registerEditDataSetClickListener(this);
     recyclerView.setAdapter(adapter);
 
     // when user launch this app for first time, add some example datasets
@@ -119,13 +122,22 @@ public class MainActivity extends BaseActivity {
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    if (requestCode != RESULT_OK) {
+      return;
+    }
     switch (requestCode) {
       case REQUEST_CODE_CREATE_DATASET:
-        if (resultCode == RESULT_OK) {
-          adapter.notifyItemInserted(DataSetCollection.getDataSetList().size() - 1);
-          recyclerView.scrollToPosition(DataSetCollection.getDataSetList().size() - 1);
+        adapter.notifyItemInserted(DataSetCollection.getDataSetList().size() - 1);
+        recyclerView.scrollToPosition(DataSetCollection.getDataSetList().size() - 1);
+        break;
+      case REQUEST_CODE_UPDATE_DATASET:
+        if (data.hasExtra("position")) {
+          int position = data.getIntExtra("position", 0);
+          adapter.notifyItemChanged(position);
         }
         break;
+      default:
+        throw new UnsupportedOperationException();
     }
   }
 
@@ -187,5 +199,11 @@ public class MainActivity extends BaseActivity {
   protected void onPostResume() {
     super.onPostResume();
     adapter.notifyDataSetChanged();
+  }
+
+  @Override
+  public void onEditDataSetClicked(DataSet dataSet) {
+    EditDataSetActivity.startUpdateDataSetActivity(
+        this, REQUEST_CODE_UPDATE_DATASET, dataSet.getName());
   }
 }

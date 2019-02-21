@@ -2,6 +2,7 @@ package org.cloud.wetag.model;
 
 import org.litepal.crud.DataSupport;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class DataSetCollection {
@@ -24,10 +25,13 @@ public class DataSetCollection {
   }
 
   public static void removeDataSet(final String dataSetName) {
-    for (DataSet dataSet : INSTANCE.dataSets) {
+    Iterator<DataSet> iterator = INSTANCE.dataSets.iterator();
+    while (iterator.hasNext()) {
+      DataSet dataSet = iterator.next();
       if (dataSet.getName().equals(dataSetName)) {
-        INSTANCE.dataSets.remove(dataSet);
+        iterator.remove();
         dataSet.delete();
+        break;
       }
     }
   }

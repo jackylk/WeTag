@@ -9,7 +9,6 @@ import org.litepal.crud.DataSupport;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -42,6 +41,9 @@ public class DataSet extends DataSupport {
   // dataset type for text classification labeling
   public static final int TEXT_CLASSIFICATION = 1;
 
+  public DataSet() {
+  }
+
   @TargetApi(Build.VERSION_CODES.KITKAT)
   public DataSet(String name, int type) {
     Objects.requireNonNull(name);
@@ -63,6 +65,10 @@ public class DataSet extends DataSupport {
 
   public boolean isTextClassificationDataSet() {
     return type == TEXT_CLASSIFICATION;
+  }
+
+  public int getId() {
+    return id;
   }
 
   public int getType() {
@@ -92,7 +98,9 @@ public class DataSet extends DataSupport {
 
   public List<DataObject> getOrLoadObjects() {
     if (this.dataObjects.size() == 0) {
-      List<DataObject> dataObjects = DataSupport.where("dataSetName = ?", name).find(DataObject.class);
+      List<DataObject> dataObjects = DataSupport
+          .where("dataset_id = ?", String.valueOf(id))
+          .find(DataObject.class);
       this.dataObjects = dataObjects;
       for (DataObject dataObject : dataObjects) {
         dataObject.getOrLoadLabels();
@@ -115,7 +123,7 @@ public class DataSet extends DataSupport {
 
   public void addSource(File file) throws IOException {
     if (isImageDataSet()) {
-      DataObject dataObject = new DataObject(getName(), file.getPath(), true);
+      DataObject dataObject = new DataObject(file.getPath(), true);
       dataObject.saveThrows();
       addObject(dataObject);
     } else if (isTextClassificationDataSet()) {
@@ -123,7 +131,7 @@ public class DataSet extends DataSupport {
       BufferedReader reader = new BufferedReader(new InputStreamReader(in));
       String line;
       while ((line = reader.readLine()) != null) {
-        DataObject dataObject = new DataObject(getName(), line, true);
+        DataObject dataObject = new DataObject(line, true);
         dataObject.saveThrows();
         addObject(dataObject);
       }

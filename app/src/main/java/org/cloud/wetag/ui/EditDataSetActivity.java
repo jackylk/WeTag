@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -15,16 +14,21 @@ import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
+import org.litepal.crud.DataSupport;
 
-import java.util.Arrays;
-import java.util.List;
-
-public class EditDataSetActivity extends BaseActivity implements View.OnClickListener {
+public class EditDataSetActivity extends BaseActivity {
 
   private EditText name;
   private EditText desc;
-  private EditText labels;
+
+  // only for create case
   private int datasetType;
+
+  // only for update case
+  private DataSet dataSet;
+  private int position;
+
+  // can be create or update
   private int mode;
 
   public static final int CREATE_DATASET = 0;
@@ -33,33 +37,28 @@ public class EditDataSetActivity extends BaseActivity implements View.OnClickLis
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_create_data_set);
+    setContentView(R.layout.activity_edit_data_set);
 
     Intent intent = getIntent();
     mode = intent.getIntExtra("mode", CREATE_DATASET);
 
     name = findViewById(R.id.dataset_name_input);
     desc = findViewById(R.id.dataset_desc_input);
-    labels = findViewById(R.id.dataset_labels_input);
 
     if (mode == CREATE_DATASET) {
       datasetType = intent.getIntExtra("dataset_type", 0);
       name.setHint("请输入数据集名字");
       desc.setHint("可选项，一句话描述数据集");
-      labels.setHint("用于打标签的标签名，以逗号分隔");
       setTitle("新建数据集");
-    } else {
+    } else if (mode == UPDATE_DATASET) {
       String dataSetName = intent.getStringExtra("dataset_name");
-      DataSet dataSet = DataSetCollection.getDataSet(dataSetName);
+      dataSet = DataSetCollection.getDataSet(dataSetName);
       name.setText(dataSet.getName());
       desc.setText(dataSet.getDesc());
-      List<String> labelList = dataSet.getLabels();
-      StringBuilder builder = new StringBuilder();
-      for (String label : labelList) {
-        builder.append(label).append(" ");
-      }
-      labels.setText(builder.toString());
+      position = DataSetCollection.getDataSetList().indexOf(dataSet);
       setTitle("修改数据集");
+    } else {
+      throw new UnsupportedOperationException();
     }
   }
 
@@ -77,11 +76,6 @@ public class EditDataSetActivity extends BaseActivity implements View.OnClickLis
     return super.onOptionsItemSelected(item);
   }
 
-  @Override
-  public void onClick(View v) {
-    saveResultAndReturnActivity(v.getContext());
-  }
-
   private void saveResultAndReturnActivity(Context context) {
     if (!isValidInput(context)) {
       return;
@@ -89,48 +83,42 @@ public class EditDataSetActivity extends BaseActivity implements View.OnClickLis
 
     String datasetName = name.getText().toString();
     String datasetDesc = desc.getText().toString();
-    String allLabelString = labels.getText().toString();
-    String[] labelArray = allLabelString.split(",");
-    if (labelArray.length < 2) {
-      labelArray = allLabelString.split("，");
-    }
-
-    DataSet dataSet = new DataSet(datasetName, datasetType);
     if (datasetDesc.isEmpty()) {
       datasetDesc = "无描述";
     }
-    dataSet.setDesc(datasetDesc);
-    dataSet.setLabels(Arrays.asList(labelArray));
-    DataSetCollection.addDataSet(dataSet);
 
     Intent intent = new Intent();
-    setResult(RESULT_OK, intent);
+    if (mode == CREATE_DATASET) {
+      DataSet dataSet = new DataSet(datasetName, datasetType);
+      dataSet.setDesc(datasetDesc);
+      DataSetCollection.addDataSet(dataSet);
+    } else if (mode == UPDATE_DATASET) {
+      int id = dataSet.getId();
+      dataSet.setName(datasetName);
+      dataSet.setDesc(datasetDesc);
+      dataSet.update(id);
+      intent.putExtra("position", position);
+    } else {
+      throw new UnsupportedOperationException();
+    }
 
+    setResult(RESULT_OK, intent);
     finish();
   }
 
   private boolean isValidInput(Context context) {
-    if (name.getText().toString().isEmpty() || labels.getText().toString().isEmpty()) {
+    if (name.getText().toString().isEmpty()) {
       Toast.makeText(context, "必须填写名称和标签", Toast.LENGTH_LONG).show();
       return false;
     }
-    if (DataSetCollection.getDataSet(name.getText().toString()) != null) {
+    if (mode == CREATE_DATASET && DataSetCollection.getDataSet(name.getText().toString()) != null) {
       Toast.makeText(context, "数据集名称已存在", Toast.LENGTH_LONG).show();
       return false;
-    }
-    String[] labelArray = labels.getText().toString().split(",");
-    if (labelArray.length < 2) {
-      labelArray = labels.getText().toString().split("，");
-      if (labelArray.length < 2) {
-        Toast.makeText(context, "标签必须要有两个或以上，以逗号分隔", Toast.LENGTH_LONG).show();
-        return false;
-      }
     }
     return true;
   }
 
-  public static void startCreateDataSetActivity(Activity parent, int requestCode,
-                                                int datasetType) {
+  public static void startCreateDataSetActivity(Activity parent, int requestCode, int datasetType) {
     Intent intent = new Intent(parent, EditDataSetActivity.class);
     intent.putExtra("mode", EditDataSetActivity.CREATE_DATASET);
     if (datasetType == DataSet.IMAGE) {
@@ -143,10 +131,11 @@ public class EditDataSetActivity extends BaseActivity implements View.OnClickLis
     parent.startActivityForResult(intent, requestCode);
   }
 
-  public static void startUpdateDataSetActivity(Context context, String datasetName) {
-    Intent intent = new Intent(context, EditDataSetActivity.class);
+  public static void startUpdateDataSetActivity(Activity parent, int requestCode,
+                                                String datasetName) {
+    Intent intent = new Intent(parent, EditDataSetActivity.class);
     intent.putExtra("mode", EditDataSetActivity.UPDATE_DATASET);
     intent.putExtra("dataset_name", datasetName);
-    context.startActivity(intent);
+    parent.startActivityForResult(intent, requestCode);
   }
 }

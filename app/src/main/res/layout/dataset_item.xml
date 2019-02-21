@@ -26,7 +26,8 @@
             android:id="@+id/dataset_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_8"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginLeft="@dimen/dataset_card_item_text_margin"
             android:textAppearance="?android:textAppearanceLarge"
             android:textColor="@color/card_item_text_primary"/>
 
@@ -34,15 +35,15 @@
             android:id="@+id/dataset_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_8"
-            android:textAppearance="?android:textAppearanceSmall"
+            android:layout_marginLeft="@dimen/dataset_card_item_text_margin"
+            android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/card_item_text_secondary" />
 
         <TextView
             android:id="@+id/dataset_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_8"
+            android:layout_margin="@dimen/dataset_card_item_text_margin"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/card_item_text_secondary"/>
 
@@ -53,14 +54,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <Button
+                <TextView
                     android:id="@+id/button_start_labeling"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/dp_8"
-                    android:backgroundTint="@android:color/holo_purple"
+                    android:layout_margin="@dimen/dataset_card_item_text_margin"
                     android:textAppearance="?android:textAppearanceMedium"
-                    android:textColor="@android:color/white"
+                    android:textColor="@android:color/holo_purple"
                     android:text="@string/button_start_labeling"/>
 
                 <TextView
@@ -68,10 +68,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignRight="@id/button_start_labeling"
-                    android:layout_margin="@dimen/dp_8"
-                    android:paddingLeft="@dimen/dp_16"
+                    android:layout_margin="@dimen/dataset_card_item_text_margin"
                     android:textAppearance="?android:textAppearanceMedium"
-                    android:textColor="@android:color/white"
+                    android:textColor="@android:color/holo_purple"
                     android:text="@string/button_edit_label"/>
 
             </LinearLayout>

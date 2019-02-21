@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -22,7 +20,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.util.JsonWriter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,9 +48,7 @@ import org.cloud.wetag.utils.Glide4Engine;
 import org.cloud.wetag.utils.MediaStoreCompat;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -357,7 +352,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     if (requestCode == REQUEST_CODE_CAPTURE) {
       File imageFile = new File(mediaStoreCompat.getCurrentPhotoPath());
       if (imageFile.exists() && imageFile.length() > 0) {
-        DataObject dataObject = new DataObject(dataSet.getName(), mediaStoreCompat.getCurrentPhotoPath(), true);
+        DataObject dataObject = new DataObject(mediaStoreCompat.getCurrentPhotoPath(), true);
         dataObject.saveThrows();
         dataSet.addObject(dataObject);
         dataSet.saveThrows();
@@ -369,7 +364,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
       // returned from image chooser, add the image to the dataset and refresh UI
       List<String> pathList = Matisse.obtainPathResult(data);
       for (String path : pathList) {
-        DataObject dataObject = new DataObject(dataSet.getName(), path, false);
+        DataObject dataObject = new DataObject(path, false);
         dataObject.saveThrows();
         dataSet.addObject(dataObject);
         dataSet.saveThrows();
