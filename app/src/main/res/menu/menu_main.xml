@@ -5,6 +5,7 @@
     <item
         android:id="@+id/add_dataset"
         android:title="@string/menu_item_create_dataset"
+        android:icon="@android:drawable/ic_menu_add"
         app:showAsAction="always" />
 
 </menu>

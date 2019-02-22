@@ -4,6 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools" >
 
     <item
+        android:id="@+id/edit_label"
+        android:orderInCategory="10"
+        android:title="@string/button_edit_label" />
+    <item
         android:id="@+id/dataset_modify"
         android:orderInCategory="100"
         android:icon="@android:drawable/ic_menu_edit"

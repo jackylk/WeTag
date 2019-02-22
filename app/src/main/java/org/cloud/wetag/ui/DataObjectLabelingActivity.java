@@ -75,10 +75,22 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   public static final int REQUEST_CODE_ALBUM = 3;
   public static final int REQUEST_CODE_CHOOSE_FILE = 4;
 
-  public static void start(Context context, DataSet dataSet) {
-    Intent intent = new Intent(context, DataObjectLabelingActivity.class);
-    intent.putExtra("dataset_name", dataSet.getName());
-    context.startActivity(intent);
+  public static void start(final Context context, final DataSet dataSet) {
+    if (dataSet.getLabels().isEmpty()) {
+      new AlertDialog.Builder(context)
+          .setTitle("标签未定义，打标签前请先添加标签")
+          .setPositiveButton("好的", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              EditLabelActivity.start(context, dataSet);
+            }
+          })
+          .show();
+    } else {
+      Intent intent = new Intent(context, DataObjectLabelingActivity.class);
+      intent.putExtra("dataset_name", dataSet.getName());
+      context.startActivity(intent);
+    }
   }
 
   @Override
@@ -98,7 +110,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     mediaStoreCompat.setCaptureStrategy(
         new CaptureStrategy(false, "org.cloud.wetag.fileprovider", datasetName));
 
-    setTitle(dataSet.getName() + "数据集");
+    setTitle(dataSet.getName());
     initLabelBar();
     initTabs();
   }

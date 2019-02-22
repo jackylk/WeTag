@@ -58,40 +58,22 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       viewHolder.dataSetDesc.setText("无描述");
     }
 
+    viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        DataObjectLabelingActivity.start(viewHolder.cardView.getContext(), dataSet);
+      }
+    });
     viewHolder.moreButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         showPopupMenu(position, v);
       }
     });
-    viewHolder.startLabelingButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (dataSet.getLabels().isEmpty()) {
-          new AlertDialog.Builder(v.getContext())
-              .setTitle("还没有标签，请先添加标签")
-              .setPositiveButton("好的", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                  EditLabelActivity.start(viewHolder.itemView.getContext(), dataSet);
-                }
-              })
-              .show();
-        } else {
-          DataObjectLabelingActivity.start(viewHolder.itemView.getContext(), dataSet);
-        }
-      }
-    });
-    viewHolder.modifyDataSetButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        EditLabelActivity.start(v.getContext(), dataSet);
-      }
-    });
     List<DataObject> dataObjects = dataSet.getOrLoadObjects();
     if (dataObjects.isEmpty() || !dataSet.isImageDataSet()) {
       // load default picture
-      Glide.with(context).load(R.drawable.empty_dark).into(viewHolder.dataSetImage);
+      Glide.with(context).load(dataSet.getDefaultPictureResourceId()).into(viewHolder.dataSetImage);
     } else {
       // display first image in the dataset
       Glide.with(context).load(dataObjects.get(0).getUri()).into(viewHolder.dataSetImage);
@@ -111,10 +93,14 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
       @Override
       public boolean onMenuItemClick(MenuItem menuItem) {
+        DataSet dataSet = DataSetCollection.getDataSetList().get(position);
         switch (menuItem.getItemId()) {
+          case R.id.edit_label:
+            EditLabelActivity.start(view.getContext(), dataSet);
+            break;
           case R.id.dataset_modify:
             if (listener != null) {
-              listener.onEditDataSetClicked(DataSetCollection.getDataSetList().get(position));
+              listener.onEditDataSetClicked(dataSet);
             }
             break;
           case R.id.dataset_delete:
@@ -161,8 +147,6 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     TextView dataSetDesc;
     ImageButton moreButton;
     ImageView dataSetImage;
-    TextView startLabelingButton;
-    TextView modifyDataSetButton;
 
     public DataSetViewHolder(@NonNull final View itemView) {
       super(itemView);
@@ -171,8 +155,6 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       dataSetType = itemView.findViewById(R.id.dataset_type);
       dataSetDesc = itemView.findViewById(R.id.dataset_desc);
       dataSetImage = itemView.findViewById(R.id.dataset_image);
-      startLabelingButton = itemView.findViewById(R.id.button_start_labeling);
-      modifyDataSetButton = itemView.findViewById(R.id.button_modify_label);
       moreButton = itemView.findViewById(R.id.dataset_menu_dot);
     }
   }

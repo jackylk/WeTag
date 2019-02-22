@@ -3,6 +3,7 @@ package org.cloud.wetag.model;
 import android.annotation.TargetApi;
 import android.os.Build;
 
+import org.cloud.wetag.R;
 import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
@@ -156,4 +157,11 @@ public class DataSet extends DataSupport {
     this.desc = desc;
   }
 
+  // default picture shown in the card
+  public int getDefaultPictureResourceId() {
+    if (isTextClassificationDataSet()) {
+      return R.drawable.text_classification;
+    }
+    return R.drawable.empty_dark;
+  }
 }
