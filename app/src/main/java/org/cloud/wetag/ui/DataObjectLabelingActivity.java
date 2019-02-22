@@ -68,7 +68,9 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
 
   private Menu menu;
   private LabelBar labelBar;
-  private boolean isEditingDataSet = false;
+
+  // whether it is in deleting mode currently. (user is selecting data object for deletion)
+  private boolean inDeletingMode = false;
 
   public static final int REQUEST_CODE_CAPTURE = 1;
   public static final int REQUEST_CODE_PREVIEW = 2;
@@ -140,7 +142,11 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
 
   @Override
   public void onBackPressed() {
-    if (isEditingDataSet) {
+    boolean consumed = adapter.onBackPressed();
+    if (consumed) {
+      return;
+    }
+    if (inDeletingMode) {
       cancelEdit();
     } else {
       super.onBackPressed();
@@ -168,11 +174,11 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
       case R.id.item_export:
         showExportLabelDialog();
         break;
-      case R.id.item_edit:
+      case R.id.item_delete_data_object:
         menu.clear();
-        getMenuInflater().inflate(R.menu.menu_labeling_edit, menu);
+        getMenuInflater().inflate(R.menu.menu_labeling_page_delete_object, menu);
         labelBar.setEnableLabelBar(false);
-        isEditingDataSet = true;
+        inDeletingMode = true;
         if (dataSet.isTextClassificationDataSet()) {
           // make the check box visible in UI so that user can select text to delete
           objectSelection.setSelectEnabled(true);
@@ -195,7 +201,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
 
   private void cancelEdit() {
     drawMainMenu();
-    isEditingDataSet = false;
+    inDeletingMode = false;
     if (dataSet.isTextClassificationDataSet()) {
       // make the check box invisible in UI
       objectSelection.setSelectEnabled(false);
@@ -288,7 +294,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
             Snackbar.make(tabLayout.getRootView(), msg, Snackbar.LENGTH_LONG).show();
             refreshView();
             drawMainMenu();
-            isEditingDataSet = false;
+            inDeletingMode = false;
           }
         })
         .show();
@@ -463,7 +469,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
         }
       }
     }
-    if (objectSelection.get().size() > 0 && !isEditingDataSet) {
+    if (objectSelection.get().size() > 0 && !inDeletingMode) {
       labelBar.setEnableLabelBar(true);
     } else {
       labelBar.setCheckedLabelBar(false);

@@ -59,6 +59,20 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
     }
   }
 
+  /**
+   * back is pressed by user in parent activity
+   * @return true if this class consumed the event
+   */
+  public boolean onBackPressed() {
+    for (int i = 0; i < fragments.size(); i++) {
+      boolean consumed = fragments.get(i).onBackPressed();
+      if (consumed) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
   public Fragment getItem(int i) {
     return fragments.get(i);

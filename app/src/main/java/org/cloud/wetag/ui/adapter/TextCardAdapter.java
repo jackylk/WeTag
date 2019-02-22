@@ -23,8 +23,8 @@ public class TextCardAdapter extends DataObjectCardAdapter {
   }
 
   @Override
-  void drawDataObject(Context context, CardItemViewHolder holder, DataObject dataObject,
-                      int position) {
+  void onBindDataObject(Context context, CardItemViewHolder holder, DataObject dataObject,
+                        int position) {
     List<String> labels = dataObject.getLabels();
     for (Chip chip : holder.chips) {
       if (labels.contains(chip.getText().toString())) {

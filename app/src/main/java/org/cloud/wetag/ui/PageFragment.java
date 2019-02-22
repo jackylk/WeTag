@@ -108,4 +108,12 @@ public class PageFragment extends Fragment {
     return view;
   }
 
+  /**
+   * back is pressed by user in parent activity
+   * @return true if this class consumed the event
+   */
+  public boolean onBackPressed() {
+    return adapter.onBackPressed();
+  }
+
 }

@@ -14,7 +14,7 @@
         app:showAsAction="collapseActionView"/>
 
     <item
-        android:id="@+id/item_edit"
+        android:id="@+id/item_delete_data_object"
         android:title="@string/menu_item_delete_image"
         android:icon="@android:drawable/ic_menu_edit"
         app:showAsAction="collapseActionView"/>

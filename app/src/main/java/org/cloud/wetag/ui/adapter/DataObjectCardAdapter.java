@@ -16,7 +16,6 @@ import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.ObjectSelection;
 import org.cloud.wetag.ui.widget.CheckView;
-import org.cloud.wetag.utils.ColorUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +43,9 @@ public abstract class DataObjectCardAdapter extends
     this.dataSet = dataSet;
     this.type = type;
     this.filterLabel = filterLabel;
+
+    // avoid blinking when refreshing the cards
+    setHasStableIds(true);
     refreshAllCards();
   }
 
@@ -73,6 +75,11 @@ public abstract class DataObjectCardAdapter extends
     notifyDataSetChanged();
   }
 
+  @Override
+  public long getItemId(int position) {
+    return dataObjects.get(position).getId();
+  }
+
   @NonNull
   @Override
   public CardItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
@@ -93,11 +100,11 @@ public abstract class DataObjectCardAdapter extends
   @Override
   public void onBindViewHolder(@NonNull CardItemViewHolder holder, int position) {
     DataObject dataObject = dataObjects.get(position);
-    drawDataObject(context, holder, dataObject, position);
+    onBindDataObject(context, holder, dataObject, position);
   }
 
-  abstract void drawDataObject(Context context, CardItemViewHolder holder,
-                               DataObject dataObject, int position);
+  abstract void onBindDataObject(Context context, CardItemViewHolder holder,
+                                 DataObject dataObject, int position);
 
   @Override
   public int getItemCount() {
@@ -182,5 +189,13 @@ public abstract class DataObjectCardAdapter extends
         chips.add(chip);
       }
     }
+  }
+
+  /**
+   * back is pressed by user in parent activity
+   * @return true if this class consumed the event
+   */
+  public boolean onBackPressed() {
+    return false;
   }
 }

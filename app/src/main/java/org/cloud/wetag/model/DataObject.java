@@ -91,4 +91,9 @@ public class DataObject extends DataSupport {
   public void removeLabel(String lable) {
     labels.remove(lable);
   }
+
+  public int getId() {
+    return id;
+  }
+
 }
