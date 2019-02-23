@@ -113,7 +113,11 @@ public class PageFragment extends Fragment {
    * @return true if this class consumed the event
    */
   public boolean onBackPressed() {
-    return adapter.onBackPressed();
+    if (adapter != null) {
+      return adapter.onBackPressed();
+    } else {
+      return false;
+    }
   }
 
 }

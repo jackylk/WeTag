@@ -142,9 +142,11 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
 
   @Override
   public void onBackPressed() {
-    boolean consumed = adapter.onBackPressed();
-    if (consumed) {
-      return;
+    if (adapter != null) {
+      boolean consumed = adapter.onBackPressed();
+      if (consumed) {
+        return;
+      }
     }
     if (inDeletingMode) {
       cancelEdit();
