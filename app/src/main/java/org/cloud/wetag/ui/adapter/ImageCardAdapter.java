@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.design.chip.Chip;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -41,19 +43,19 @@ public class ImageCardAdapter extends DataObjectCardAdapter
     if (inMultiSelectMode) {
       imageView.setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
       holder.checkView.setVisibility(View.VISIBLE);
-      holder.checkView.setEnabled(false);
+      if (objectSelection.exist(dataObject)) {
+        imageView.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+        holder.checkView.setEnabled(true);
+        holder.checkView.setChecked(true);
+      } else {
+        holder.checkView.setEnabled(false);
+        holder.checkView.setChecked(false);
+      }
     } else {
       imageView.clearColorFilter();
       holder.checkView.setVisibility(View.GONE);
     }
 
-    if (objectSelection.exist(dataObject)) {
-      imageView.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
-      holder.checkView.setEnabled(true);
-      holder.checkView.setChecked(true);
-    } else {
-      holder.checkView.setChecked(false);
-    }
     holder.chipGroup.removeAllViews();
     List<String> labels = dataObject.getOrLoadLabels();
     for (String label : labels) {
