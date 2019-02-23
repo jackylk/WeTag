@@ -1,7 +1,6 @@
 package org.cloud.wetag.utils;
 
 import android.app.Activity;
-import android.os.Environment;
 import android.util.JsonWriter;
 import android.util.Log;
 

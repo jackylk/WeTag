@@ -6,6 +6,6 @@
     android:layout_height="?attr/actionBarSize"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    android:background="@color/dracula_page_bg"
+    android:background="@color/app_bar_background"
     app:layout_scrollFlags="scroll|enterAlways|snap" />
 

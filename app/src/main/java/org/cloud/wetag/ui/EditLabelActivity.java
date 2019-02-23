@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;

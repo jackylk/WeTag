@@ -120,7 +120,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   private void initLabelBar() {
     LinearLayout linearLayout = findViewById(R.id.label_bar);
     labelBar = new LabelBar(linearLayout, dataSet, this);
-    labelBar.setEnableLabelBar(false);
+    labelBar.setEnabled(false);
     if (dataSet.isTextClassificationDataSet()) {
       labelBar.setVisible(false);
     }
@@ -142,6 +142,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
 
   @Override
   public void onBackPressed() {
+    labelBar.setEnabled(false);
     if (adapter != null) {
       boolean consumed = adapter.onBackPressed();
       if (consumed) {
@@ -179,7 +180,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
       case R.id.item_delete_data_object:
         menu.clear();
         getMenuInflater().inflate(R.menu.menu_labeling_page_delete_object, menu);
-        labelBar.setEnableLabelBar(false);
+        labelBar.setEnabled(false);
         inDeletingMode = true;
         if (dataSet.isTextClassificationDataSet()) {
           // make the check box visible in UI so that user can select text to delete
@@ -472,10 +473,10 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
       }
     }
     if (objectSelection.get().size() > 0 && !inDeletingMode) {
-      labelBar.setEnableLabelBar(true);
+      labelBar.setEnabled(true);
     } else {
-      labelBar.setCheckedLabelBar(false);
-      labelBar.setEnableLabelBar(false);
+      labelBar.setChecked(false);
+      labelBar.setEnabled(false);
     }
   }
 
@@ -490,7 +491,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
         }
         objectSelection.clear();
         labelBar.clear();
-        labelBar.setEnableLabelBar(false);
+        labelBar.setEnabled(false);
         refreshView();
         break;
       default:

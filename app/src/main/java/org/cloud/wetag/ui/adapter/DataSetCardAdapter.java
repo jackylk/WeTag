@@ -2,8 +2,6 @@ package org.cloud.wetag.ui.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
@@ -14,10 +12,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -67,6 +65,18 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
         DataObjectLabelingActivity.start(viewHolder.cardView.getContext(), dataSet);
       }
     });
+    viewHolder.startLabelButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        DataObjectLabelingActivity.start(viewHolder.cardView.getContext(), dataSet);
+      }
+    });
+    viewHolder.editLabelButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        EditLabelActivity.start(viewHolder.cardView.getContext(), dataSet);
+      }
+    });
     viewHolder.moreButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -98,9 +108,6 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       public boolean onMenuItemClick(MenuItem menuItem) {
         DataSet dataSet = DataSetCollection.getDataSetList().get(position);
         switch (menuItem.getItemId()) {
-          case R.id.edit_label:
-            EditLabelActivity.start(view.getContext(), dataSet);
-            break;
           case R.id.dataset_modify:
             if (listener != null) {
               listener.onEditDataSetClicked(dataSet);
@@ -150,6 +157,8 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     TextView dataSetDesc;
     ImageButton moreButton;
     ImageView dataSetImage;
+    Button startLabelButton;
+    Button editLabelButton;
 
     public DataSetViewHolder(@NonNull final View itemView) {
       super(itemView);
@@ -159,6 +168,8 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       dataSetDesc = itemView.findViewById(R.id.dataset_desc);
       dataSetImage = itemView.findViewById(R.id.dataset_image);
       moreButton = itemView.findViewById(R.id.dataset_menu_dot);
+      startLabelButton = itemView.findViewById(R.id.button_start_label);
+      editLabelButton = itemView.findViewById(R.id.button_edit_label);
     }
   }
 }

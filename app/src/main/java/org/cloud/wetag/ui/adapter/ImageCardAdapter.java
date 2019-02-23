@@ -5,11 +5,8 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.design.chip.Chip;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -19,7 +16,6 @@ import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.ObjectSelection;
 import org.cloud.wetag.utils.ColorUtils;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class ImageCardAdapter extends DataObjectCardAdapter
@@ -75,18 +71,17 @@ public class ImageCardAdapter extends DataObjectCardAdapter
   @Override
   public boolean onLongClick(View v) {
     inMultiSelectMode = true;
-    int position = (int) v.getTag(R.id.dataobject_view);
-    objectSelection.add(dataObjects.get(position));
+    onDataObjectClicked((Integer) v.getTag(R.id.dataobject_view));
     notifyDataSetChanged();
     return true;
   }
 
   @Override
-  void onDataObjectClicked(View v, CardItemViewHolder holder, int position) {
+  void onDataObjectClicked(int position) {
     if (inMultiSelectMode) {
       onDataObjectCheckClicked(position);
     } else {
-      super.onDataObjectClicked(v, holder, position);
+      super.onDataObjectClicked(position);
     }
   }
 

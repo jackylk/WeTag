@@ -45,7 +45,7 @@ public class LabelBar {
     }
   }
 
-  public void setEnableLabelBar(boolean enabled) {
+  public void setEnabled(boolean enabled) {
     int textColor = enabled ? ContextCompat.getColor(MyApplication.getContext(), R.color.white) :
         ContextCompat.getColor(MyApplication.getContext(), R.color.gray);
     Button confirmButton = parentView.findViewById(R.id.label_confirm);
@@ -64,7 +64,7 @@ public class LabelBar {
     }
   }
 
-  public void setCheckedLabelBar(boolean checked) {
+  public void setChecked(boolean checked) {
     parentView.findViewById(R.id.label_confirm).setEnabled(checked);
     for (Chip chip : chipMap.values()) {
       chip.setChecked(checked);

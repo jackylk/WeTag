@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -14,7 +13,6 @@ import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
-import org.litepal.crud.DataSupport;
 
 public class EditDataSetActivity extends BaseActivity {
 

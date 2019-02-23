@@ -133,7 +133,7 @@ public abstract class DataObjectCardAdapter extends
     notifyItemChanged(position);
   }
 
-  void onDataObjectClicked(View v, CardItemViewHolder holder, int position) {
+  void onDataObjectClicked(int position) {
     listener.onDataObjectClicked(dataObjects.get(position));
   }
 
@@ -164,7 +164,7 @@ public abstract class DataObjectCardAdapter extends
       dataObjectView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          onDataObjectClicked(v, CardItemViewHolder.this, getAdapterPosition());
+          onDataObjectClicked(getAdapterPosition());
         }
       });
       chipGroup = card.findViewById(R.id.dataobject_chipgroup);
@@ -176,7 +176,8 @@ public abstract class DataObjectCardAdapter extends
         chip.setEnabled(true);
         chip.setClickable(true);
         chip.setCheckable(true);
-        chip.setTextAppearance(R.style.TextAppearance_MaterialComponents_Body1);
+        chip.setChipIconResource(R.drawable.ic_radio_button_unchecked_black_24dp);
+        chip.setTextAppearance(R.style.TextAppearance_AppCompat_Large);
         chip.setTextColor(ContextCompat.getColor(context, R.color.white));
         chip.setOnClickListener(new View.OnClickListener() {
           @Override

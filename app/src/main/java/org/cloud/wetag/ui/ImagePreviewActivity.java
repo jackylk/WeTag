@@ -3,10 +3,10 @@ package org.cloud.wetag.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.design.chip.Chip;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 
 import org.cloud.wetag.MyApplication;
@@ -50,7 +50,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
 
     dataSet = DataSetCollection.getDataSet(dataSetName);
     labelBar = new LabelBar(findViewById(R.id.label_bar), dataSet, this);
-    labelBar.setEnableLabelBar(true);
+    labelBar.setEnabled(true);
 
     DataObject dataObject = dataSet.getDataObject(imageIndex);
     for (Map.Entry<String, Chip> chipEntry : labelBar.getChipMap().entrySet()) {

@@ -3,10 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
-    android:foreground="?attr/selectableItemBackground"
-    android:elevation="4dp"
-    app:cardElevation="@dimen/sp_16"
+    android:layout_margin="@dimen/dp_16"
+    android:elevation="16dp"
+    app:cardElevation="@dimen/dp_16"
     app:cardCornerRadius="4dp">
 
     <LinearLayout
@@ -34,7 +33,7 @@
                     android:id="@+id/dataset_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_8"
+                    android:layout_marginTop="@dimen/dp_4"
                     android:layout_marginLeft="@dimen/dataset_card_item_text_margin"
                     android:textAppearance="?android:textAppearanceLarge"
                     android:textColor="@color/card_item_text_primary"/>
@@ -49,24 +48,52 @@
 
             </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/dataset_menu_dot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_margin="@dimen/dp_8"
-                android:backgroundTint="@color/transparent"
-                android:src="@drawable/ic_more_options" />
-
         </RelativeLayout>
 
         <TextView
             android:id="@+id/dataset_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dataset_card_item_text_margin"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginLeft="@dimen/dataset_card_item_text_margin"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/card_item_text_secondary"/>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginBottom="@dimen/dp_8"
+            android:layout_marginLeft="@dimen/dataset_card_item_text_margin">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/button_start_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:backgroundTint="@android:color/holo_purple"
+                    android:text="@string/button_start_labeling"/>
+                <Button
+                    android:id="@+id/button_edit_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:layout_marginLeft="@dimen/dp_16"
+                    android:backgroundTint="@android:color/holo_purple"
+                    android:text="@string/button_edit_label"/>
+            </LinearLayout>
+            <ImageButton
+                android:id="@+id/dataset_menu_dot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_more_options" />
+        </RelativeLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

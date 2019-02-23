@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         app:tabMode="scrollable"
         app:tabGravity="center"
-        android:background="@color/card_background"
+        android:background="@color/app_bar_background"
+        app:tabTextAppearance="?android:textAppearanceMedium"
         app:tabTextColor="@color/white"/>
 
     <android.support.v4.view.ViewPager
