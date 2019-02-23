@@ -484,7 +484,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   @Override
   public void onClick(View v) {
     switch (v.getId()) {
-      case R.id.label_confirm:
+      case R.id.button_label_confirm:
         for (DataObject dataObject : objectSelection.get()) {
           dataObject.setLabels(labelBar.getLabelSelection());
           dataObject.saveThrows();

@@ -30,7 +30,7 @@ public class LabelBar {
   }
 
   private void initLabelBar(View.OnClickListener confirmListener) {
-    parentView.findViewById(R.id.label_confirm).setOnClickListener(confirmListener);
+    parentView.findViewById(R.id.button_label_confirm).setOnClickListener(confirmListener);
     chipGroup = parentView.findViewById(R.id.label_chipgroup);
     chipMap = new HashMap<>();
     for (String label : dataSet.getLabels()) {
@@ -48,7 +48,7 @@ public class LabelBar {
   public void setEnabled(boolean enabled) {
     int textColor = enabled ? ContextCompat.getColor(MyApplication.getContext(), R.color.white) :
         ContextCompat.getColor(MyApplication.getContext(), R.color.gray);
-    Button confirmButton = parentView.findViewById(R.id.label_confirm);
+    Button confirmButton = parentView.findViewById(R.id.button_label_confirm);
     confirmButton.setEnabled(enabled);
     confirmButton.setTextColor(textColor);
     for (Chip chip : chipMap.values()) {
@@ -65,7 +65,7 @@ public class LabelBar {
   }
 
   public void setChecked(boolean checked) {
-    parentView.findViewById(R.id.label_confirm).setEnabled(checked);
+    parentView.findViewById(R.id.button_label_confirm).setEnabled(checked);
     for (Chip chip : chipMap.values()) {
       chip.setChecked(checked);
     }

@@ -3,18 +3,22 @@ package org.cloud.wetag.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
+import org.cloud.wetag.utils.ColorUtils;
 
 import java.util.List;
 
@@ -51,6 +55,8 @@ public class EditLabelActivity extends BaseActivity implements View.OnClickListe
     }
     chip.setText(label + "(" + count + ")");
     chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
+    chip.setChipBackgroundColorResource(R.color.gray);
+    chip.setTextColor(Color.WHITE);
     chip.setCloseIconVisible(true);
     chip.setOnCloseIconClickListener(new View.OnClickListener() {
       @Override
@@ -88,7 +94,7 @@ public class EditLabelActivity extends BaseActivity implements View.OnClickListe
     final EditText et = new EditText(v.getContext());
     new AlertDialog.Builder(v.getContext())
         .setTitle("添加标签")
-        .setView(et)
+        .setView(et, 50, 0, 50, 0)
         .setPositiveButton(R.string.dialog_button_positive, new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int which) {
             final String label = et.getText().toString();

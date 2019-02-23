@@ -23,6 +23,7 @@
     <color name="darkgreen">#4c8c4a</color>
     <color name="darkgray">#494949</color>
     <color name="lightgray">#D3D3D3</color>
+    <color name="button_background">@color/darkgray</color>
     <color name="zhihu_item_checkCircle_borderColor">#FFFFFF</color>
     <color name="zhihu_item_checkCircle_backgroundColor">#1E8AE8</color>
 </resources>

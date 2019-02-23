@@ -14,12 +14,73 @@
         android:layout_height="wrap_content"
         android:background="@color/card_item_background" >
 
-        <ImageView
-            android:id="@+id/dataset_image"
+        <android.support.v7.widget.GridLayout
+            android:id="@+id/dataset_image_grid"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_weight="1"
-            android:scaleType="centerCrop" />
+            android:layout_height="wrap_content"
+            app:columnCount="3"
+            app:rowCount="2">
+            <ImageView
+                android:id="@+id/dataset_image1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                app:layout_row="0"
+                app:layout_column="0"
+                app:layout_gravity="fill"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/dataset_image2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                app:layout_row="0"
+                app:layout_column="1"
+                app:layout_gravity="fill"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/dataset_image3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                app:layout_row="0"
+                app:layout_column="2"
+                app:layout_gravity="fill"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/dataset_image4"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                app:layout_row="1"
+                app:layout_column="0"
+                app:layout_gravity="fill"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/dataset_image5"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                app:layout_row="1"
+                app:layout_column="1"
+                app:layout_gravity="fill"
+                android:scaleType="centerCrop"/>
+            <ImageView
+                android:id="@+id/dataset_image6"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1"
+                app:layout_row="1"
+                app:layout_column="2"
+                app:layout_gravity="fill"
+                android:scaleType="centerCrop"/>
+        </android.support.v7.widget.GridLayout>
 
         <RelativeLayout
             android:orientation="horizontal"
@@ -75,7 +136,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:textAppearanceMedium"
-                    android:backgroundTint="@android:color/holo_purple"
+                    android:backgroundTint="@color/button_background"
                     android:text="@string/button_start_labeling"/>
                 <Button
                     android:id="@+id/button_edit_label"
@@ -83,7 +144,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:textAppearanceMedium"
                     android:layout_marginLeft="@dimen/dp_16"
-                    android:backgroundTint="@android:color/holo_purple"
+                    android:backgroundTint="@color/button_background"
                     android:text="@string/button_edit_label"/>
             </LinearLayout>
             <ImageButton

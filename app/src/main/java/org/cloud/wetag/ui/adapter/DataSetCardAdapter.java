@@ -5,8 +5,10 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,6 +28,7 @@ import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.ui.DataObjectLabelingActivity;
 import org.cloud.wetag.ui.EditLabelActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.DataSetViewHolder> {
@@ -84,12 +87,25 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       }
     });
     List<DataObject> dataObjects = dataSet.getOrLoadObjects();
-    if (dataObjects.isEmpty() || !dataSet.isImageDataSet()) {
-      // load default picture
-      Glide.with(context).load(dataSet.getDefaultPictureResourceId()).into(viewHolder.dataSetImage);
-    } else {
-      // display first image in the dataset
-      Glide.with(context).load(dataObjects.get(0).getUri()).into(viewHolder.dataSetImage);
+    if (dataSet.isImageDataSet()) {
+      for (int i = 0; i < 6; i++) {
+        GridLayout.LayoutParams params = new GridLayout.LayoutParams(
+            GridLayout.spec(i / 3, 1f), GridLayout.spec(i % 3, 1f));
+        params.setMargins(4, 4, 4, 4);
+
+        ImageView imageView = viewHolder.imageViews.get(i);
+        imageView.setAdjustViewBounds(true);
+        imageView.setMinimumHeight(200);
+        imageView.setLayoutParams(params);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        if (dataObjects.size() > i) {
+          // display the image in the dataset
+          Glide.with(context).load(dataObjects.get(i).getUri()).into(imageView);
+        } else {
+          // load default picture
+          Glide.with(context).load(dataSet.getDefaultPictureResourceId()).into(imageView);
+        }
+      }
     }
   }
 
@@ -156,7 +172,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     TextView dataSetType;
     TextView dataSetDesc;
     ImageButton moreButton;
-    ImageView dataSetImage;
+    List<ImageView> imageViews = new ArrayList<>(6);
     Button startLabelButton;
     Button editLabelButton;
 
@@ -166,7 +182,19 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       dataSetName = itemView.findViewById(R.id.dataset_name);
       dataSetType = itemView.findViewById(R.id.dataset_type);
       dataSetDesc = itemView.findViewById(R.id.dataset_desc);
-      dataSetImage = itemView.findViewById(R.id.dataset_image);
+      ImageView image1, image2, image3, image4, image5, image6;
+      image1 = itemView.findViewById(R.id.dataset_image1);
+      image2 = itemView.findViewById(R.id.dataset_image2);
+      image3 = itemView.findViewById(R.id.dataset_image3);
+      image4 = itemView.findViewById(R.id.dataset_image4);
+      image5 = itemView.findViewById(R.id.dataset_image5);
+      image6 = itemView.findViewById(R.id.dataset_image6);
+      imageViews.add(image1);
+      imageViews.add(image2);
+      imageViews.add(image3);
+      imageViews.add(image4);
+      imageViews.add(image5);
+      imageViews.add(image6);
       moreButton = itemView.findViewById(R.id.dataset_menu_dot);
       startLabelButton = itemView.findViewById(R.id.button_start_label);
       editLabelButton = itemView.findViewById(R.id.button_edit_label);
