@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dracula_bottom_toolbar_bg">
+    android:background="@color/card_background">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"

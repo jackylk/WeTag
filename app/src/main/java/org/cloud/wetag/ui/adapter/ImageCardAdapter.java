@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.design.chip.Chip;
 import android.support.v4.content.ContextCompat;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -19,7 +20,7 @@ import org.cloud.wetag.utils.ColorUtils;
 import java.util.List;
 
 public class ImageCardAdapter extends DataObjectCardAdapter
-    implements View.OnLongClickListener {
+    implements View.OnLongClickListener, View.OnTouchListener {
 
   private boolean inMultiSelectMode;
 
@@ -35,6 +36,7 @@ public class ImageCardAdapter extends DataObjectCardAdapter
     ImageView imageView = (ImageView) holder.dataObjectView;
     Glide.with(context).load(dataObject.getUri()).into(imageView);
     imageView.setOnLongClickListener(this);
+    imageView.setOnTouchListener(this);
     imageView.setTag(R.id.dataobject_view, position);
     if (inMultiSelectMode) {
       imageView.setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
@@ -96,6 +98,22 @@ public class ImageCardAdapter extends DataObjectCardAdapter
       objectSelection.clear();
       notifyDataSetChanged();
       return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean onTouch(View v, MotionEvent event) {
+    ImageView imageView = v.findViewById(R.id.dataobject_view);
+    switch (event.getAction()) {
+      case MotionEvent.ACTION_DOWN:
+        imageView.setColorFilter(Color.parseColor("#77000000"));
+        break;
+      default:
+        if (!inMultiSelectMode) {
+          imageView.clearColorFilter();
+        }
+        break;
     }
     return false;
   }

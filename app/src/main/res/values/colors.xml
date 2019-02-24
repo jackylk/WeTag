@@ -1,29 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">#4e342e</color>
+    <color name="colorPrimaryDark">#260e04</color>
+    <color name="colorPrimaryLight">#7b5e57</color>
+    <color name="colorSecondary">#fb8c00</color>
+    <color name="colorSecondaryDark">#c25e00</color>
+    <color name="colorSecondaryLight">#ffbd45</color>
+
+    <color name="colorPrimaryTh2">#263238</color>
+    <color name="colorPrimaryDarkTh2">#000a12</color>
+    <color name="colorPrimaryLightTh2">#4f5b62</color>
+
     <color name="colorAccent">#D81B60</color>
+
+    <color name="app_bar_background">@color/colorPrimaryDarkTh2</color>
+    <color name="tab_background">@color/colorPrimaryDarkTh2</color>
+    <color name="card_item_surface">@color/colorPrimaryTh2</color>
+    <color name="card_background">@color/colorPrimaryDarkTh2</color>
+
+    <color name="card_item_text_primary">@color/white</color>
+    <color name="card_item_text_secondary">@color/gray</color>
+
+    <!--<color name="button_background">@color/darkgray</color>-->
+    <color name="button_background">@color/colorPrimaryLightTh2</color>
+    <color name="button_text">@color/white</color>
+    <color name="button_disabled_background">@color/colorPrimaryDarkTh2</color>
+
+    <color name="transparent">#0000</color>
     <color name="blue">#3F51B5</color>
     <color name="blue_dark">#303F9F</color>
     <color name="green">#A4C639</color>
     <color name="red">#FF4081</color>
-
-    <color name="transparent">#0000</color>
-
     <color name="black">#000</color>
-
     <color name="white">#fff</color>
-    <color name="card_item_background">@color/dracula_primary_dark</color>
-    <color name="card_background">@color/dracula_bottom_toolbar_bg</color>
-    <color name="app_bar_background">@color/dracula_page_bg</color>
-    <color name="card_item_text_primary">@color/white</color>
-    <color name="card_item_text_secondary">@color/gray</color>
     <color name="gray">#999</color>
     <color name="darkred">#7f0000</color>
     <color name="darkgreen">#4c8c4a</color>
     <color name="darkgray">#494949</color>
     <color name="lightgray">#D3D3D3</color>
-    <color name="button_background">@color/darkgray</color>
+
     <color name="zhihu_item_checkCircle_borderColor">#FFFFFF</color>
     <color name="zhihu_item_checkCircle_backgroundColor">#1E8AE8</color>
 </resources>

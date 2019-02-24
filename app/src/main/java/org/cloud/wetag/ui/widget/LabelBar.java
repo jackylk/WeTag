@@ -1,5 +1,7 @@
 package org.cloud.wetag.ui.widget;
 
+import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.v4.content.ContextCompat;
@@ -47,10 +49,19 @@ public class LabelBar {
 
   public void setEnabled(boolean enabled) {
     int textColor = enabled ? ContextCompat.getColor(MyApplication.getContext(), R.color.white) :
-        ContextCompat.getColor(MyApplication.getContext(), R.color.gray);
+        ContextCompat.getColor(MyApplication.getContext(), R.color.darkgray);
     Button confirmButton = parentView.findViewById(R.id.button_label_confirm);
     confirmButton.setEnabled(enabled);
     confirmButton.setTextColor(textColor);
+    if (enabled) {
+      confirmButton.setBackgroundTintMode(PorterDuff.Mode.MULTIPLY);
+      confirmButton.setBackgroundTintList(
+          ColorStateList.valueOf(parentView.getResources().getColor(R.color.button_background)));
+    } else {
+      confirmButton.setBackgroundTintMode(PorterDuff.Mode.MULTIPLY);
+      confirmButton.setBackgroundTintList(
+          ColorStateList.valueOf(parentView.getResources().getColor(R.color.button_disabled_background)));
+    }
     for (Chip chip : chipMap.values()) {
       if (enabled) {
         chip.setChipBackgroundColorResource(

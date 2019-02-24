@@ -62,8 +62,8 @@ public class MainActivity extends BaseActivity implements
    * Add an example data set: cat and dog image classification
    */
   private void addExampleCatDogDataSet() {
-    DataSet sample = DataSet.newImageDataSet("样例1");
-    sample.setDesc("Kaggle猫狗图片分类数据集");
+    DataSet sample = DataSet.newImageDataSet("样例数据集1");
+    sample.setDesc("kaggle上的一个竞赛数据集：Dogs vs. Cats");
     sample.setLabels(Arrays.asList("Cat", "Dog"));
     String destDir = createDataSetSourceFolder(sample.getName());
     FileUtils.copyAssetsDir2Phone(this, "ImageClassificationExample", destDir);
@@ -86,8 +86,8 @@ public class MainActivity extends BaseActivity implements
    * Add an example data set: movie comment text classification
    */
   private void addExampleMovieCommentDataSet() {
-    DataSet sample = DataSet.newTextClassificationDataSet("样例2");
-    sample.setDesc("《流浪地球》电影评论文本分类数据集");
+    DataSet sample = DataSet.newTextClassificationDataSet("样例数据集2");
+    sample.setDesc("网上收集的对《流浪地球》的电影评论，进行文本分类标注");
     sample.setLabels(Arrays.asList("正面", "负面", "中性"));
     String destDir = createDataSetSourceFolder(sample.getName());
     FileUtils.copyAssetsDir2Phone(this, "TextClassificationExample", destDir);
