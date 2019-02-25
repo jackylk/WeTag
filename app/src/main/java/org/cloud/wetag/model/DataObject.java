@@ -23,6 +23,8 @@ public class DataObject extends DataSupport {
   // we should delete it only if it is true, otherwise do not delete it
   private boolean capturedInApp;
 
+  // file path of the image, in case of image data object
+  // content of the text, in case of text data object
   private String source;
 
   private List<String> labels = new LinkedList<>();

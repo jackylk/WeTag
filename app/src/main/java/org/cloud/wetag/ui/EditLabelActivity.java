@@ -40,12 +40,13 @@ public class EditLabelActivity extends BaseActivity implements View.OnClickListe
     chipGroup = findViewById(R.id.edit_label_chipgroup);
 
     for (String label : dataSet.getLabels()) {
-      Chip chip = makeChip(label);
+      Chip chip = makeChip(chipGroup, dataSet, label);
       chipGroup.addView(chip);
     }
   }
 
-  private Chip makeChip(final String label) {
+  public static Chip makeChip(final ChipGroup chipGroup, final DataSet dataSet,
+                              final String label) {
     final Chip chip = new Chip(chipGroup.getContext());
     int count = 0;
     for (DataObject dataObject : dataSet.getDataObjects()) {
@@ -105,7 +106,7 @@ public class EditLabelActivity extends BaseActivity implements View.OnClickListe
               if (!labelDef.contains(label)) {
                 labelDef.add(label);
                 dataSet.save();
-                Chip chip = makeChip(label);
+                Chip chip = makeChip(chipGroup, dataSet, label);
                 chipGroup.addView(chip);
               } else {
                 Toast.makeText(v.getContext(), "标签名字已存在！", Toast.LENGTH_LONG).show();

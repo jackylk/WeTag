@@ -2,13 +2,21 @@ package org.cloud.wetag.ui.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
+import android.graphics.drawable.PictureDrawable;
+import android.graphics.drawable.VectorDrawable;
 import android.support.annotation.NonNull;
+import android.support.design.chip.Chip;
+import android.support.design.chip.ChipGroup;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +25,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -27,8 +37,8 @@ import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.ui.DataObjectLabelingActivity;
 import org.cloud.wetag.ui.EditLabelActivity;
+import org.cloud.wetag.utils.ColorUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.DataSetViewHolder> {
@@ -87,24 +97,94 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       }
     });
     List<DataObject> dataObjects = dataSet.getOrLoadObjects();
+    GridLayout gridLayout = viewHolder.cardView.findViewById(R.id.dataset_preview_grid);
+    gridLayout.removeAllViews();
     if (dataSet.isImageDataSet()) {
+      // for image dataset, show an image grid of 2 rows * 3 columns
+      gridLayout.setRowCount(2);
+      gridLayout.setColumnCount(3);
       for (int i = 0; i < 6; i++) {
-        GridLayout.LayoutParams params = new GridLayout.LayoutParams(
-            GridLayout.spec(i / 3, 1f), GridLayout.spec(i % 3, 1f));
-        params.setMargins(4, 4, 4, 4);
+        GridLayout.LayoutParams gridParam = new GridLayout.LayoutParams(
+            GridLayout.spec(GridLayout.UNDEFINED, 1f), GridLayout.spec(GridLayout.UNDEFINED, 1f));
+        gridParam.setMargins(4, 4, 4, 4);
 
-        ImageView imageView = viewHolder.imageViews.get(i);
+        ImageView imageView = new ImageView(viewHolder.cardView.getContext());
         imageView.setAdjustViewBounds(true);
-        imageView.setMinimumHeight(200);
-        imageView.setLayoutParams(params);
+        imageView.setMinimumHeight(300);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageView.setLayoutParams(gridParam);
+
+//        LinearLayout relativeLayout = new LinearLayout(viewHolder.cardView.getContext());
+//        relativeLayout.setLayoutParams(gridParam);
+//        relativeLayout.addView(imageView, gridParam);
+
         if (dataObjects.size() > i) {
           // display the image in the dataset
+//          Glide.with(context).load(dataObjects.get(i).getUri()).into(imageView);
           Glide.with(context).load(dataObjects.get(i).getUri()).into(imageView);
+
+//          DataObject object = dataObjects.get(i);
+//          if (!object.getLabels().isEmpty()) {
+            // add the label chip at the bottom of the image
+//            ChipGroup chipGroup = new ChipGroup(imageView.getContext());
+//            for (String label : object.getLabels()) {
+//              Chip chip = ImageCardAdapter.makeChip(gridLayout.getContext(), dataSet, label);
+//              chip.setTextAppearance(R.style.TextAppearance_AppCompat_Small);
+//              chipGroup.addView(chip);
+//            }
+//
+//            RelativeLayout.LayoutParams relativeParam = new RelativeLayout.LayoutParams(
+//                ViewGroup.LayoutParams.WRAP_CONTENT,
+//                ViewGroup.LayoutParams.WRAP_CONTENT);
+//            relativeParam.addRule(RelativeLayout.ALIGN_BOTTOM, imageView.getId());
+//            relativeLayout.setMinimumHeight(200);
+//            relativeLayout.addView(chipGroup, relativeParam);
+//          }
+
+          gridLayout.addView(imageView);
         } else {
           // load default picture
           Glide.with(context).load(dataSet.getDefaultPictureResourceId()).into(imageView);
+          gridLayout.addView(imageView);
         }
+      }
+    } else {
+      // for text dataset, show an text grid of 6 rows * 1 column
+      gridLayout.removeAllViews();
+      gridLayout.setRowCount(6);
+      gridLayout.setColumnCount(1);
+      for (int i = 0; i < 6; i++) {
+        GridLayout.LayoutParams params = new GridLayout.LayoutParams(
+            GridLayout.spec(i, 1f), GridLayout.spec(0, 1f));
+        params.setMargins(4, 4, 4, 4);
+
+        TextView textView = new TextView(viewHolder.cardView.getContext());
+        textView.setMaxLines(1);
+        textView.setMinimumWidth(viewHolder.cardView.getWidth());
+        textView.setLeft(30);
+        textView.setRight(30);
+        Drawable icon = viewHolder.cardView.getResources().getDrawable(R.drawable.ic_text_fields_black_24dp);
+        icon.setBounds(0, 0, 30, 30);
+        textView.setCompoundDrawables(icon, null, null, null);
+        textView.setIncludeFontPadding(true);
+        textView.setLetterSpacing(0.05f);
+        textView.setPadding(10, 0, 0, 0);
+        textView.setBackgroundResource(R.color.card_item_surface);
+        textView.setTextColor(
+            ColorStateList.valueOf(viewHolder.cardView.getResources().getColor(R.color.lightgray)));
+        if (dataObjects.size() > i) {
+          textView.setText(dataObjects.get(i).getSource());
+          if (!dataObjects.get(i).getLabels().isEmpty()) {
+            textView.setTextColor(
+                textView.getResources().getColor(
+                ColorUtils.getLabelBackgroundColor(
+                    dataSet.getLabels(), dataObjects.get(i).getLabels().get(0))));
+          }
+        } else {
+          // load default text
+          textView.setText("待添加文本");
+        }
+        gridLayout.addView(textView);
       }
     }
   }
@@ -172,7 +252,6 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     TextView dataSetType;
     TextView dataSetDesc;
     ImageButton moreButton;
-    List<ImageView> imageViews = new ArrayList<>(6);
     Button startLabelButton;
     Button editLabelButton;
 
@@ -182,19 +261,6 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       dataSetName = itemView.findViewById(R.id.dataset_name);
       dataSetType = itemView.findViewById(R.id.dataset_type);
       dataSetDesc = itemView.findViewById(R.id.dataset_desc);
-      ImageView image1, image2, image3, image4, image5, image6;
-      image1 = itemView.findViewById(R.id.dataset_image1);
-      image2 = itemView.findViewById(R.id.dataset_image2);
-      image3 = itemView.findViewById(R.id.dataset_image3);
-      image4 = itemView.findViewById(R.id.dataset_image4);
-      image5 = itemView.findViewById(R.id.dataset_image5);
-      image6 = itemView.findViewById(R.id.dataset_image6);
-      imageViews.add(image1);
-      imageViews.add(image2);
-      imageViews.add(image3);
-      imageViews.add(image4);
-      imageViews.add(image5);
-      imageViews.add(image6);
       moreButton = itemView.findViewById(R.id.dataset_menu_dot);
       startLabelButton = itemView.findViewById(R.id.button_start_label);
       editLabelButton = itemView.findViewById(R.id.button_edit_label);

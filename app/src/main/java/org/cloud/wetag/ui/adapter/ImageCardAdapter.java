@@ -3,6 +3,7 @@ package org.cloud.wetag.ui.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.support.annotation.NonNull;
 import android.support.design.chip.Chip;
 import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
@@ -57,17 +58,23 @@ public class ImageCardAdapter extends DataObjectCardAdapter
     holder.chipGroup.removeAllViews();
     List<String> labels = dataObject.getOrLoadLabels();
     for (String label : labels) {
-      Chip chip = new Chip(holder.chipGroup.getContext());
-      chip.setText(label);
-      chip.setEnabled(true);
-      chip.setClickable(false);
-      chip.setTextAppearance(R.style.TextAppearance_MaterialComponents_Body1);
-      chip.setTextColor(ContextCompat.getColor(context, R.color.white));
-      chip.setChipBackgroundColorResource(
-          ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), label));
+      Chip chip = makeChip(context, dataSet, label);
       holder.chipGroup.addView(chip);
       holder.chips.add(chip);
     }
+  }
+
+  @NonNull
+  public static Chip makeChip(Context context, DataSet dataSet, String label) {
+    Chip chip = new Chip(context);
+    chip.setText(label);
+    chip.setEnabled(true);
+    chip.setClickable(false);
+    chip.setTextAppearance(R.style.TextAppearance_MaterialComponents_Body1);
+    chip.setTextColor(ContextCompat.getColor(context, R.color.white));
+    chip.setChipBackgroundColorResource(
+        ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), label));
+    return chip;
   }
 
   @Override
@@ -107,7 +114,9 @@ public class ImageCardAdapter extends DataObjectCardAdapter
     ImageView imageView = v.findViewById(R.id.dataobject_view);
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
-        imageView.setColorFilter(Color.parseColor("#77000000"));
+        if (!inMultiSelectMode) {
+          imageView.setColorFilter(Color.parseColor("#77000000"));
+        }
         break;
       default:
         if (!inMultiSelectMode) {

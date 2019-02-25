@@ -40,7 +40,7 @@ public class MainActivity extends BaseActivity implements
     LitePal.getDatabase();
     setContentView(R.layout.activity_main);
 
-    setTitle(R.string.main_activity_title);
+    setTitle(R.string.app_name);
     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
     recyclerView = findViewById(R.id.recycler_view);
@@ -87,7 +87,7 @@ public class MainActivity extends BaseActivity implements
    */
   private void addExampleMovieCommentDataSet() {
     DataSet sample = DataSet.newTextClassificationDataSet("样例数据集2");
-    sample.setDesc("网上收集的对《流浪地球》的电影评论，进行文本分类标注");
+    sample.setDesc("网上收集的《流浪地球》电影评论，对文本情感分类");
     sample.setLabels(Arrays.asList("正面", "负面", "中性"));
     String destDir = createDataSetSourceFolder(sample.getName());
     FileUtils.copyAssetsDir2Phone(this, "TextClassificationExample", destDir);
