@@ -17,73 +17,76 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/dataset_name"
-            android:layout_width="wrap_content"
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_8"
             android:layout_marginLeft="@dimen/dataset_card_item_text_margin"
-            android:layout_marginRight="@dimen/dataset_card_item_text_margin"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:textColor="@color/card_item_text_primary"/>
+            android:layout_marginRight="@dimen/dataset_card_item_text_margin">
 
-        <TextView
-            android:id="@+id/dataset_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dataset_card_item_text_margin"
-            android:layout_marginRight="@dimen/dataset_card_item_text_margin"
-            android:layout_marginBottom="@dimen/dp_8"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="@color/card_item_text_secondary" />
+            <TextView
+                android:id="@+id/dataset_name"
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/card_item_text_primary"/>
 
-        <android.support.v7.widget.GridLayout
-            android:id="@+id/dataset_preview_grid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/card_item_surface" >
-        </android.support.v7.widget.GridLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/dataset_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:textColor="@color/card_item_text_secondary" />
+                <TextView
+                    android:id="@+id/dataset_object_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/dataset_type"
+                    android:layout_alignParentRight="true"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:textColor="@color/card_item_text_secondary" />
+            </RelativeLayout>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/dataset_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_8"
             android:layout_marginLeft="@dimen/dataset_card_item_text_margin"
             android:layout_marginRight="@dimen/dataset_card_item_text_margin"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@color/card_item_text_primary"/>
 
+        <android.support.v7.widget.GridLayout
+            android:id="@+id/dataset_preview_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_8"
+            android:background="@color/card_item_surface" >
+        </android.support.v7.widget.GridLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_4"
             android:layout_marginBottom="@dimen/dp_8"
             android:layout_marginLeft="@dimen/dataset_card_item_text_margin">
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
-                <Button
-                    android:id="@+id/button_start_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:textAppearanceMedium"
-                    android:backgroundTint="@color/button_background"
-                    android:textColor="@color/button_text"
-                    android:text="@string/button_start_labeling"/>
-                <Button
-                    android:id="@+id/button_edit_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:textAppearanceMedium"
-                    android:layout_marginLeft="@dimen/dp_16"
-                    android:backgroundTint="@color/button_background"
-                    android:textColor="@color/button_text"
-                    android:text="@string/button_edit_label"/>
-            </LinearLayout>
+            <android.support.design.chip.ChipGroup
+                android:id="@+id/dataset_item_chipgroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true" />
+
             <ImageButton
                 android:id="@+id/dataset_menu_dot"
                 android:layout_width="wrap_content"

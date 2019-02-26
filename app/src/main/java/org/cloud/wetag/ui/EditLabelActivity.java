@@ -56,7 +56,7 @@ public class EditLabelActivity extends BaseActivity implements View.OnClickListe
     }
     chip.setText(label + "(" + count + ")");
     chip.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
-    chip.setChipBackgroundColorResource(R.color.gray);
+    chip.setChipBackgroundColorResource(R.color.darkgray);
     chip.setTextColor(Color.WHITE);
     chip.setCloseIconVisible(true);
     chip.setOnCloseIconClickListener(new View.OnClickListener() {

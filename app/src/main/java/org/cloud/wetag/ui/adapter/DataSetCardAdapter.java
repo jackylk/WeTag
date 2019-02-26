@@ -4,11 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
-import android.graphics.drawable.PictureDrawable;
-import android.graphics.drawable.VectorDrawable;
 import android.support.annotation.NonNull;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
@@ -22,11 +18,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -64,8 +57,18 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
   @Override
   public void onBindViewHolder(@NonNull final DataSetViewHolder viewHolder, final int position) {
     final DataSet dataSet = DataSetCollection.getDataSetList().get(position);
+    List<DataObject> dataObjects = dataSet.getOrLoadObjects();
+
     viewHolder.dataSetName.setText(dataSet.getName());
     viewHolder.dataSetType.setText(dataSetType[dataSet.getType()]);
+
+    int labeledCount = 0;
+    for (DataObject dataObject : dataSet.getDataObjects()) {
+      if (!dataObject.getLabels().isEmpty()) {
+        labeledCount++;
+      }
+    }
+    viewHolder.dataSetObjectCount.setText(labeledCount + "/" + dataSet.getDataObjects().size());
     if (dataSet.getDesc() != null) {
       viewHolder.dataSetDesc.setText(dataSet.getDesc());
     } else {
@@ -78,114 +81,91 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
         DataObjectLabelingActivity.start(viewHolder.cardView.getContext(), dataSet);
       }
     });
-    viewHolder.startLabelButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        DataObjectLabelingActivity.start(viewHolder.cardView.getContext(), dataSet);
-      }
-    });
-    viewHolder.editLabelButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        EditLabelActivity.start(viewHolder.cardView.getContext(), dataSet);
-      }
-    });
     viewHolder.moreButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         showPopupMenu(position, v);
       }
     });
-    List<DataObject> dataObjects = dataSet.getOrLoadObjects();
     GridLayout gridLayout = viewHolder.cardView.findViewById(R.id.dataset_preview_grid);
     gridLayout.removeAllViews();
     if (dataSet.isImageDataSet()) {
-      // for image dataset, show an image grid of 2 rows * 3 columns
-      gridLayout.setRowCount(2);
-      gridLayout.setColumnCount(3);
-      for (int i = 0; i < 6; i++) {
-        GridLayout.LayoutParams gridParam = new GridLayout.LayoutParams(
-            GridLayout.spec(GridLayout.UNDEFINED, 1f), GridLayout.spec(GridLayout.UNDEFINED, 1f));
-        gridParam.setMargins(4, 4, 4, 4);
-
-        ImageView imageView = new ImageView(viewHolder.cardView.getContext());
-        imageView.setAdjustViewBounds(true);
-        imageView.setMinimumHeight(300);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageView.setLayoutParams(gridParam);
-
-//        LinearLayout relativeLayout = new LinearLayout(viewHolder.cardView.getContext());
-//        relativeLayout.setLayoutParams(gridParam);
-//        relativeLayout.addView(imageView, gridParam);
-
-        if (dataObjects.size() > i) {
-          // display the image in the dataset
-//          Glide.with(context).load(dataObjects.get(i).getUri()).into(imageView);
-          Glide.with(context).load(dataObjects.get(i).getUri()).into(imageView);
-
-//          DataObject object = dataObjects.get(i);
-//          if (!object.getLabels().isEmpty()) {
-            // add the label chip at the bottom of the image
-//            ChipGroup chipGroup = new ChipGroup(imageView.getContext());
-//            for (String label : object.getLabels()) {
-//              Chip chip = ImageCardAdapter.makeChip(gridLayout.getContext(), dataSet, label);
-//              chip.setTextAppearance(R.style.TextAppearance_AppCompat_Small);
-//              chipGroup.addView(chip);
-//            }
-//
-//            RelativeLayout.LayoutParams relativeParam = new RelativeLayout.LayoutParams(
-//                ViewGroup.LayoutParams.WRAP_CONTENT,
-//                ViewGroup.LayoutParams.WRAP_CONTENT);
-//            relativeParam.addRule(RelativeLayout.ALIGN_BOTTOM, imageView.getId());
-//            relativeLayout.setMinimumHeight(200);
-//            relativeLayout.addView(chipGroup, relativeParam);
-//          }
-
-          gridLayout.addView(imageView);
-        } else {
-          // load default picture
-          Glide.with(context).load(dataSet.getDefaultPictureResourceId()).into(imageView);
-          gridLayout.addView(imageView);
-        }
-      }
+      drawImageGrid(viewHolder, dataSet, dataObjects, gridLayout);
     } else {
-      // for text dataset, show an text grid of 6 rows * 1 column
-      gridLayout.removeAllViews();
-      gridLayout.setRowCount(6);
-      gridLayout.setColumnCount(1);
-      for (int i = 0; i < 6; i++) {
-        GridLayout.LayoutParams params = new GridLayout.LayoutParams(
-            GridLayout.spec(i, 1f), GridLayout.spec(0, 1f));
-        params.setMargins(4, 4, 4, 4);
+      drawTextGrid(viewHolder, dataSet, dataObjects, gridLayout);
+    }
 
-        TextView textView = new TextView(viewHolder.cardView.getContext());
-        textView.setMaxLines(1);
-        textView.setMinimumWidth(viewHolder.cardView.getWidth());
-        textView.setLeft(30);
-        textView.setRight(30);
-        Drawable icon = viewHolder.cardView.getResources().getDrawable(R.drawable.ic_text_fields_black_24dp);
-        icon.setBounds(0, 0, 30, 30);
-        textView.setCompoundDrawables(icon, null, null, null);
-        textView.setIncludeFontPadding(true);
-        textView.setLetterSpacing(0.05f);
-        textView.setPadding(10, 0, 0, 0);
-        textView.setBackgroundResource(R.color.card_item_surface);
-        textView.setTextColor(
-            ColorStateList.valueOf(viewHolder.cardView.getResources().getColor(R.color.lightgray)));
-        if (dataObjects.size() > i) {
-          textView.setText(dataObjects.get(i).getSource());
-          if (!dataObjects.get(i).getLabels().isEmpty()) {
-            textView.setTextColor(
-                textView.getResources().getColor(
-                ColorUtils.getLabelBackgroundColor(
-                    dataSet.getLabels(), dataObjects.get(i).getLabels().get(0))));
-          }
-        } else {
-          // load default text
-          textView.setText("待添加文本");
-        }
-        gridLayout.addView(textView);
+    ChipGroup chipGroup = viewHolder.chipGroup;
+    chipGroup.removeAllViews();
+    for (String label : dataSet.getLabels()) {
+      Chip chip = EditLabelActivity.makeChip(chipGroup, dataSet, label);
+      chip.setTextAppearance(R.style.TextAppearance_AppCompat_Small);
+      chip.setTextColor(Color.WHITE);
+      chip.setCloseIconVisible(false);
+      chipGroup.addView(chip);
+    }
+  }
+
+  // for text dataset, show an text grid of 6 rows * 1 column
+  private void drawTextGrid(@NonNull DataSetViewHolder viewHolder,
+                            DataSet dataSet, List<DataObject> dataObjects, GridLayout gridLayout) {
+    gridLayout.removeAllViews();
+    gridLayout.setRowCount(6);
+    gridLayout.setColumnCount(1);
+    for (int i = 0; i < 6; i++) {
+      GridLayout.LayoutParams params = new GridLayout.LayoutParams(
+          GridLayout.spec(i, 1f), GridLayout.spec(0, 1f));
+      params.setMargins(4, 4, 4, 4);
+
+      TextView textView = new TextView(viewHolder.cardView.getContext());
+      textView.setMaxLines(1);
+      textView.setMinimumWidth(viewHolder.cardView.getWidth());
+      textView.setLeft(30);
+      textView.setRight(30);
+      Drawable icon = viewHolder.cardView.getResources().getDrawable(R.drawable.ic_text_fields_black_24dp);
+      icon.setBounds(0, 0, 30, 30);
+      textView.setCompoundDrawables(icon, null, null, null);
+      textView.setIncludeFontPadding(true);
+      textView.setLetterSpacing(0.05f);
+      textView.setPadding(10, 0, 0, 0);
+      textView.setBackgroundResource(R.color.card_item_surface);
+      textView.setTextColor(
+          ColorStateList.valueOf(viewHolder.cardView.getResources().getColor(R.color.lightgray)));
+      if (dataObjects.size() > i) {
+        textView.setText(dataObjects.get(i).getSource());
+      } else {
+        // load default text
+        textView.setText("待添加文本");
       }
+      gridLayout.addView(textView);
+    }
+  }
+
+  // for image dataset, show an image grid of 2 rows * 3 columns
+  private void drawImageGrid(@NonNull DataSetViewHolder viewHolder,
+                             DataSet dataSet, List<DataObject> dataObjects, GridLayout gridLayout) {
+    gridLayout.setRowCount(2);
+    gridLayout.setColumnCount(3);
+    for (int i = 0; i < 6; i++) {
+      GridLayout.LayoutParams gridParam = new GridLayout.LayoutParams();
+      gridParam.width = 0;
+      gridParam.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, GridLayout.FILL, 1f);
+      gridParam.setMargins(8, 8, 8, 8);
+
+      ImageView imageView = new ImageView(viewHolder.cardView.getContext());
+      imageView.setAdjustViewBounds(true);
+      imageView.setMinimumHeight(300);
+      imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+      imageView.setLayoutParams(gridParam);
+
+      if (dataObjects.size() > i) {
+        // display the image in the dataset
+        Glide.with(context).load(dataObjects.get(i).getUri()).into(imageView);
+      } else {
+        // load default picture
+        Glide.with(context).load(dataSet.getDefaultPictureResourceId()).into(imageView);
+      }
+      gridLayout.addView(imageView);
     }
   }
 
@@ -204,6 +184,9 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       public boolean onMenuItemClick(MenuItem menuItem) {
         DataSet dataSet = DataSetCollection.getDataSetList().get(position);
         switch (menuItem.getItemId()) {
+          case R.id.dataset_modify_label:
+            EditLabelActivity.start(view.getContext(), dataSet);
+            break;
           case R.id.dataset_modify:
             if (listener != null) {
               listener.onEditDataSetClicked(dataSet);
@@ -250,20 +233,20 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     CardView cardView;
     TextView dataSetName;
     TextView dataSetType;
+    TextView dataSetObjectCount;
     TextView dataSetDesc;
     ImageButton moreButton;
-    Button startLabelButton;
-    Button editLabelButton;
+    ChipGroup chipGroup;
 
     public DataSetViewHolder(@NonNull final View itemView) {
       super(itemView);
       cardView = (CardView) itemView;
       dataSetName = itemView.findViewById(R.id.dataset_name);
       dataSetType = itemView.findViewById(R.id.dataset_type);
+      dataSetObjectCount = itemView.findViewById(R.id.dataset_object_count);
       dataSetDesc = itemView.findViewById(R.id.dataset_desc);
       moreButton = itemView.findViewById(R.id.dataset_menu_dot);
-      startLabelButton = itemView.findViewById(R.id.button_start_label);
-      editLabelButton = itemView.findViewById(R.id.button_edit_label);
+      chipGroup = itemView.findViewById(R.id.dataset_item_chipgroup);
     }
   }
 }
