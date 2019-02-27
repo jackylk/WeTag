@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
@@ -97,11 +98,17 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
 
     ChipGroup chipGroup = viewHolder.chipGroup;
     chipGroup.removeAllViews();
-    for (String label : dataSet.getLabels()) {
+    for (final String label : dataSet.getLabels()) {
       Chip chip = EditLabelActivity.makeChip(chipGroup, dataSet, label);
       chip.setTextAppearance(R.style.TextAppearance_AppCompat_Small);
       chip.setTextColor(Color.WHITE);
       chip.setCloseIconVisible(false);
+      chip.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          DataObjectLabelingActivity.start(viewHolder.cardView.getContext(), dataSet, label);
+        }
+      });
       chipGroup.addView(chip);
     }
   }
@@ -163,6 +170,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
         Glide.with(context).load(dataObjects.get(i).getUri()).into(imageView);
       } else {
         // load default picture
+//        Glide.with(context).load(Uri.parse("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1551805290&di=0814adbfa304269a555fca3faeb383e0&imgtype=jpg&er=1&src=http%3A%2F%2Fscimg.jb51.net%2Fallimg%2F160203%2F14-1602031204110-L.jpg")).into(imageView);
         Glide.with(context).load(dataSet.getDefaultPictureResourceId()).into(imageView);
       }
       gridLayout.addView(imageView);

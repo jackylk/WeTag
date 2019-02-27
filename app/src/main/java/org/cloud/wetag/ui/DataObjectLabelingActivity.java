@@ -62,6 +62,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
 
   private DataSet dataSet;
   private TabLayout tabLayout;
+  private ViewPager viewPager;
   private LabelFragmentPagerAdapter adapter;
   private MediaStoreCompat mediaStoreCompat;
   private ObjectSelection objectSelection;
@@ -95,6 +96,13 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     }
   }
 
+  public static void start(final Context context, final DataSet dataSet, String gotoLabel) {
+    Intent intent = new Intent(context, DataObjectLabelingActivity.class);
+    intent.putExtra("dataset_name", dataSet.getName());
+    intent.putExtra("dataset_goto_label", gotoLabel);
+    context.startActivity(intent);
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -115,6 +123,13 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     setTitle(dataSet.getName());
     initLabelBar();
     initTabs();
+
+    if (getIntent().hasExtra("dataset_goto_label")) {
+      String gotoLabel = getIntent().getStringExtra("dataset_goto_label");
+      int position = dataSet.getLabels().indexOf(gotoLabel) + 2;
+      tabLayout.setScrollPosition(position, 0f, true);
+      viewPager.setCurrentItem(position);
+    }
   }
 
   private void initLabelBar() {
@@ -128,7 +143,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
 
   private void initTabs() {
     tabLayout = findViewById(R.id.label_tab_layout);
-    ViewPager viewPager = findViewById(R.id.view_pager);
+    viewPager = findViewById(R.id.view_pager);
     objectSelection = new ObjectSelection();
     if (dataSet.isTextClassificationDataSet()) {
       objectSelection.setSelectEnabled(false);
