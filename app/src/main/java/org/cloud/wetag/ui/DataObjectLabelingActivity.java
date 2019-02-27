@@ -58,7 +58,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 public class DataObjectLabelingActivity extends BaseActivity implements View.OnClickListener,
-    DataObjectCardAdapter.OnDataObjectCheckChangedListener, TabLayout.OnTabSelectedListener {
+    DataObjectCardAdapter.OnDataObjectStateChangedListener, TabLayout.OnTabSelectedListener {
 
   private DataSet dataSet;
   private TabLayout tabLayout;
@@ -79,7 +79,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   public static final int REQUEST_CODE_CHOOSE_FILE = 4;
 
   public static void start(final Context context, final DataSet dataSet) {
-    if (dataSet.getLabels().isEmpty()) {
+    if (dataSet.getLabels().isEmpty() && dataSet.requireLabelDef()) {
       new AlertDialog.Builder(context)
           .setTitle("标签未定义，打标签前请先添加标签")
           .setPositiveButton("好的", new DialogInterface.OnClickListener() {
@@ -136,7 +136,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     LinearLayout linearLayout = findViewById(R.id.label_bar);
     labelBar = new LabelBar(linearLayout, dataSet, this);
     labelBar.setEnabled(false);
-    if (dataSet.isTextClassificationDataSet()) {
+    if (!dataSet.requireLabelBar()) {
       labelBar.setVisible(false);
     }
   }
@@ -145,7 +145,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     tabLayout = findViewById(R.id.label_tab_layout);
     viewPager = findViewById(R.id.view_pager);
     objectSelection = new ObjectSelection();
-    if (dataSet.isTextClassificationDataSet()) {
+    if (!dataSet.requireObjectSelection()) {
       objectSelection.setSelectEnabled(false);
     }
     adapter = new LabelFragmentPagerAdapter(getSupportFragmentManager(), dataSet, objectSelection,
@@ -197,7 +197,8 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
         getMenuInflater().inflate(R.menu.menu_labeling_page_delete_object, menu);
         labelBar.setEnabled(false);
         inDeletingMode = true;
-        if (dataSet.isTextClassificationDataSet()) {
+        if (dataSet.getType() == DataSet.TEXT_CLASSIFICATION ||
+            dataSet.getType() == DataSet.SEQ2SEQ) {
           // make the check box visible in UI so that user can select text to delete
           objectSelection.setSelectEnabled(true);
           adapter.refreshAllFragments();
@@ -220,9 +221,10 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   private void cancelEdit() {
     drawMainMenu();
     inDeletingMode = false;
-    if (dataSet.isTextClassificationDataSet()) {
+    if (dataSet.isText()) {
       // make the check box invisible in UI
       objectSelection.setSelectEnabled(false);
+      objectSelection.clear();
       adapter.refreshAllFragments();
     }
   }
@@ -273,7 +275,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
         .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            if (dataSet.isTextClassificationDataSet()) {
+            if (dataSet.isText()) {
               objectSelection.setSelectEnabled(true);
             }
           }
@@ -302,11 +304,11 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
               } else {
                 msg = "删除了" + deleted + "张图片";
               }
-            } else if (dataSet.isTextClassificationDataSet()){
+            } else if (dataSet.isText()){
               msg = "删除了" + deleted + "个文本";
             }
 
-            if (dataSet.isTextClassificationDataSet()) {
+            if (dataSet.isText()) {
               objectSelection.setSelectEnabled(false);
             }
             Snackbar.make(tabLayout.getRootView(), msg, Snackbar.LENGTH_LONG).show();
@@ -371,11 +373,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
 
   private void drawMainMenu() {
     menu.clear();
-    if (dataSet.isImageDataSet()) {
-      getMenuInflater().inflate(R.menu.menu_image_labeling, menu);
-    } else if (dataSet.isTextClassificationDataSet()) {
-      getMenuInflater().inflate(R.menu.menu_text_labeling, menu);
-    }
+    getMenuInflater().inflate(dataSet.getMenuResource(), menu);
   }
 
   @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -466,6 +464,11 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     } else {
       dataObject.addLabel(chip.getText().toString());
     }
+    refreshView();
+  }
+
+  @Override
+  public void refreshTab() {
     refreshView();
   }
 

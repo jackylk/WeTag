@@ -123,6 +123,8 @@ public class EditDataSetActivity extends BaseActivity {
       intent.putExtra("dataset_type", DataSet.IMAGE);
     } else if (datasetType == DataSet.TEXT_CLASSIFICATION) {
       intent.putExtra("dataset_type", DataSet.TEXT_CLASSIFICATION);
+    } else if (datasetType == DataSet.SEQ2SEQ) {
+      intent.putExtra("dataset_type", DataSet.SEQ2SEQ);
     } else {
       throw new UnsupportedOperationException();
     }

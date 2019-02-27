@@ -17,6 +17,7 @@ import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.model.ObjectSelection;
 import org.cloud.wetag.ui.adapter.DataObjectCardAdapter;
 import org.cloud.wetag.ui.adapter.ImageCardAdapter;
+import org.cloud.wetag.ui.adapter.Seq2SeqCardAdapter;
 import org.cloud.wetag.ui.adapter.TextCardAdapter;
 
 public class PageFragment extends Fragment {
@@ -27,7 +28,7 @@ public class PageFragment extends Fragment {
 
   private DataObjectCardAdapter adapter;
   private ObjectSelection objectSelection;
-  private DataObjectCardAdapter.OnDataObjectCheckChangedListener listener;
+  private DataObjectCardAdapter.OnDataObjectStateChangedListener listener;
   private RecyclerView recyclerView;
   private DataSet dataSet;
 
@@ -48,39 +49,12 @@ public class PageFragment extends Fragment {
     int pageType = getArguments().getInt("page_type");
     String labelName = getArguments().getString("filter_label");
     DataSet dataSet = DataSetCollection.getDataSet(datasetName);
-    if (dataSet.getType() == DataSet.IMAGE) {
-      adapter = createImageCardAdapter(pageType, labelName, dataSet);
-    } else if (dataSet.getType() == DataSet.TEXT_CLASSIFICATION) {
-      adapter = createTextCardAdapter(pageType, labelName, dataSet);
-    } else {
-      throw new UnsupportedOperationException("dataset type " +
-          dataSet.getType() + " is not supported");
-    }
+    adapter = dataSet.createAdapter(pageType, labelName, objectSelection);
     adapter.registerOnCheckChangedListener(listener);
     super.onCreate(savedInstanceState);
   }
 
-  private DataObjectCardAdapter createImageCardAdapter(int pageType, String labelName, DataSet dataSet) {
-    if (pageType == ALL_UNLABELED) {
-      return new ImageCardAdapter(dataSet, objectSelection, ALL_UNLABELED, null);
-    } else if (pageType == ALL_LABELED) {
-      return new ImageCardAdapter(dataSet, objectSelection, ALL_LABELED, null);
-    } else {
-      return new ImageCardAdapter(dataSet, objectSelection, SINGLE_LABELED, labelName);
-    }
-  }
-
-  private DataObjectCardAdapter createTextCardAdapter(int pageType, String labelName, DataSet dataSet) {
-    if (pageType == ALL_UNLABELED) {
-      return new TextCardAdapter(dataSet, objectSelection, ALL_UNLABELED, null);
-    } else if (pageType == ALL_LABELED) {
-      return new TextCardAdapter(dataSet, objectSelection, ALL_LABELED, null);
-    } else {
-      return new TextCardAdapter(dataSet, objectSelection, SINGLE_LABELED, labelName);
-    }
-  }
-
-  public void registerOnCheckChangedListener(DataObjectCardAdapter.OnDataObjectCheckChangedListener listener) {
+  public void registerOnCheckChangedListener(DataObjectCardAdapter.OnDataObjectStateChangedListener listener) {
     this.listener = listener;
   }
 

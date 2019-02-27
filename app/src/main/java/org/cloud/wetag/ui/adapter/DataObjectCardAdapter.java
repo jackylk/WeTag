@@ -28,7 +28,7 @@ public abstract class DataObjectCardAdapter extends
 
   Context context;
   ObjectSelection objectSelection;
-  OnDataObjectCheckChangedListener listener;
+  OnDataObjectStateChangedListener listener;
 
   DataSet dataSet;
   List<DataObject> dataObjects;
@@ -86,14 +86,8 @@ public abstract class DataObjectCardAdapter extends
     if (context == null) {
       context = viewGroup.getContext();
     }
-    View view;
-    if (dataSet.isImageDataSet()) {
-      view = LayoutInflater.from(context).inflate(R.layout.image_card_item, viewGroup, false);
-    } else if (dataSet.isTextClassificationDataSet()) {
-      view = LayoutInflater.from(context).inflate(R.layout.text_card_item, viewGroup, false);
-    } else {
-      throw new UnsupportedOperationException();
-    }
+    View view = LayoutInflater.from(context).inflate(
+        dataSet.getCardItemLayoutResource(), viewGroup, false);
     return new CardItemViewHolder(view);
   }
 
@@ -111,14 +105,15 @@ public abstract class DataObjectCardAdapter extends
     return dataObjects.size();
   }
 
-  public void registerOnCheckChangedListener(OnDataObjectCheckChangedListener listener) {
+  public void registerOnCheckChangedListener(OnDataObjectStateChangedListener listener) {
     this.listener = listener;
   }
 
-  public interface OnDataObjectCheckChangedListener {
+  public interface OnDataObjectStateChangedListener {
     void onDataObjectCheckClicked(DataObject dataObject, boolean check);
     void onDataObjectClicked(DataObject dataObject);
     void onDataObjectChipClicked(Chip chip, DataObject dataObject);
+    void refreshTab();
   }
 
   void onDataObjectCheckClicked(int position) {
@@ -143,6 +138,7 @@ public abstract class DataObjectCardAdapter extends
 
   class CardItemViewHolder extends RecyclerView.ViewHolder {
 
+    CardView cardView;
     ChipGroup chipGroup;
     List<Chip> chips;
     CheckView checkView;
@@ -150,8 +146,8 @@ public abstract class DataObjectCardAdapter extends
 
     public CardItemViewHolder(@NonNull View itemView) {
       super(itemView);
-      final CardView card = (CardView) itemView;
-      checkView = card.findViewById(R.id.dataobject_check_view);
+      cardView = (CardView) itemView;
+      checkView = cardView.findViewById(R.id.dataobject_check_view);
       if (checkView != null) {
         checkView.setOnClickListener(new View.OnClickListener() {
           @Override
@@ -160,34 +156,36 @@ public abstract class DataObjectCardAdapter extends
           }
         });
       }
-      dataObjectView = card.findViewById(R.id.dataobject_view);
+      dataObjectView = cardView.findViewById(R.id.dataobject_view);
       dataObjectView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
           onDataObjectClicked(getAdapterPosition());
         }
       });
-      chipGroup = card.findViewById(R.id.dataobject_chipgroup);
-      chips = new LinkedList<>();
-      List<String> labelDefinition = dataSet.getLabels();
-      for (String labelDef : labelDefinition) {
-        final Chip chip = new Chip(chipGroup.getContext());
-        chip.setText(labelDef);
-        chip.setEnabled(true);
-        chip.setClickable(true);
-        chip.setCheckable(true);
-        chip.setChipIconResource(R.drawable.ic_radio_button_unchecked_black_24dp);
-        chip.setTextAppearance(R.style.TextAppearance_AppCompat_Large);
-        chip.setTextColor(ContextCompat.getColor(context, R.color.white));
-        chip.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            onDataObjectChipClicked(chip, getAdapterPosition());
-          }
-        });
-        chip.setTag(getAdapterPosition());
-        chipGroup.addView(chip);
-        chips.add(chip);
+      chipGroup = cardView.findViewById(R.id.dataobject_chipgroup);
+      if (chipGroup != null) {
+        chips = new LinkedList<>();
+        List<String> labelDefinition = dataSet.getLabels();
+        for (String labelDef : labelDefinition) {
+          final Chip chip = new Chip(chipGroup.getContext());
+          chip.setText(labelDef);
+          chip.setEnabled(true);
+          chip.setClickable(true);
+          chip.setCheckable(true);
+          chip.setChipIconResource(R.drawable.ic_radio_button_unchecked_black_24dp);
+          chip.setTextAppearance(R.style.TextAppearance_AppCompat_Large);
+          chip.setTextColor(ContextCompat.getColor(context, R.color.white));
+          chip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              onDataObjectChipClicked(chip, getAdapterPosition());
+            }
+          });
+          chip.setTag(getAdapterPosition());
+          chipGroup.addView(chip);
+          chips.add(chip);
+        }
       }
     }
   }

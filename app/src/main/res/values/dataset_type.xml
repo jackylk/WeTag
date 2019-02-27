@@ -3,5 +3,6 @@
     <array name="dataset_type_array">
         <item>图片分类</item>
         <item>文本分类</item>
+        <item>Seq2Seq</item>
     </array>
 </resources>

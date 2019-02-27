@@ -55,6 +55,7 @@ public class MainActivity extends BaseActivity implements
     if (DataSetCollection.getDataSetList().isEmpty()) {
       addExampleCatDogDataSet();
       addExampleMovieCommentDataSet();
+      addExampleSeq2SeqDataSet();
     }
   }
 
@@ -91,6 +92,31 @@ public class MainActivity extends BaseActivity implements
     sample.setLabels(Arrays.asList("正面", "负面", "中性"));
     String destDir = createDataSetSourceFolder(sample.getName());
     FileUtils.copyAssetsDir2Phone(this, "TextClassificationExample", destDir);
+    File[] files = new File(destDir).listFiles();
+    if (files.length > 0) {
+      try {
+        for (File file : files) {
+          if (!file.isDirectory()) {
+            sample.addSource(file);
+          }
+        }
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    DataSetCollection.addDataSet(sample);
+  }
+
+  /**
+   * Add an example seq2seq data set
+   */
+  private void addExampleSeq2SeqDataSet() {
+    DataSet sample = DataSet.newSeq2SeqDataSet("样例数据集3");
+    sample.setDesc("英文文本翻译");
+    String destDir = createDataSetSourceFolder(sample.getName());
+    FileUtils.copyAssetsDir2Phone(this, "Seq2SeqExample", destDir);
     File[] files = new File(destDir).listFiles();
     if (files.length > 0) {
       try {

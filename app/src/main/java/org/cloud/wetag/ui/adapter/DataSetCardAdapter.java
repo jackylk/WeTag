@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
@@ -31,7 +30,6 @@ import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.ui.DataObjectLabelingActivity;
 import org.cloud.wetag.ui.EditLabelActivity;
-import org.cloud.wetag.utils.ColorUtils;
 
 import java.util.List;
 
@@ -90,9 +88,10 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     });
     GridLayout gridLayout = viewHolder.cardView.findViewById(R.id.dataset_preview_grid);
     gridLayout.removeAllViews();
-    if (dataSet.isImageDataSet()) {
+    if (dataSet.getType() == DataSet.IMAGE) {
       drawImageGrid(viewHolder, dataSet, dataObjects, gridLayout);
-    } else {
+    } else if (dataSet.getType() == DataSet.TEXT_CLASSIFICATION ||
+        dataSet.getType() == DataSet.SEQ2SEQ){
       drawTextGrid(viewHolder, dataSet, dataObjects, gridLayout);
     }
 

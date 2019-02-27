@@ -24,7 +24,7 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
 
   public LabelFragmentPagerAdapter(FragmentManager fm, DataSet dataSet,
                                    ObjectSelection objectSelection,
-                                   DataObjectCardAdapter.OnDataObjectCheckChangedListener listener) {
+                                   DataObjectCardAdapter.OnDataObjectStateChangedListener listener) {
     super(fm);
     this.dataSet = dataSet;
 

@@ -3,11 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/dp_16"
-    android:layout_marginRight="@dimen/dp_16"
-    android:layout_marginTop="@dimen/dp_8"
-    android:layout_marginBottom="@dimen/dp_8"
-    android:elevation="4dp"
+    android:layout_margin="@dimen/sp_16"
+    android:elevation="8dp"
     app:cardCornerRadius="16dp">
 
     <LinearLayout
@@ -42,16 +39,36 @@
         </LinearLayout>
 
         <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/seq2seq_label_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/card_item_surface"
+            android:divider="@drawable/divider"
+            android:showDividers="beginning|middle"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/seq2seq_label_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/card_item_surface">
 
-            <android.support.design.chip.ChipGroup
-                android:id="@+id/dataobject_chipgroup"
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/seq2seq_label_input"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="12dp"/>
-
+                android:layout_weight="5"
+                android:layout_margin="12dp"
+                android:textColor="@color/white"/>
+            <Button
+                android:id="@+id/seq2seq_confirm_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:layout_gravity="center_vertical"
+                android:backgroundTint="@color/button_background"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:text="添加" />
         </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>
