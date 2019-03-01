@@ -2,6 +2,9 @@ package org.cloud.wetag.ui;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -12,13 +15,14 @@ public class BaseActivity extends AppCompatActivity {
 
   public Context mContext;
   public Toolbar mToolbarTb;
+  public DrawerLayout mDrawerLayout;
 
   @Override
   public void setContentView(@LayoutRes int layoutResID) {
     super.setContentView(layoutResID);
 
     mContext = this;
-
+    mDrawerLayout = findViewById(R.id.drawer_layout);
     mToolbarTb = findViewById(R.id.toolbar);
     if (mToolbarTb != null) {
       setSupportActionBar(mToolbarTb);
@@ -31,7 +35,11 @@ public class BaseActivity extends AppCompatActivity {
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case android.R.id.home:
-        finish();
+        if (this instanceof MainActivity) {
+          mDrawerLayout.openDrawer(GravityCompat.START);
+        } else {
+          finish();
+        }
         break;
     }
     return super.onOptionsItemSelected(item);

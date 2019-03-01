@@ -3,12 +3,18 @@ package org.cloud.wetag.ui;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
@@ -25,7 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity implements
-    DataSetCardAdapter.OnEditDataSetClickListener {
+    DataSetCardAdapter.OnEditDataSetClickListener, View.OnClickListener {
 
   private DataSetCardAdapter adapter;
 
@@ -41,7 +47,7 @@ public class MainActivity extends BaseActivity implements
     setContentView(R.layout.activity_main);
 
     setTitle(R.string.app_name);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    initDrawer();
 
     recyclerView = findViewById(R.id.recycler_view);
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -57,6 +63,28 @@ public class MainActivity extends BaseActivity implements
       addExampleMovieCommentDataSet();
       addExampleSeq2SeqDataSet();
     }
+  }
+
+  private void initDrawer() {
+    getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+    final DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+    NavigationView navigationView = findViewById(R.id.nav_view);
+    navigationView.setCheckedItem(R.id.nav_local_dataset);
+    navigationView.setNavigationItemSelectedListener(
+        new NavigationView.OnNavigationItemSelectedListener() {
+      @Override
+      public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        drawerLayout.closeDrawers();
+        return true;
+      }
+    });
+
+    navigationView.getHeaderView(0).findViewById(R.id.icon_user_image)
+        .setOnClickListener(this);
+
+    TextView textView = navigationView.getHeaderView(0).findViewById(R.id.username);
+    textView.setText("未登录");
+    textView.setOnClickListener(this);
   }
 
   /**
@@ -218,4 +246,21 @@ public class MainActivity extends BaseActivity implements
     EditDataSetActivity.startUpdateDataSetActivity(
         this, REQUEST_CODE_UPDATE_DATASET, dataSet.getName());
   }
+
+  @Override
+  public void onClick(View v) {
+    switch (v.getId()) {
+      case R.id.username:
+      case R.id.icon_user_image:
+        userLogin();
+        break;
+      default:
+        break;
+    }
+  }
+
+  private void userLogin() {
+    Toast.makeText(getBaseContext(), "login", Toast.LENGTH_SHORT).show();
+  }
+
 }
