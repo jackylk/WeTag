@@ -53,7 +53,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
     labelBar = new LabelBar(findViewById(R.id.label_bar), dataSet, this);
     labelBar.setEnabled(true);
 
-    Sample sample = dataSet.getDataObject(imageIndex);
+    Sample sample = dataSet.getSample(imageIndex);
     for (Map.Entry<String, Chip> chipEntry : labelBar.getChipMap().entrySet()) {
       if (sample.getLabels().contains(chipEntry.getKey())) {
         chipEntry.getValue().setChecked(true);
@@ -63,7 +63,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
 
   @Override
   public void onClick(View v) {
-    Sample sample = dataSet.getDataObject(imageIndex);
+    Sample sample = dataSet.getSample(imageIndex);
     DataSetUpdateDBHelper.setLabels(dataSet, sample, labelBar.getLabelSelection());
     Intent intent = new Intent();
     setResult(RESULT_OK, intent);

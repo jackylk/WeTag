@@ -59,7 +59,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 public class LabelingActivity extends BaseActivity implements View.OnClickListener,
-    SampleCardAdapter.OnDataObjectStateChangedListener, TabLayout.OnTabSelectedListener {
+    SampleCardAdapter.OnSampleStateChangedListener, TabLayout.OnTabSelectedListener {
 
   private DataSet dataSet;
   private TabLayout tabLayout;
@@ -206,7 +206,7 @@ public class LabelingActivity extends BaseActivity implements View.OnClickListen
         }
         break;
       case R.id.item_delete:
-        showDeleteDataObjectConfirmDialog();
+        showDeleteSampleConfirmDialog();
         break;
       case R.id.item_cancel:
         cancelEdit();
@@ -269,9 +269,9 @@ public class LabelingActivity extends BaseActivity implements View.OnClickListen
   /**
    * show dialog and delete data object
    */
-  private void showDeleteDataObjectConfirmDialog() {
+  private void showDeleteSampleConfirmDialog() {
     new AlertDialog.Builder(tabLayout.getContext())
-        .setTitle(R.string.dialog_delete_dataobject_title)
+        .setTitle(R.string.dialog_delete_sample_title)
         .setMessage(R.string.dialog_delete_image_message)
         .setNegativeButton(R.string.dialog_button_negative, new DialogInterface.OnClickListener() {
           @Override
@@ -281,7 +281,7 @@ public class LabelingActivity extends BaseActivity implements View.OnClickListen
             }
           }
         })
-        .setPositiveButton(R.string.dialog_delete_dataobject_button_positive, new DialogInterface.OnClickListener() {
+        .setPositiveButton(R.string.dialog_delete_sample_button_positive, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             // delete all selected images, delete it only if it is captured in this app.
@@ -451,14 +451,14 @@ public class LabelingActivity extends BaseActivity implements View.OnClickListen
 
   // sample clicked
   @Override
-  public void onDataObjectClicked(Sample sample) {
+  public void onSampleClicked(Sample sample) {
     if (dataSet.isImageDataSet()) {
       ImagePreviewActivity.start(this, dataSet, sample, REQUEST_CODE_PREVIEW);
     }
   }
 
   @Override
-  public void onDataObjectChipClicked(Chip chip, Sample sample) {
+  public void onSampleChipClicked(Chip chip, Sample sample) {
     if (sample.getLabels().contains(chip.getText().toString())) {
       DataSetUpdateDBHelper.removeLabel(dataSet, sample, chip.getText().toString());
     } else {
@@ -474,7 +474,7 @@ public class LabelingActivity extends BaseActivity implements View.OnClickListen
 
   // sample check clicked
   @Override
-  public void onDataObjectCheckClicked(Sample sample, boolean check) {
+  public void onSampleCheckClicked(Sample sample, boolean check) {
     if (sample.getLabels().size() > 0) {
       // gather labels from all select images
       Set<String> labels = new HashSet<>();

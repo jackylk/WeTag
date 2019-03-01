@@ -27,9 +27,9 @@ public class Seq2SeqCardAdapter extends SampleCardAdapter implements View.OnClic
   }
 
   @Override
-  void onBindDataObject(Context context, CardItemViewHolder holder, Sample sample,
-                        int position) {
-    ((TextView) holder.dataObjectView).setText(sample.getSource());
+  void onBindSample(Context context, CardItemViewHolder holder, Sample sample,
+                    int position) {
+    ((TextView) holder.sampleView).setText(sample.getSource());
     if (objectSelection.isSelectEnabled()) {
       holder.checkView.setVisibility(View.VISIBLE);
       if (objectSelection.get().contains(sample)) {
@@ -114,7 +114,7 @@ public class Seq2SeqCardAdapter extends SampleCardAdapter implements View.OnClic
             }
           })
           .setNegativeButton(R.string.dialog_button_negative, null)
-          .setNeutralButton(R.string.dialog_delete_dataobject_button_positive, new DialogInterface.OnClickListener() {
+          .setNeutralButton(R.string.dialog_delete_sample_button_positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
               sample.getLabels().remove(originLabel);

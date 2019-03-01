@@ -23,8 +23,8 @@ public class TextCardAdapter extends SampleCardAdapter {
   }
 
   @Override
-  void onBindDataObject(Context context, CardItemViewHolder holder, Sample sample,
-                        int position) {
+  void onBindSample(Context context, CardItemViewHolder holder, Sample sample,
+                    int position) {
     List<String> labels = sample.getLabels();
     for (Chip chip : holder.chips) {
       if (labels.contains(chip.getText().toString())) {
@@ -36,7 +36,7 @@ public class TextCardAdapter extends SampleCardAdapter {
           ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), chip.getText().toString()));
       chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
     }
-    ((TextView) holder.dataObjectView).setText(sample.getSource());
+    ((TextView) holder.sampleView).setText(sample.getSource());
     if (objectSelection.isSelectEnabled()) {
       holder.checkView.setVisibility(View.VISIBLE);
       if (objectSelection.get().contains(sample)) {

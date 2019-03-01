@@ -28,7 +28,7 @@ public abstract class SampleCardAdapter extends
 
   Context context;
   ObjectSelection objectSelection;
-  OnDataObjectStateChangedListener listener;
+  OnSampleStateChangedListener listener;
 
   DataSet dataSet;
   List<Sample> samples;
@@ -94,46 +94,46 @@ public abstract class SampleCardAdapter extends
   @Override
   public void onBindViewHolder(@NonNull CardItemViewHolder holder, int position) {
     Sample sample = samples.get(position);
-    onBindDataObject(context, holder, sample, position);
+    onBindSample(context, holder, sample, position);
   }
 
-  abstract void onBindDataObject(Context context, CardItemViewHolder holder,
-                                 Sample sample, int position);
+  abstract void onBindSample(Context context, CardItemViewHolder holder,
+                             Sample sample, int position);
 
   @Override
   public int getItemCount() {
     return samples.size();
   }
 
-  public void registerOnCheckChangedListener(OnDataObjectStateChangedListener listener) {
+  public void registerOnCheckChangedListener(OnSampleStateChangedListener listener) {
     this.listener = listener;
   }
 
-  public interface OnDataObjectStateChangedListener {
-    void onDataObjectCheckClicked(Sample sample, boolean check);
-    void onDataObjectClicked(Sample sample);
-    void onDataObjectChipClicked(Chip chip, Sample sample);
+  public interface OnSampleStateChangedListener {
+    void onSampleCheckClicked(Sample sample, boolean check);
+    void onSampleClicked(Sample sample);
+    void onSampleChipClicked(Chip chip, Sample sample);
     void refreshTab();
   }
 
-  void onDataObjectCheckClicked(int position) {
+  void onSampleCheckClicked(int position) {
     Sample sample = samples.get(position);
     if (!objectSelection.exist(sample)) {
       objectSelection.add(sample);
-      listener.onDataObjectCheckClicked(sample,true);
+      listener.onSampleCheckClicked(sample,true);
     } else {
       objectSelection.remove(sample);
-      listener.onDataObjectCheckClicked(sample,false);
+      listener.onSampleCheckClicked(sample,false);
     }
     notifyItemChanged(position);
   }
 
-  void onDataObjectClicked(int position) {
-    listener.onDataObjectClicked(samples.get(position));
+  void onSampleClicked(int position) {
+    listener.onSampleClicked(samples.get(position));
   }
 
-  void onDataObjectChipClicked(Chip chip, int position) {
-    listener.onDataObjectChipClicked(chip, samples.get(position));
+  void onSampleChipClicked(Chip chip, int position) {
+    listener.onSampleChipClicked(chip, samples.get(position));
   }
 
   class CardItemViewHolder extends RecyclerView.ViewHolder {
@@ -142,28 +142,28 @@ public abstract class SampleCardAdapter extends
     ChipGroup chipGroup;
     List<Chip> chips;
     CheckView checkView;
-    View dataObjectView;
+    View sampleView;
 
     public CardItemViewHolder(@NonNull View itemView) {
       super(itemView);
       cardView = (CardView) itemView;
-      checkView = cardView.findViewById(R.id.dataobject_check_view);
+      checkView = cardView.findViewById(R.id.sample_check_view);
       if (checkView != null) {
         checkView.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-            onDataObjectCheckClicked(getAdapterPosition());
+            onSampleCheckClicked(getAdapterPosition());
           }
         });
       }
-      dataObjectView = cardView.findViewById(R.id.dataobject_view);
-      dataObjectView.setOnClickListener(new View.OnClickListener() {
+      sampleView = cardView.findViewById(R.id.sample_view);
+      sampleView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          onDataObjectClicked(getAdapterPosition());
+          onSampleClicked(getAdapterPosition());
         }
       });
-      chipGroup = cardView.findViewById(R.id.dataobject_chipgroup);
+      chipGroup = cardView.findViewById(R.id.sample_chipgroup);
       if (chipGroup != null) {
         chips = new LinkedList<>();
         List<String> labelDefinition = dataSet.getLabels();
@@ -179,7 +179,7 @@ public abstract class SampleCardAdapter extends
           chip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              onDataObjectChipClicked(chip, getAdapterPosition());
+              onSampleChipClicked(chip, getAdapterPosition());
             }
           });
           chip.setTag(getAdapterPosition());

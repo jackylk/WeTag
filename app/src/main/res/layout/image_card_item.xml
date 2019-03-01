@@ -12,13 +12,13 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/dataobject_view"
+            android:id="@+id/sample_view"
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:scaleType="centerCrop" />
 
         <org.cloud.wetag.ui.widget.CheckView
-            android:id="@+id/dataobject_check_view"
+            android:id="@+id/sample_check_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -26,10 +26,10 @@
             android:visibility="gone"/>
 
         <android.support.design.chip.ChipGroup
-            android:id="@+id/dataobject_chipgroup"
+            android:id="@+id/sample_chipgroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/dataobject_view"
+            android:layout_alignBottom="@id/sample_view"
             app:chipSpacing="@dimen/sp_12"/>
 
     </RelativeLayout>

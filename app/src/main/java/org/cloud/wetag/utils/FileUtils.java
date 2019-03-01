@@ -83,7 +83,7 @@ public class FileUtils {
     JsonWriter writer = new JsonWriter(out);
     writer.beginArray();
     for (int i = 0; i < dataSet.getObjectCount(); i++) {
-      Sample sample = dataSet.getDataObject(i);
+      Sample sample = dataSet.getSample(i);
       if (sample.getLabels().size() > 0) {
         writer.beginObject();
         writer.name("file");

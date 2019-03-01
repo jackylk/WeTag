@@ -146,7 +146,7 @@ public class DataSet extends DataSupport {
     return samples;
   }
 
-  public Sample getDataObject(int index) {
+  public Sample getSample(int index) {
     return samples.get(index);
   }
 

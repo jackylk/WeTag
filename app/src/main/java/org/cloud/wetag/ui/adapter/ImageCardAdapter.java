@@ -32,13 +32,13 @@ public class ImageCardAdapter extends SampleCardAdapter
   }
 
   @Override
-  void onBindDataObject(Context context, CardItemViewHolder holder, Sample sample,
-                        int position) {
-    ImageView imageView = (ImageView) holder.dataObjectView;
+  void onBindSample(Context context, CardItemViewHolder holder, Sample sample,
+                    int position) {
+    ImageView imageView = (ImageView) holder.sampleView;
     Glide.with(context).load(sample.getUri()).into(imageView);
     imageView.setOnLongClickListener(this);
     imageView.setOnTouchListener(this);
-    imageView.setTag(R.id.dataobject_view, position);
+    imageView.setTag(R.id.sample_view, position);
     if (inMultiSelectMode) {
       imageView.setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
       holder.checkView.setVisibility(View.VISIBLE);
@@ -80,17 +80,17 @@ public class ImageCardAdapter extends SampleCardAdapter
   @Override
   public boolean onLongClick(View v) {
     inMultiSelectMode = true;
-    onDataObjectClicked((Integer) v.getTag(R.id.dataobject_view));
+    onSampleClicked((Integer) v.getTag(R.id.sample_view));
     notifyDataSetChanged();
     return true;
   }
 
   @Override
-  void onDataObjectClicked(int position) {
+  void onSampleClicked(int position) {
     if (inMultiSelectMode) {
-      onDataObjectCheckClicked(position);
+      onSampleCheckClicked(position);
     } else {
-      super.onDataObjectClicked(position);
+      super.onSampleClicked(position);
     }
   }
 
@@ -111,7 +111,7 @@ public class ImageCardAdapter extends SampleCardAdapter
 
   @Override
   public boolean onTouch(View v, MotionEvent event) {
-    ImageView imageView = v.findViewById(R.id.dataobject_view);
+    ImageView imageView = v.findViewById(R.id.sample_view);
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
         if (!inMultiSelectMode) {

@@ -25,7 +25,7 @@ public class PageFragment extends Fragment {
 
   private SampleCardAdapter adapter;
   private ObjectSelection objectSelection;
-  private SampleCardAdapter.OnDataObjectStateChangedListener listener;
+  private SampleCardAdapter.OnSampleStateChangedListener listener;
   private RecyclerView recyclerView;
   private DataSet dataSet;
 
@@ -51,7 +51,7 @@ public class PageFragment extends Fragment {
     super.onCreate(savedInstanceState);
   }
 
-  public void registerOnCheckChangedListener(SampleCardAdapter.OnDataObjectStateChangedListener listener) {
+  public void registerOnCheckChangedListener(SampleCardAdapter.OnSampleStateChangedListener listener) {
     this.listener = listener;
   }
 

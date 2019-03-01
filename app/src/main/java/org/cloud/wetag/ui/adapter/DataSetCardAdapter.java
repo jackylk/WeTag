@@ -240,7 +240,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     new AlertDialog.Builder(view.getContext())
         .setTitle(R.string.dialog_delete_dataset_title)
         .setMessage(R.string.dialog_delete_dataset_message)
-        .setPositiveButton(R.string.dialog_delete_dataobject_button_positive, new DialogInterface.OnClickListener() {
+        .setPositiveButton(R.string.dialog_delete_sample_button_positive, new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             // delete the dataset by name

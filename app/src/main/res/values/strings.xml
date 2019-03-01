@@ -10,9 +10,9 @@
     <string name="title_activity_label">LabelActivity</string>
     <string name="dialog_delete_dataset_title">删除数据集</string>
     <string name="dialog_delete_dataset_message">将会彻底删除该数据集下的所有数据文件和标注信息</string>
-    <string name="dialog_delete_dataobject_title">删除数据</string>
+    <string name="dialog_delete_sample_title">删除数据</string>
     <string name="dialog_delete_image_message">将会彻底删除所选数据和标注</string>
-    <string name="dialog_delete_dataobject_button_positive">删除</string>
+    <string name="dialog_delete_sample_button_positive">删除</string>
     <string name="dialog_button_negative">取消</string>
     <string name="dialog_button_positive">确认</string>
     <string name="dialog_export_label_title">导出标注文件</string>
