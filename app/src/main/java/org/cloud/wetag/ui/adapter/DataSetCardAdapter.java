@@ -25,12 +25,15 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import org.cloud.wetag.R;
-import org.cloud.wetag.model.DataObject;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
-import org.cloud.wetag.ui.DataObjectLabelingActivity;
+import org.cloud.wetag.model.Sample;
 import org.cloud.wetag.ui.EditLabelActivity;
+import org.cloud.wetag.ui.LabelingActivity;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.DataSetViewHolder> {
@@ -56,18 +59,40 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
   @Override
   public void onBindViewHolder(@NonNull final DataSetViewHolder viewHolder, final int position) {
     final DataSet dataSet = DataSetCollection.getDataSetList().get(position);
-    List<DataObject> dataObjects = dataSet.getOrLoadObjects();
+    List<Sample> samples = dataSet.getOrLoadSamples();
 
     viewHolder.dataSetName.setText(dataSet.getName());
     viewHolder.dataSetType.setText(dataSetType[dataSet.getType()]);
 
+    // calculate update time
+    Instant now = Instant.now();
+    Instant updateTime = new Date(dataSet.getUpdateTime()).toInstant();
+    Duration duration = Duration.between(updateTime, now);
+
+    long diffDays = duration.toDays();
+    long diffHours = duration.toHours();
+    long diffMinutes = duration.toMinutes();
+    long diffSeconds = duration.getSeconds();
+
+    if (diffDays > 0) {
+      viewHolder.dataSetUpdateTime.setText(diffDays + "天前");
+    } else if (diffHours > 0) {
+      viewHolder.dataSetUpdateTime.setText(diffHours + "小时前");
+    } else if (diffMinutes > 0) {
+      viewHolder.dataSetUpdateTime.setText(diffMinutes + "分钟前");
+    } else if (diffSeconds > 0) {
+      viewHolder.dataSetUpdateTime.setText(diffSeconds + "秒前");
+    } else {
+      viewHolder.dataSetUpdateTime.setText("1秒内");
+    }
+
     int labeledCount = 0;
-    for (DataObject dataObject : dataSet.getDataObjects()) {
-      if (!dataObject.getLabels().isEmpty()) {
+    for (Sample sample : dataSet.getSamples()) {
+      if (!sample.getLabels().isEmpty()) {
         labeledCount++;
       }
     }
-    viewHolder.dataSetObjectCount.setText(labeledCount + "/" + dataSet.getDataObjects().size());
+    viewHolder.dataSetObjectCount.setText(labeledCount + "/" + dataSet.getSamples().size());
     if (dataSet.getDesc() != null) {
       viewHolder.dataSetDesc.setText(dataSet.getDesc());
     } else {
@@ -77,7 +102,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        DataObjectLabelingActivity.start(viewHolder.cardView.getContext(), dataSet);
+        LabelingActivity.start(viewHolder.cardView.getContext(), dataSet);
       }
     });
     viewHolder.moreButton.setOnClickListener(new View.OnClickListener() {
@@ -89,10 +114,10 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     GridLayout gridLayout = viewHolder.cardView.findViewById(R.id.dataset_preview_grid);
     gridLayout.removeAllViews();
     if (dataSet.getType() == DataSet.IMAGE) {
-      drawImageGrid(viewHolder, dataSet, dataObjects, gridLayout);
+      drawImageGrid(viewHolder, dataSet, samples, gridLayout);
     } else if (dataSet.getType() == DataSet.TEXT_CLASSIFICATION ||
         dataSet.getType() == DataSet.SEQ2SEQ){
-      drawTextGrid(viewHolder, dataSet, dataObjects, gridLayout);
+      drawTextGrid(viewHolder, dataSet, samples, gridLayout);
     }
 
     ChipGroup chipGroup = viewHolder.chipGroup;
@@ -105,7 +130,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       chip.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          DataObjectLabelingActivity.start(viewHolder.cardView.getContext(), dataSet, label);
+          LabelingActivity.start(viewHolder.cardView.getContext(), dataSet, label);
         }
       });
       chipGroup.addView(chip);
@@ -114,7 +139,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
 
   // for text dataset, show an text grid of 6 rows * 1 column
   private void drawTextGrid(@NonNull DataSetViewHolder viewHolder,
-                            DataSet dataSet, List<DataObject> dataObjects, GridLayout gridLayout) {
+                            DataSet dataSet, List<Sample> samples, GridLayout gridLayout) {
     gridLayout.removeAllViews();
     gridLayout.setRowCount(6);
     gridLayout.setColumnCount(1);
@@ -137,8 +162,8 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       textView.setBackgroundResource(R.color.card_item_surface);
       textView.setTextColor(
           ColorStateList.valueOf(viewHolder.cardView.getResources().getColor(R.color.lightgray)));
-      if (dataObjects.size() > i) {
-        textView.setText(dataObjects.get(i).getSource());
+      if (samples.size() > i) {
+        textView.setText(samples.get(i).getSource());
       } else {
         // load default text
         textView.setText("待添加文本");
@@ -149,7 +174,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
 
   // for image dataset, show an image grid of 2 rows * 3 columns
   private void drawImageGrid(@NonNull DataSetViewHolder viewHolder,
-                             DataSet dataSet, List<DataObject> dataObjects, GridLayout gridLayout) {
+                             DataSet dataSet, List<Sample> samples, GridLayout gridLayout) {
     gridLayout.setRowCount(2);
     gridLayout.setColumnCount(3);
     for (int i = 0; i < 6; i++) {
@@ -164,9 +189,9 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
       imageView.setLayoutParams(gridParam);
 
-      if (dataObjects.size() > i) {
+      if (samples.size() > i) {
         // display the image in the dataset
-        Glide.with(context).load(dataObjects.get(i).getUri()).into(imageView);
+        Glide.with(context).load(samples.get(i).getUri()).into(imageView);
       } else {
         // load default picture
 //        Glide.with(context).load(Uri.parse("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1551805290&di=0814adbfa304269a555fca3faeb383e0&imgtype=jpg&er=1&src=http%3A%2F%2Fscimg.jb51.net%2Fallimg%2F160203%2F14-1602031204110-L.jpg")).into(imageView);
@@ -240,6 +265,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
     CardView cardView;
     TextView dataSetName;
     TextView dataSetType;
+    TextView dataSetUpdateTime;
     TextView dataSetObjectCount;
     TextView dataSetDesc;
     ImageButton moreButton;
@@ -250,6 +276,7 @@ public class DataSetCardAdapter extends RecyclerView.Adapter<DataSetCardAdapter.
       cardView = (CardView) itemView;
       dataSetName = itemView.findViewById(R.id.dataset_name);
       dataSetType = itemView.findViewById(R.id.dataset_type);
+      dataSetUpdateTime = itemView.findViewById(R.id.dataset_update_time);
       dataSetObjectCount = itemView.findViewById(R.id.dataset_object_count);
       dataSetDesc = itemView.findViewById(R.id.dataset_desc);
       moreButton = itemView.findViewById(R.id.dataset_menu_dot);

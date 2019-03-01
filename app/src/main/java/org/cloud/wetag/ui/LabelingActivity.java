@@ -34,11 +34,12 @@ import com.zhihu.matisse.filter.Filter;
 
 import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
-import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.model.DataSetUpdateDBHelper;
+import org.cloud.wetag.model.Sample;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.model.ObjectSelection;
-import org.cloud.wetag.ui.adapter.DataObjectCardAdapter;
+import org.cloud.wetag.ui.adapter.SampleCardAdapter;
 import org.cloud.wetag.ui.adapter.LabelFragmentPagerAdapter;
 import org.cloud.wetag.ui.widget.LabelBar;
 import org.cloud.wetag.utils.CaptureStrategy;
@@ -57,8 +58,8 @@ import java.util.Set;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
-public class DataObjectLabelingActivity extends BaseActivity implements View.OnClickListener,
-    DataObjectCardAdapter.OnDataObjectStateChangedListener, TabLayout.OnTabSelectedListener {
+public class LabelingActivity extends BaseActivity implements View.OnClickListener,
+    SampleCardAdapter.OnDataObjectStateChangedListener, TabLayout.OnTabSelectedListener {
 
   private DataSet dataSet;
   private TabLayout tabLayout;
@@ -90,14 +91,14 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
           })
           .show();
     } else {
-      Intent intent = new Intent(context, DataObjectLabelingActivity.class);
+      Intent intent = new Intent(context, LabelingActivity.class);
       intent.putExtra("dataset_name", dataSet.getName());
       context.startActivity(intent);
     }
   }
 
   public static void start(final Context context, final DataSet dataSet, String gotoLabel) {
-    Intent intent = new Intent(context, DataObjectLabelingActivity.class);
+    Intent intent = new Intent(context, LabelingActivity.class);
     intent.putExtra("dataset_name", dataSet.getName());
     intent.putExtra("dataset_goto_label", gotoLabel);
     context.startActivity(intent);
@@ -286,11 +287,11 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
             // delete all selected images, delete it only if it is captured in this app.
             int ignored = 0;
             int deleted = 0;
-            for (DataObject dataObject : objectSelection.get()) {
-              dataSet.removeObject(dataObject);
-              dataObject.delete();
-              if (dataObject.isCapturedInApp()) {
-                File imageFile = new File(dataObject.getSource());
+            for (Sample sample : objectSelection.get()) {
+              dataSet.removeObject(sample);
+              sample.delete();
+              if (sample.isCapturedInApp()) {
+                File imageFile = new File(sample.getSource());
                 imageFile.delete();
                 deleted++;
               } else {
@@ -331,7 +332,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
 
           @Override
           public void onNext(Boolean aBoolean) {
-            Matisse.from(DataObjectLabelingActivity.this)
+            Matisse.from(LabelingActivity.this)
                 .choose(new HashSet<MimeType>(){{add(MimeType.JPEG);}})
                 .countable(true)
                 .maxSelectable(100)
@@ -345,7 +346,7 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
 
           @Override
           public void onError(Throwable e) {
-            Log.e(DataObjectLabelingActivity.this.getClass().getName(), e.toString());
+            Log.e(LabelingActivity.this.getClass().getName(), e.toString());
           }
 
           @Override
@@ -386,10 +387,9 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     if (requestCode == REQUEST_CODE_CAPTURE) {
       File imageFile = new File(mediaStoreCompat.getCurrentPhotoPath());
       if (imageFile.exists() && imageFile.length() > 0) {
-        DataObject dataObject = new DataObject(mediaStoreCompat.getCurrentPhotoPath(), true);
-        dataObject.saveThrows();
-        dataSet.addObject(dataObject);
-        dataSet.saveThrows();
+        Sample sample = new Sample(mediaStoreCompat.getCurrentPhotoPath(), true);
+        sample.saveThrows();
+        dataSet.addObject(sample);
         refreshView();
       }
     } else if (requestCode == REQUEST_CODE_PREVIEW) {
@@ -398,9 +398,9 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
       // returned from image chooser, add the image to the dataset and refresh UI
       List<String> pathList = Matisse.obtainPathResult(data);
       for (String path : pathList) {
-        DataObject dataObject = new DataObject(path, false);
-        dataObject.saveThrows();
-        dataSet.addObject(dataObject);
+        Sample sample = new Sample(path, false);
+        sample.saveThrows();
+        dataSet.addObject(sample);
         dataSet.saveThrows();
       }
       refreshView();
@@ -449,20 +449,20 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     adapter.notifyDataSetChanged();
   }
 
-  // dataObject clicked
+  // sample clicked
   @Override
-  public void onDataObjectClicked(DataObject dataObject) {
+  public void onDataObjectClicked(Sample sample) {
     if (dataSet.isImageDataSet()) {
-      ImagePreviewActivity.start(this, dataSet, dataObject, REQUEST_CODE_PREVIEW);
+      ImagePreviewActivity.start(this, dataSet, sample, REQUEST_CODE_PREVIEW);
     }
   }
 
   @Override
-  public void onDataObjectChipClicked(Chip chip, DataObject dataObject) {
-    if (dataObject.getLabels().contains(chip.getText().toString())) {
-      dataObject.removeLabel(chip.getText().toString());
+  public void onDataObjectChipClicked(Chip chip, Sample sample) {
+    if (sample.getLabels().contains(chip.getText().toString())) {
+      DataSetUpdateDBHelper.removeLabel(dataSet, sample, chip.getText().toString());
     } else {
-      dataObject.addLabel(chip.getText().toString());
+      DataSetUpdateDBHelper.addLabel(dataSet, sample, chip.getText().toString());
     }
     refreshView();
   }
@@ -472,13 +472,13 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
     refreshView();
   }
 
-  // dataObject check clicked
+  // sample check clicked
   @Override
-  public void onDataObjectCheckClicked(DataObject dataObject, boolean check) {
-    if (dataObject.getLabels().size() > 0) {
+  public void onDataObjectCheckClicked(Sample sample, boolean check) {
+    if (sample.getLabels().size() > 0) {
       // gather labels from all select images
       Set<String> labels = new HashSet<>();
-      for (DataObject img : objectSelection.get()) {
+      for (Sample img : objectSelection.get()) {
         labels.addAll(img.getLabels());
       }
       // set chips status in label bar
@@ -503,9 +503,8 @@ public class DataObjectLabelingActivity extends BaseActivity implements View.OnC
   public void onClick(View v) {
     switch (v.getId()) {
       case R.id.button_label_confirm:
-        for (DataObject dataObject : objectSelection.get()) {
-          dataObject.setLabels(labelBar.getLabelSelection());
-          dataObject.saveThrows();
+        for (Sample sample : objectSelection.get()) {
+          DataSetUpdateDBHelper.setLabels(dataSet, sample, labelBar.getLabelSelection());
         }
         objectSelection.clear();
         labelBar.clear();

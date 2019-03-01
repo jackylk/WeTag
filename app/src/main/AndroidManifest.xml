@@ -26,7 +26,7 @@
         <activity android:name=".ui.EditDataSetActivity" />
         <activity android:name=".ui.BaseActivity" />
         <activity
-            android:name=".ui.DataObjectLabelingActivity"
+            android:name=".ui.LabelingActivity"
             android:label="@string/title_activity_label" />
 
         <provider

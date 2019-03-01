@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.cloud.wetag.R;
-import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.model.Sample;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.ObjectSelection;
 import org.cloud.wetag.ui.widget.CheckView;
@@ -23,22 +23,22 @@ import java.util.List;
 import static org.cloud.wetag.ui.PageFragment.ALL_LABELED;
 import static org.cloud.wetag.ui.PageFragment.ALL_UNLABELED;
 
-public abstract class DataObjectCardAdapter extends
-    RecyclerView.Adapter<DataObjectCardAdapter.CardItemViewHolder> {
+public abstract class SampleCardAdapter extends
+    RecyclerView.Adapter<SampleCardAdapter.CardItemViewHolder> {
 
   Context context;
   ObjectSelection objectSelection;
   OnDataObjectStateChangedListener listener;
 
   DataSet dataSet;
-  List<DataObject> dataObjects;
+  List<Sample> samples;
 
   // type can be constant value in PageFragment
   private int type;
   private String filterLabel;
 
-  public DataObjectCardAdapter(DataSet dataSet, ObjectSelection objectSelection, int type,
-                               String filterLabel) {
+  public SampleCardAdapter(DataSet dataSet, ObjectSelection objectSelection, int type,
+                           String filterLabel) {
     this.objectSelection = objectSelection;
     this.dataSet = dataSet;
     this.type = type;
@@ -51,24 +51,24 @@ public abstract class DataObjectCardAdapter extends
 
   public void refreshAllCards() {
     if (type == ALL_UNLABELED) {
-      dataObjects = new LinkedList<>();
-      for (DataObject dataObject : dataSet.getDataObjects()) {
-        if (dataObject.getLabels().size() == 0) {
-          dataObjects.add(dataObject);
+      samples = new LinkedList<>();
+      for (Sample sample : dataSet.getSamples()) {
+        if (sample.getLabels().size() == 0) {
+          samples.add(sample);
         }
       }
     } else if (type == ALL_LABELED) {
-      dataObjects = new LinkedList<>();
-      for (DataObject dataObject : dataSet.getDataObjects()) {
-        if (dataObject.getLabels().size() > 0) {
-          dataObjects.add(dataObject);
+      samples = new LinkedList<>();
+      for (Sample sample : dataSet.getSamples()) {
+        if (sample.getLabels().size() > 0) {
+          samples.add(sample);
         }
       }
     } else {
-      dataObjects = new LinkedList<>();
-      for (DataObject dataObject : dataSet.getDataObjects()) {
-        if (dataObject.getLabels().contains(filterLabel)) {
-          dataObjects.add(dataObject);
+      samples = new LinkedList<>();
+      for (Sample sample : dataSet.getSamples()) {
+        if (sample.getLabels().contains(filterLabel)) {
+          samples.add(sample);
         }
       }
     }
@@ -77,7 +77,7 @@ public abstract class DataObjectCardAdapter extends
 
   @Override
   public long getItemId(int position) {
-    return dataObjects.get(position).getId();
+    return samples.get(position).getId();
   }
 
   @NonNull
@@ -93,16 +93,16 @@ public abstract class DataObjectCardAdapter extends
 
   @Override
   public void onBindViewHolder(@NonNull CardItemViewHolder holder, int position) {
-    DataObject dataObject = dataObjects.get(position);
-    onBindDataObject(context, holder, dataObject, position);
+    Sample sample = samples.get(position);
+    onBindDataObject(context, holder, sample, position);
   }
 
   abstract void onBindDataObject(Context context, CardItemViewHolder holder,
-                                 DataObject dataObject, int position);
+                                 Sample sample, int position);
 
   @Override
   public int getItemCount() {
-    return dataObjects.size();
+    return samples.size();
   }
 
   public void registerOnCheckChangedListener(OnDataObjectStateChangedListener listener) {
@@ -110,30 +110,30 @@ public abstract class DataObjectCardAdapter extends
   }
 
   public interface OnDataObjectStateChangedListener {
-    void onDataObjectCheckClicked(DataObject dataObject, boolean check);
-    void onDataObjectClicked(DataObject dataObject);
-    void onDataObjectChipClicked(Chip chip, DataObject dataObject);
+    void onDataObjectCheckClicked(Sample sample, boolean check);
+    void onDataObjectClicked(Sample sample);
+    void onDataObjectChipClicked(Chip chip, Sample sample);
     void refreshTab();
   }
 
   void onDataObjectCheckClicked(int position) {
-    DataObject dataObject = dataObjects.get(position);
-    if (!objectSelection.exist(dataObject)) {
-      objectSelection.add(dataObject);
-      listener.onDataObjectCheckClicked(dataObject,true);
+    Sample sample = samples.get(position);
+    if (!objectSelection.exist(sample)) {
+      objectSelection.add(sample);
+      listener.onDataObjectCheckClicked(sample,true);
     } else {
-      objectSelection.remove(dataObject);
-      listener.onDataObjectCheckClicked(dataObject,false);
+      objectSelection.remove(sample);
+      listener.onDataObjectCheckClicked(sample,false);
     }
     notifyItemChanged(position);
   }
 
   void onDataObjectClicked(int position) {
-    listener.onDataObjectClicked(dataObjects.get(position));
+    listener.onDataObjectClicked(samples.get(position));
   }
 
   void onDataObjectChipClicked(Chip chip, int position) {
-    listener.onDataObjectChipClicked(chip, dataObjects.get(position));
+    listener.onDataObjectChipClicked(chip, samples.get(position));
   }
 
   class CardItemViewHolder extends RecyclerView.ViewHolder {

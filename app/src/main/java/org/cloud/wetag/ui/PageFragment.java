@@ -15,10 +15,7 @@ import org.cloud.wetag.R;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.model.ObjectSelection;
-import org.cloud.wetag.ui.adapter.DataObjectCardAdapter;
-import org.cloud.wetag.ui.adapter.ImageCardAdapter;
-import org.cloud.wetag.ui.adapter.Seq2SeqCardAdapter;
-import org.cloud.wetag.ui.adapter.TextCardAdapter;
+import org.cloud.wetag.ui.adapter.SampleCardAdapter;
 
 public class PageFragment extends Fragment {
 
@@ -26,9 +23,9 @@ public class PageFragment extends Fragment {
   public final static int ALL_LABELED = 1;
   public final static int SINGLE_LABELED = 2;
 
-  private DataObjectCardAdapter adapter;
+  private SampleCardAdapter adapter;
   private ObjectSelection objectSelection;
-  private DataObjectCardAdapter.OnDataObjectStateChangedListener listener;
+  private SampleCardAdapter.OnDataObjectStateChangedListener listener;
   private RecyclerView recyclerView;
   private DataSet dataSet;
 
@@ -54,11 +51,11 @@ public class PageFragment extends Fragment {
     super.onCreate(savedInstanceState);
   }
 
-  public void registerOnCheckChangedListener(DataObjectCardAdapter.OnDataObjectStateChangedListener listener) {
+  public void registerOnCheckChangedListener(SampleCardAdapter.OnDataObjectStateChangedListener listener) {
     this.listener = listener;
   }
 
-  public DataObjectCardAdapter getAdapter() {
+  public SampleCardAdapter getAdapter() {
     return adapter;
   }
 

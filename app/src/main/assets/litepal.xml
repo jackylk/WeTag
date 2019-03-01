@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <litepal>
     <dbname value="WeTag" ></dbname>
-    <version value="5"></version>
+    <version value="8"></version>
     <list>
         <mapping class="org.cloud.wetag.model.DataSet"></mapping>
-        <mapping class="org.cloud.wetag.model.DataObject"></mapping>
+        <mapping class="org.cloud.wetag.model.Sample"></mapping>
     </list>
 </litepal>

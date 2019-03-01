@@ -11,7 +11,8 @@ import android.view.View;
 
 import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
-import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.model.DataSetUpdateDBHelper;
+import org.cloud.wetag.model.Sample;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.ui.widget.LabelBar;
@@ -52,9 +53,9 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
     labelBar = new LabelBar(findViewById(R.id.label_bar), dataSet, this);
     labelBar.setEnabled(true);
 
-    DataObject dataObject = dataSet.getDataObject(imageIndex);
+    Sample sample = dataSet.getDataObject(imageIndex);
     for (Map.Entry<String, Chip> chipEntry : labelBar.getChipMap().entrySet()) {
-      if (dataObject.getLabels().contains(chipEntry.getKey())) {
+      if (sample.getLabels().contains(chipEntry.getKey())) {
         chipEntry.getValue().setChecked(true);
       }
     }
@@ -62,19 +63,19 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
 
   @Override
   public void onClick(View v) {
-    DataObject dataObject = dataSet.getDataObject(imageIndex);
-    dataObject.setLabels(labelBar.getLabelSelection());
+    Sample sample = dataSet.getDataObject(imageIndex);
+    DataSetUpdateDBHelper.setLabels(dataSet, sample, labelBar.getLabelSelection());
     Intent intent = new Intent();
     setResult(RESULT_OK, intent);
     finish();
   }
 
   public static void start(AppCompatActivity activity,
-                           DataSet dataSet, DataObject dataObject, int requestCode) {
+                           DataSet dataSet, Sample sample, int requestCode) {
     Intent intent = new Intent(MyApplication.getContext(), ImagePreviewActivity.class);
     intent.putExtra("dataset_name", dataSet.getName());
-    intent.putExtra("image_index", dataSet.getDataObjects().indexOf(dataObject));
-    intent.putExtra("image_path", dataObject.getSource());
+    intent.putExtra("image_index", dataSet.getSamples().indexOf(sample));
+    intent.putExtra("image_path", sample.getSource());
     activity.startActivityForResult(intent, requestCode);
   }
 

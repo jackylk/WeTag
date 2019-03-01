@@ -2,10 +2,9 @@ package org.cloud.wetag.model;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.view.LayoutInflater;
 
 import org.cloud.wetag.R;
-import org.cloud.wetag.ui.adapter.DataObjectCardAdapter;
+import org.cloud.wetag.ui.adapter.SampleCardAdapter;
 import org.cloud.wetag.ui.adapter.ImageCardAdapter;
 import org.cloud.wetag.ui.adapter.Seq2SeqCardAdapter;
 import org.cloud.wetag.ui.adapter.TextCardAdapter;
@@ -44,7 +43,13 @@ public class DataSet extends DataSupport {
   @Column(nullable = false)
   private int type;
 
-  private List<DataObject> dataObjects = new ArrayList<>();
+  private List<Sample> samples = new ArrayList<>();
+
+  // creation time of this dataset, by System.currentTimeMillis()
+  private long createTime;
+
+  // update time of when any objects or labels is updated, by System.currentTimeMillis()
+  private long updateTime;
 
   // dataset type for image classification labeling, it can be object detection in future version
   public static final int IMAGE = 0;
@@ -63,6 +68,8 @@ public class DataSet extends DataSupport {
     Objects.requireNonNull(name);
     this.name = name;
     this.type = type;
+    this.createTime = System.currentTimeMillis();
+    this.updateTime = createTime;
   }
 
   public static DataSet newImageDataSet(String name) {
@@ -118,36 +125,36 @@ public class DataSet extends DataSupport {
     return labels;
   }
 
-  public List<DataObject> getOrLoadObjects() {
-    if (this.dataObjects.size() == 0) {
-      List<DataObject> dataObjects = DataSupport
+  public List<Sample> getOrLoadSamples() {
+    if (this.samples.size() == 0) {
+      List<Sample> samples = DataSupport
           .where("dataset_id = ?", String.valueOf(id))
-          .find(DataObject.class);
-      this.dataObjects = dataObjects;
-      for (DataObject dataObject : dataObjects) {
-        dataObject.getOrLoadLabels();
+          .find(Sample.class);
+      this.samples = samples;
+      for (Sample sample : samples) {
+        sample.getOrLoadLabels();
       }
     }
-    return this.dataObjects;
+    return this.samples;
   }
 
   public int getObjectCount() {
-    return dataObjects.size();
+    return samples.size();
   }
 
-  public List<DataObject> getDataObjects() {
-    return dataObjects;
+  public List<Sample> getSamples() {
+    return samples;
   }
 
-  public DataObject getDataObject(int index) {
-    return dataObjects.get(index);
+  public Sample getDataObject(int index) {
+    return samples.get(index);
   }
 
   public void addSource(File file) throws IOException {
     if (type == IMAGE) {
-      DataObject dataObject = new DataObject(file.getPath(), true);
-      dataObject.saveThrows();
-      addObject(dataObject);
+      Sample sample = new Sample(file.getPath(), true);
+      sample.saveThrows();
+      addObject(sample);
     } else if (type == TEXT_CLASSIFICATION) {
       readAllLines(file);
     } else if (type == SEQ2SEQ) {
@@ -162,20 +169,20 @@ public class DataSet extends DataSupport {
     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
     String line;
     while ((line = reader.readLine()) != null) {
-      DataObject dataObject = new DataObject(line, true);
-      dataObject.saveThrows();
-      addObject(dataObject);
+      Sample sample = new Sample(line, true);
+      sample.saveThrows();
+      addObject(sample);
     }
     reader.close();
     in.close();
   }
 
-  public void addObject(DataObject dataObject) {
-    dataObjects.add(dataObject);
+  public void addObject(Sample sample) {
+    samples.add(sample);
   }
 
-  public void removeObject(DataObject dataObject) {
-    dataObjects.remove(dataObject);
+  public void removeObject(Sample sample) {
+    samples.remove(sample);
   }
 
   public String getDesc() {
@@ -184,6 +191,18 @@ public class DataSet extends DataSupport {
 
   public void setDesc(String desc) {
     this.desc = desc;
+  }
+
+  public long getCreateTime() {
+    return createTime;
+  }
+
+  public long getUpdateTime() {
+    return updateTime;
+  }
+
+  public void setUpdateTime(long updateTime) {
+    this.updateTime = updateTime;
   }
 
   // default picture shown in the card
@@ -222,8 +241,8 @@ public class DataSet extends DataSupport {
     }
   }
 
-  public DataObjectCardAdapter createAdapter(int pageType, String labelName,
-                                             ObjectSelection objectSelection) {
+  public SampleCardAdapter createAdapter(int pageType, String labelName,
+                                         ObjectSelection objectSelection) {
     if (type == DataSet.IMAGE) {
       return createImageCardAdapter(pageType, labelName, objectSelection);
     } else if (type == DataSet.TEXT_CLASSIFICATION) {
@@ -235,8 +254,8 @@ public class DataSet extends DataSupport {
     }
   }
 
-  private DataObjectCardAdapter createImageCardAdapter(int pageType, String labelName,
-                                                       ObjectSelection objectSelection) {
+  private SampleCardAdapter createImageCardAdapter(int pageType, String labelName,
+                                                   ObjectSelection objectSelection) {
     if (pageType == ALL_UNLABELED) {
       return new ImageCardAdapter(this, objectSelection, ALL_UNLABELED, null);
     } else if (pageType == ALL_LABELED) {
@@ -246,8 +265,8 @@ public class DataSet extends DataSupport {
     }
   }
 
-  private DataObjectCardAdapter createTextCardAdapter(int pageType, String labelName,
-                                                      ObjectSelection objectSelection) {
+  private SampleCardAdapter createTextCardAdapter(int pageType, String labelName,
+                                                  ObjectSelection objectSelection) {
     if (pageType == ALL_UNLABELED) {
       return new TextCardAdapter(this, objectSelection, ALL_UNLABELED, null);
     } else if (pageType == ALL_LABELED) {
@@ -257,8 +276,8 @@ public class DataSet extends DataSupport {
     }
   }
 
-  private DataObjectCardAdapter createSeq2SeqCardAdapter(int pageType, String labelName,
-                                                         ObjectSelection objectSelection) {
+  private SampleCardAdapter createSeq2SeqCardAdapter(int pageType, String labelName,
+                                                     ObjectSelection objectSelection) {
     if (pageType == ALL_UNLABELED) {
       return new Seq2SeqCardAdapter(this, objectSelection, ALL_UNLABELED, null);
     } else if (pageType == ALL_LABELED) {

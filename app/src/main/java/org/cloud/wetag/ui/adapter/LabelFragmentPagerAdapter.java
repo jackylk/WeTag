@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.model.Sample;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.ObjectSelection;
 import org.cloud.wetag.ui.PageFragment;
@@ -24,7 +24,7 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
 
   public LabelFragmentPagerAdapter(FragmentManager fm, DataSet dataSet,
                                    ObjectSelection objectSelection,
-                                   DataObjectCardAdapter.OnDataObjectStateChangedListener listener) {
+                                   SampleCardAdapter.OnDataObjectStateChangedListener listener) {
     super(fm);
     this.dataSet = dataSet;
 
@@ -46,7 +46,7 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
 
   public void refreshFragment(int position) {
     if (position >= 0 && position < fragments.size()) {
-      DataObjectCardAdapter adapter = fragments.get(position).getAdapter();
+      SampleCardAdapter adapter = fragments.get(position).getAdapter();
       if (adapter != null) {
         adapter.refreshAllCards();
       }
@@ -86,7 +86,7 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
   @Nullable
   @Override
   public CharSequence getPageTitle(int position) {
-    DataObjectCardAdapter adapter = fragments.get(position).getAdapter();
+    SampleCardAdapter adapter = fragments.get(position).getAdapter();
     int count;
     if (adapter != null) {
       count = fragments.get(position).getAdapter().getItemCount();
@@ -109,20 +109,20 @@ public class LabelFragmentPagerAdapter extends FragmentPagerAdapter {
   private int countImages(int position, String filterLabel) {
     int count = 0;
     if (position == ALL_UNLABELED) {
-      for (DataObject dataObject : dataSet.getDataObjects()) {
-        if (dataObject.getLabels().size() == 0) {
+      for (Sample sample : dataSet.getSamples()) {
+        if (sample.getLabels().size() == 0) {
           count++;
         }
       }
     } else if (position == ALL_LABELED) {
-      for (DataObject dataObject : dataSet.getDataObjects()) {
-        if (dataObject.getLabels().size() > 0) {
+      for (Sample sample : dataSet.getSamples()) {
+        if (sample.getLabels().size() > 0) {
           count++;
         }
       }
     } else {
-      for (DataObject dataObject : dataSet.getDataObjects()) {
-        if (dataObject.getLabels().contains(filterLabel)) {
+      for (Sample sample : dataSet.getSamples()) {
+        if (sample.getLabels().contains(filterLabel)) {
           count++;
         }
       }

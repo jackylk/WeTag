@@ -10,15 +10,12 @@ import android.support.design.chip.ChipGroup;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.cloud.wetag.R;
-import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.model.Sample;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
-import org.cloud.wetag.utils.ColorUtils;
 
 import java.util.List;
 
@@ -49,8 +46,8 @@ public class EditLabelActivity extends BaseActivity implements View.OnClickListe
                               final String label) {
     final Chip chip = new Chip(chipGroup.getContext());
     int count = 0;
-    for (DataObject dataObject : dataSet.getDataObjects()) {
-      if (dataObject.getLabels().contains(label)) {
+    for (Sample sample : dataSet.getSamples()) {
+      if (sample.getLabels().contains(label)) {
         count++;
       }
     }
@@ -66,10 +63,10 @@ public class EditLabelActivity extends BaseActivity implements View.OnClickListe
             .setTitle("删除标签")
             .setPositiveButton(R.string.dialog_button_positive, new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int which) {
-                for (DataObject dataObject : dataSet.getDataObjects()) {
-                  if (dataObject.getLabels().contains(label)) {
-                    dataObject.getLabels().remove(label);
-                    dataObject.save();
+                for (Sample sample : dataSet.getSamples()) {
+                  if (sample.getLabels().contains(label)) {
+                    sample.getLabels().remove(label);
+                    sample.save();
                   }
                 }
                 dataSet.getLabels().remove(label);

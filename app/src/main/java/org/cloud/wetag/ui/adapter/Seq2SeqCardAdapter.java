@@ -14,11 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.cloud.wetag.R;
-import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.model.DataSetUpdateDBHelper;
+import org.cloud.wetag.model.Sample;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.ObjectSelection;
 
-public class Seq2SeqCardAdapter extends DataObjectCardAdapter implements View.OnClickListener {
+public class Seq2SeqCardAdapter extends SampleCardAdapter implements View.OnClickListener {
 
   public Seq2SeqCardAdapter(DataSet dataSet, ObjectSelection objectSelection, int type,
                             String filterLabel) {
@@ -26,12 +27,12 @@ public class Seq2SeqCardAdapter extends DataObjectCardAdapter implements View.On
   }
 
   @Override
-  void onBindDataObject(Context context, CardItemViewHolder holder, DataObject dataObject,
+  void onBindDataObject(Context context, CardItemViewHolder holder, Sample sample,
                         int position) {
-    ((TextView) holder.dataObjectView).setText(dataObject.getSource());
+    ((TextView) holder.dataObjectView).setText(sample.getSource());
     if (objectSelection.isSelectEnabled()) {
       holder.checkView.setVisibility(View.VISIBLE);
-      if (objectSelection.get().contains(dataObject)) {
+      if (objectSelection.get().contains(sample)) {
         holder.checkView.setChecked(true);
       } else {
         holder.checkView.setChecked(false);
@@ -41,8 +42,8 @@ public class Seq2SeqCardAdapter extends DataObjectCardAdapter implements View.On
     }
     LinearLayout labelView = holder.cardView.findViewById(R.id.seq2seq_label_view);
     labelView.removeAllViews();
-    if (!dataObject.getLabels().isEmpty()) {
-      for (String label : dataObject.getLabels()) {
+    if (!sample.getLabels().isEmpty()) {
+      for (String label : sample.getLabels()) {
         addNewLabelView(labelView, label, position);
       }
     }
@@ -79,14 +80,13 @@ public class Seq2SeqCardAdapter extends DataObjectCardAdapter implements View.On
   @Override
   public void onClick(final View v) {
     final int position = (int) v.getTag(R.string.tag_key_position);
-    final DataObject dataObject = dataObjects.get(position);
+    final Sample sample = samples.get(position);
     if (v instanceof Button) {
       LinearLayout layout = (LinearLayout) v.getParent().getParent();
       CardView cardView = (CardView) layout.getParent();
       EditText editText = cardView.findViewById(R.id.seq2seq_label_input);
       if (!editText.getText().toString().isEmpty()) {
-        dataObject.addLabel(editText.getText().toString());
-        dataObject.saveThrows();
+        DataSetUpdateDBHelper.addLabel(dataSet, sample, editText.getText().toString());
         editText.setText("");
         listener.refreshTab();
         notifyItemChanged(position);
@@ -106,9 +106,9 @@ public class Seq2SeqCardAdapter extends DataObjectCardAdapter implements View.On
               if (newLabel.isEmpty()) {
                 Toast.makeText(v.getContext(), "输入不能为空！", Toast.LENGTH_LONG).show();
               } else {
-                dataObject.getLabels().remove(originLabel);
-                dataObject.getLabels().add(newLabel);
-                dataObject.saveThrows();
+                sample.getLabels().remove(originLabel);
+                sample.getLabels().add(newLabel);
+                sample.saveThrows();
                 notifyItemChanged(position);
               }
             }
@@ -117,8 +117,8 @@ public class Seq2SeqCardAdapter extends DataObjectCardAdapter implements View.On
           .setNeutralButton(R.string.dialog_delete_dataobject_button_positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-              dataObject.getLabels().remove(originLabel);
-              dataObject.saveThrows();
+              sample.getLabels().remove(originLabel);
+              sample.saveThrows();
               listener.refreshTab();
               notifyItemChanged(position);
             }

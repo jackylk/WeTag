@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.util.JsonWriter;
 import android.util.Log;
 
-import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.model.Sample;
 import org.cloud.wetag.model.DataSet;
 
 import java.io.File;
@@ -83,13 +83,13 @@ public class FileUtils {
     JsonWriter writer = new JsonWriter(out);
     writer.beginArray();
     for (int i = 0; i < dataSet.getObjectCount(); i++) {
-      DataObject dataObject = dataSet.getDataObject(i);
-      if (dataObject.getLabels().size() > 0) {
+      Sample sample = dataSet.getDataObject(i);
+      if (sample.getLabels().size() > 0) {
         writer.beginObject();
         writer.name("file");
-        writer.value(dataObject.getSource());
+        writer.value(sample.getSource());
         writer.name("label");
-        writer.value(dataObject.getLabels().toString());
+        writer.value(sample.getLabels().toString());
         writer.endObject();
       }
     }

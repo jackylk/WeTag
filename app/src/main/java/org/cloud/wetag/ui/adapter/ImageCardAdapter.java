@@ -13,14 +13,14 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 import org.cloud.wetag.R;
-import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.model.Sample;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.ObjectSelection;
 import org.cloud.wetag.utils.ColorUtils;
 
 import java.util.List;
 
-public class ImageCardAdapter extends DataObjectCardAdapter
+public class ImageCardAdapter extends SampleCardAdapter
     implements View.OnLongClickListener, View.OnTouchListener {
 
   private boolean inMultiSelectMode;
@@ -32,17 +32,17 @@ public class ImageCardAdapter extends DataObjectCardAdapter
   }
 
   @Override
-  void onBindDataObject(Context context, CardItemViewHolder holder, DataObject dataObject,
+  void onBindDataObject(Context context, CardItemViewHolder holder, Sample sample,
                         int position) {
     ImageView imageView = (ImageView) holder.dataObjectView;
-    Glide.with(context).load(dataObject.getUri()).into(imageView);
+    Glide.with(context).load(sample.getUri()).into(imageView);
     imageView.setOnLongClickListener(this);
     imageView.setOnTouchListener(this);
     imageView.setTag(R.id.dataobject_view, position);
     if (inMultiSelectMode) {
       imageView.setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
       holder.checkView.setVisibility(View.VISIBLE);
-      if (objectSelection.exist(dataObject)) {
+      if (objectSelection.exist(sample)) {
         imageView.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
         holder.checkView.setEnabled(true);
         holder.checkView.setChecked(true);
@@ -56,7 +56,7 @@ public class ImageCardAdapter extends DataObjectCardAdapter
     }
 
     holder.chipGroup.removeAllViews();
-    List<String> labels = dataObject.getOrLoadLabels();
+    List<String> labels = sample.getOrLoadLabels();
     for (String label : labels) {
       Chip chip = makeChip(context, dataSet, label);
       holder.chipGroup.addView(chip);

@@ -11,12 +11,11 @@ import org.litepal.crud.DataSupport;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Object that to be labeled. It can be image file, audio file, text, etc
  */
-public class DataObject extends DataSupport {
+public class Sample extends DataSupport {
   private int id;
 
   // true if this object is captured in this app (for example, image snapshot in this app),
@@ -29,15 +28,23 @@ public class DataObject extends DataSupport {
 
   private List<String> labels = new LinkedList<>();
 
+  // creation time of this sample, by System.currentTimeMillis()
+  private long createTime;
+
+  // update time of when any labels is updated, by System.currentTimeMillis()
+  private long updateTime;
+
   /**
-   *  @param source for file related data (like image and audio), source is the
+   * @param source for file related data (like image and audio), source is the
    *               file path of the object; for text related data, source is the
    *               text content itself
    * @param capturedInApp
    */
-  public DataObject(String source, boolean capturedInApp) {
+  public Sample(String source, boolean capturedInApp) {
     this.source = source;
     this.capturedInApp = capturedInApp;
+    this.createTime = System.currentTimeMillis();
+    this.updateTime = createTime;
   }
 
   public boolean isCapturedInApp() {
@@ -66,7 +73,7 @@ public class DataObject extends DataSupport {
     if (this.labels.size() == 0) {
       List<String> labelFromDb = new LinkedList<>();
       Cursor cursor = DataSupport.findBySQL(
-          "select * from dataobject_labels where dataobject_id = ?", String.valueOf(id));
+          "select * from sample_labels where sample_id = ?", String.valueOf(id));
       if (cursor.moveToFirst()) {
         do {
           labelFromDb.add(cursor.getString(cursor.getColumnIndex("labels")));
@@ -77,21 +84,33 @@ public class DataObject extends DataSupport {
     return this.labels;
   }
 
-  public void setLabels(List<String> labels) {
+  void setLabels(List<String> labels) {
     this.labels.clear();
     this.labels.addAll(labels);
   }
 
-  public void addLabel(String label) {
+  void addLabel(String label) {
     labels.add(label);
   }
 
-  public void addLabels(Set<String> labels) {
-    labels.addAll(labels);
+  void removeLabel(String label) {
+    this.labels.remove(label);
   }
 
-  public void removeLabel(String lable) {
-    labels.remove(lable);
+  void setCreateTime(long createTime) {
+    this.createTime = createTime;
+  }
+
+  void setUpdateTime(long updateTime) {
+    this.updateTime = updateTime;
+  }
+
+  public long getCreateTime() {
+    return createTime;
+  }
+
+  public long getUpdateTime() {
+    return updateTime;
   }
 
   public int getId() {

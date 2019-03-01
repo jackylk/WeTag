@@ -8,14 +8,14 @@ import android.widget.TextView;
 
 import org.cloud.wetag.MyApplication;
 import org.cloud.wetag.R;
-import org.cloud.wetag.model.DataObject;
+import org.cloud.wetag.model.Sample;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.ObjectSelection;
 import org.cloud.wetag.utils.ColorUtils;
 
 import java.util.List;
 
-public class TextCardAdapter extends DataObjectCardAdapter {
+public class TextCardAdapter extends SampleCardAdapter {
 
   public TextCardAdapter(DataSet dataSet, ObjectSelection objectSelection, int type,
                          String filterLabel) {
@@ -23,9 +23,9 @@ public class TextCardAdapter extends DataObjectCardAdapter {
   }
 
   @Override
-  void onBindDataObject(Context context, CardItemViewHolder holder, DataObject dataObject,
+  void onBindDataObject(Context context, CardItemViewHolder holder, Sample sample,
                         int position) {
-    List<String> labels = dataObject.getLabels();
+    List<String> labels = sample.getLabels();
     for (Chip chip : holder.chips) {
       if (labels.contains(chip.getText().toString())) {
         chip.setChecked(true);
@@ -36,10 +36,10 @@ public class TextCardAdapter extends DataObjectCardAdapter {
           ColorUtils.getLabelBackgroundColor(dataSet.getLabels(), chip.getText().toString()));
       chip.setTextColor(ContextCompat.getColor(MyApplication.getContext(), R.color.white));
     }
-    ((TextView) holder.dataObjectView).setText(dataObject.getSource());
+    ((TextView) holder.dataObjectView).setText(sample.getSource());
     if (objectSelection.isSelectEnabled()) {
       holder.checkView.setVisibility(View.VISIBLE);
-      if (objectSelection.get().contains(dataObject)) {
+      if (objectSelection.get().contains(sample)) {
         holder.checkView.setChecked(true);
       } else {
         holder.checkView.setChecked(false);
