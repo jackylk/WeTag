@@ -40,7 +40,9 @@
         </provider>
 
         <activity android:name=".ui.ImagePreviewActivity" />
-        <activity android:name=".ui.EditLabelActivity"></activity>
+        <activity android:name=".ui.EditLabelActivity" />
+        <activity android:name=".ui.LoginActivity" />
+        <activity android:name=".ui.CloudDataSetActivity"></activity>
     </application>
 
 </manifest>

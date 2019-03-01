@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.LoginActivity" >
+
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/login_grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dp_16"
+        app:rowCount="3"
+        app:columnCount="2" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="账号名"
+            android:layout_margin="@dimen/dp_16"/>
+
+        <EditText
+            android:id="@+id/user_name_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_16"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="密码"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_margin="@dimen/dp_16"/>
+
+        <EditText
+            android:id="@+id/password_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_margin="@dimen/dp_16"/>
+
+    </android.support.v7.widget.GridLayout>
+
+    <Button
+        android:id="@+id/login_confirm_button"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/login_grid"
+        android:text="登录"/>
+</RelativeLayout>

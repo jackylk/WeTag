@@ -51,6 +51,9 @@ public class DataSet extends DataSupport {
   // update time of when any objects or labels is updated, by System.currentTimeMillis()
   private long updateTime;
 
+  // dataset type for unknown (cloud dataset v1)
+  public static final int UNKNOWN = -1;
+
   // dataset type for image classification labeling, it can be object detection in future version
   public static final int IMAGE = 0;
 
@@ -138,7 +141,7 @@ public class DataSet extends DataSupport {
     return this.samples;
   }
 
-  public int getObjectCount() {
+  public int getSampleCount() {
     return samples.size();
   }
 
@@ -191,6 +194,10 @@ public class DataSet extends DataSupport {
 
   public void setDesc(String desc) {
     this.desc = desc;
+  }
+
+  public void setCreateTime(long createTime) {
+    this.createTime = createTime;
   }
 
   public long getCreateTime() {

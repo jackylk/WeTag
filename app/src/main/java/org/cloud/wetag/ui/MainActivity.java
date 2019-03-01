@@ -7,16 +7,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.cloud.wetag.R;
+import org.cloud.wetag.model.Credential;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
 import org.cloud.wetag.ui.adapter.DataSetCardAdapter;
@@ -31,14 +33,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity implements
-    DataSetCardAdapter.OnEditDataSetClickListener, View.OnClickListener {
+    DataSetCardAdapter.OnEditDataSetClickListener, View.OnClickListener,
+    NavigationView.OnNavigationItemSelectedListener {
 
   private DataSetCardAdapter adapter;
 
   private RecyclerView recyclerView;
+  private TextView usernameView;
+  private DrawerLayout drawerLayout;
+  private NavigationView navigationView;
+  private Credential credential = new Credential();
+  private String username = "未登录";
 
   private static final int REQUEST_CODE_CREATE_DATASET = 1;
   private static final int REQUEST_CODE_UPDATE_DATASET = 2;
+  private static final int REQUEST_CODE_LOGIN = 3;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -67,24 +76,17 @@ public class MainActivity extends BaseActivity implements
 
   private void initDrawer() {
     getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
-    final DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-    NavigationView navigationView = findViewById(R.id.nav_view);
+    drawerLayout = findViewById(R.id.drawer_layout);
+    navigationView = findViewById(R.id.nav_view);
     navigationView.setCheckedItem(R.id.nav_local_dataset);
-    navigationView.setNavigationItemSelectedListener(
-        new NavigationView.OnNavigationItemSelectedListener() {
-      @Override
-      public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        drawerLayout.closeDrawers();
-        return true;
-      }
-    });
+    navigationView.setNavigationItemSelectedListener(this);
 
     navigationView.getHeaderView(0).findViewById(R.id.icon_user_image)
         .setOnClickListener(this);
 
-    TextView textView = navigationView.getHeaderView(0).findViewById(R.id.username);
-    textView.setText("未登录");
-    textView.setOnClickListener(this);
+    usernameView = navigationView.getHeaderView(0).findViewById(R.id.username);
+    usernameView.setText(username);
+    usernameView.setOnClickListener(this);
   }
 
   /**
@@ -176,7 +178,7 @@ public class MainActivity extends BaseActivity implements
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    if (requestCode != RESULT_OK) {
+    if (resultCode != RESULT_OK) {
       return;
     }
     switch (requestCode) {
@@ -189,6 +191,13 @@ public class MainActivity extends BaseActivity implements
           int position = data.getIntExtra("position", 0);
           adapter.notifyItemChanged(position);
         }
+        break;
+      case REQUEST_CODE_LOGIN:
+        Log.i("TAG", "login in success");
+        credential.setToken(data.getStringExtra("token"));
+        username = data.getStringExtra("username");
+        TextView textView = navigationView.getHeaderView(0).findViewById(R.id.username);
+        textView.setText(username);
         break;
       default:
         throw new UnsupportedOperationException();
@@ -252,15 +261,22 @@ public class MainActivity extends BaseActivity implements
     switch (v.getId()) {
       case R.id.username:
       case R.id.icon_user_image:
-        userLogin();
+        LoginActivity.start(this, REQUEST_CODE_LOGIN);
         break;
       default:
         break;
     }
   }
 
-  private void userLogin() {
-    Toast.makeText(getBaseContext(), "login", Toast.LENGTH_SHORT).show();
+  @Override
+  public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+    switch (menuItem.getItemId()) {
+      case R.id.nav_cloud_dataset:
+        CloudDataSetActivity.start(this, credential);
+        break;
+      default:
+        break;
+    }
+    return false;
   }
-
 }
