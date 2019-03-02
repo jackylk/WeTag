@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">爱标注</string>
+    <string name="app_name">慧标注</string>
     <string name="dataset_name">名称:</string>
     <string name="dataset_desc">描述:</string>
     <string name="dataset_labels">标签:</string>
@@ -26,5 +26,8 @@
     <string name="menu_item_save">保存</string>
     <string name="main_activity_title">数据集管理</string>
     <string name="error_gif">长宽不小于 %1$dpx，且大小不超过 %2$sM。</string>
+    <string name="error_permission_denied">你拒绝了权限申请</string>
     <string name="tag_key_position">position</string>
+    <string name="app_desc">智慧的人做智慧的事</string>
+    <string name="remember_username">记住用户名</string>
 </resources>

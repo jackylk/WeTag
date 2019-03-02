@@ -2,8 +2,12 @@ package org.cloud.wetag.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,8 +26,10 @@ import okhttp3.Response;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
-  TextView userNameInput;
-  TextView passwordInput;
+  private TextView userNameInput;
+  private TextView passwordInput;
+  private CheckBox rememberUsername;
+  private SharedPreferences pref;
 
   public static void start(Activity activity, int requestCode) {
     Intent intent = new Intent(activity, LoginActivity.class);
@@ -37,6 +43,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     userNameInput = findViewById(R.id.user_name_input);
     passwordInput = findViewById(R.id.password_input);
     findViewById(R.id.login_confirm_button).setOnClickListener(this);
+    rememberUsername = findViewById(R.id.remember_username);
+    rememberUsername.setText(R.string.remember_username);
+
+    pref = PreferenceManager.getDefaultSharedPreferences(this);
+    if (pref.getBoolean("remember_username", false)) {
+      rememberUsername.setChecked(true);
+      userNameInput.setText(pref.getString("username", ""));
+    }
   }
 
   @Override
@@ -48,6 +62,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
           this.getApplicationContext(), "请输入账户名和密码", Toast.LENGTH_SHORT).show();
       return;
     }
+    SharedPreferences.Editor editor = pref.edit();
+    if (rememberUsername.isChecked()) {
+      editor.putBoolean("remember_username", true);
+      editor.putString("username", username);
+    } else {
+      editor.clear();
+    }
+    editor.apply();
     userLogin(username, password);
   }
 
@@ -116,6 +138,5 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
           }
         });
   }
-
 
 }
