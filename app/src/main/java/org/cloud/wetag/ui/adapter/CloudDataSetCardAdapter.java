@@ -40,7 +40,6 @@ public class CloudDataSetCardAdapter extends
     DataSet dataSet = dataSets.get(position);
     holder.dataSetName.setText(dataSet.getName());
     holder.dataSetDesc.setText(dataSet.getDesc());
-
     holder.dataSetCreateTime.setText(new Date(dataSet.getCreateTime()).toString());
   }
 

@@ -7,7 +7,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import org.cloud.wetag.R;
+import org.cloud.wetag.model.LoginInfo;
+import org.cloud.wetag.model.service.CloudGetTokenResponse;
 import org.cloud.wetag.utils.HttpUtil;
 
 import java.io.IOException;
@@ -85,15 +89,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
           }
 
           @Override
-          public void onResponse(Call call, Response response) {
+          public void onResponse(Call call, Response response) throws IOException {
             if (response.isSuccessful()) {
               runOnUiThread(() -> {
                 Toast.makeText(LoginActivity.this.getApplicationContext(),
                     "登录成功", Toast.LENGTH_SHORT).show();
               });
+              Gson gson = new Gson();
+              CloudGetTokenResponse resp = gson.fromJson(response.body().string(), CloudGetTokenResponse.class);
+              LoginInfo loginInfo = new LoginInfo();
+              loginInfo.setUserName(username);
+              loginInfo.setLoggedIn(true);
+              loginInfo.setToken(response.header("X-Subject-Token"));
+              loginInfo.setProjectId(resp.getToken().getProject().getId());
               Intent intent = new Intent();
-              intent.putExtra("token", response.header("X-Subject-Token"));
-              intent.putExtra("username", username);
+              intent.putExtra("loginInfo", loginInfo);
               setResult(RESULT_OK, intent);
             } else {
               runOnUiThread(() -> {

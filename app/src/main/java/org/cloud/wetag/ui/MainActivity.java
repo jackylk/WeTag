@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,11 +15,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.cloud.wetag.R;
-import org.cloud.wetag.model.Credential;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.DataSetCollection;
+import org.cloud.wetag.model.LoginInfo;
 import org.cloud.wetag.ui.adapter.DataSetCardAdapter;
 import org.cloud.wetag.utils.FileUtils;
 import org.litepal.LitePal;
@@ -42,8 +42,7 @@ public class MainActivity extends BaseActivity implements
   private TextView usernameView;
   private DrawerLayout drawerLayout;
   private NavigationView navigationView;
-  private Credential credential = new Credential();
-  private String username = "未登录";
+  private LoginInfo loginInfo = new LoginInfo();
 
   private static final int REQUEST_CODE_CREATE_DATASET = 1;
   private static final int REQUEST_CODE_UPDATE_DATASET = 2;
@@ -85,7 +84,7 @@ public class MainActivity extends BaseActivity implements
         .setOnClickListener(this);
 
     usernameView = navigationView.getHeaderView(0).findViewById(R.id.username);
-    usernameView.setText(username);
+    usernameView.setText(loginInfo.getUserName());
     usernameView.setOnClickListener(this);
   }
 
@@ -194,10 +193,9 @@ public class MainActivity extends BaseActivity implements
         break;
       case REQUEST_CODE_LOGIN:
         Log.i("TAG", "login in success");
-        credential.setToken(data.getStringExtra("token"));
-        username = data.getStringExtra("username");
+        loginInfo = (LoginInfo) data.getSerializableExtra("loginInfo");
         TextView textView = navigationView.getHeaderView(0).findViewById(R.id.username);
-        textView.setText(username);
+        textView.setText(loginInfo.getUserName());
         break;
       default:
         throw new UnsupportedOperationException();
@@ -261,7 +259,9 @@ public class MainActivity extends BaseActivity implements
     switch (v.getId()) {
       case R.id.username:
       case R.id.icon_user_image:
-        LoginActivity.start(this, REQUEST_CODE_LOGIN);
+        if (!loginInfo.isLoggedIn()) {
+          LoginActivity.start(this, REQUEST_CODE_LOGIN);
+        }
         break;
       default:
         break;
@@ -272,7 +272,17 @@ public class MainActivity extends BaseActivity implements
   public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
     switch (menuItem.getItemId()) {
       case R.id.nav_cloud_dataset:
-        CloudDataSetActivity.start(this, credential);
+        if (!loginInfo.isLoggedIn()) {
+          Toast.makeText(getApplicationContext(), "请先登录", Toast.LENGTH_SHORT).show();
+        } else {
+          CloudDataSetActivity.start(this, loginInfo);
+        }
+        break;
+      case R.id.nav_setting:
+        Toast.makeText(getApplicationContext(), "开发中，敬请期待", Toast.LENGTH_SHORT).show();
+        break;
+      case R.id.nav_local_dataset:
+        drawerLayout.closeDrawers();
         break;
       default:
         break;

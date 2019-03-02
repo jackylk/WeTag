@@ -10,7 +10,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import org.cloud.wetag.R;
-import org.cloud.wetag.model.Credential;
+import org.cloud.wetag.model.LoginInfo;
 import org.cloud.wetag.model.DataSet;
 import org.cloud.wetag.model.service.CloudDataSet;
 import org.cloud.wetag.model.service.CloudDataSetListResponse;
@@ -28,9 +28,11 @@ import okhttp3.Response;
 
 public class CloudDataSetActivity extends BaseActivity {
 
-  public static void start(Activity activity, Credential credential) {
+  private LoginInfo loginInfo;
+
+  public static void start(Activity activity, LoginInfo loginInfo) {
     Intent intent = new Intent(activity, CloudDataSetActivity.class);
-    intent.putExtra("token", credential.getToken());
+    intent.putExtra("login_info", loginInfo);
     activity.startActivity(intent);
   }
 
@@ -44,10 +46,10 @@ public class CloudDataSetActivity extends BaseActivity {
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
     recyclerView.setLayoutManager(layoutManager);
 
-    String token = getIntent().getStringExtra("token");
+    loginInfo = (LoginInfo) getIntent().getSerializableExtra("login_info");
     List<DataSet> dataSets = null;
     try {
-      dataSets = fetchCloudDataSet(token);
+      dataSets = fetchCloudDataSet(loginInfo.getToken());
     } catch (Exception e) {
       fail(e.getMessage());
       finish();
@@ -61,7 +63,8 @@ public class CloudDataSetActivity extends BaseActivity {
     List<DataSet> dataSetList = new LinkedList<>();
     Future<Response> future = Executors.newSingleThreadExecutor().submit(
         () -> HttpUtil.getSync(
-            "https://modelarts.cn-north-1.myhuaweicloud.com/v1/526d402aed19435d9b422dfb1f0d3e33/datasets",
+            "https://modelarts.cn-north-1.myhuaweicloud.com/v1/" +
+                loginInfo.getProjectId() + "/datasets",
             token));
 
     Response response = future.get();
